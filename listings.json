@@ -1,0 +1,23 @@
+[
+  {
+    "listing": "/index.html",
+    "items": [
+      "/materials/00-setting-up/00-about.html",
+      "/materials/00-setting-up/01-installations.html",
+      "/materials/00-setting-up/02-hwk-git-github.html",
+      "/materials/00-setting-up/03-hwk-rstudio-git.html",
+      "/materials/00-setting-up/04-hwk-building-book.html",
+      "/materials/01-function-writing/00-review.html",
+      "/materials/01-function-writing/01-more-functions.html",
+      "/materials/01-function-writing/02-closer-look.html",
+      "/materials/05-computational-tools/01-making-a-package.html",
+      "/materials/05-computational-tools/02-data-packages.html",
+      "/materials/05-computational-tools/03-website.html",
+      "/project/project.html",
+      "/project/02-draft.html",
+      "/project/03-report.html",
+      "/project/05-peer-review.html",
+      "/project/01-choose-team-and-topic.html"
+    ]
+  }
+]
