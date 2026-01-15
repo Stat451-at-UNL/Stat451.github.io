@@ -213,7 +213,7 @@
 <h1>Factorials</h1>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a>fac <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
-<span id="cb1-2"><a></a>  <span class="fu">stopifnot</span>(x <span class="sc">&gt;=</span> <span class="dv">0</span>)</span>
+<span id="cb1-2"><a></a>  <span class="fu">stopifnot</span>(<span class="fu">is.numeric</span>(x), x <span class="sc">&gt;=</span> <span class="dv">0</span>, <span class="fu">length</span>(x) <span class="sc">==</span> <span class="dv">1</span>)</span>
 <span id="cb1-3"><a></a>  <span class="cf">if</span> (x <span class="sc">==</span> <span class="dv">0</span>) <span class="fu">return</span>(<span class="dv">1</span>)</span>
 <span id="cb1-4"><a></a>  <span class="cf">if</span> (x <span class="sc">==</span> <span class="dv">1</span>) <span class="fu">return</span>(<span class="dv">1</span>)</span>
 <span id="cb1-5"><a></a>  <span class="fu">return</span>(x<span class="sc">*</span><span class="fu">fac</span>(x<span class="dv">-1</span>))</span>
@@ -235,6 +235,13 @@
 </div>
 </section>
 
+<section id="advantage-of-recursions-over-loops" class="title-slide slide level1 center">
+<h1>Advantage of recursions over loops</h1>
+<p>Calling functions generally leads to cleaner code (function naming is crucial!)</p>
+<p>Focus on “what” is done rather than “how”</p>
+<p>… at the cost of memory (function stack)</p>
+</section>
+
 <section id="your-turn" class="title-slide slide level1 center" data-background-color="#006666">
 <h1>Your Turn</h1>
 <p>Use the factorial function to implement the binomial coefficient as a function <code>binom(n, k)</code></p>
@@ -245,12 +252,15 @@
 
 <section id="floating-point-numbers-fpn" class="title-slide slide level1 center">
 <h1>Floating Point Numbers (FPN)</h1>
-<p>For base <span class="math inline">\(\beta\)</span> and precision <span class="math inline">\(\rho\)</span>, FPNs are represented as</p>
+<p>For base <span class="math inline">\(\beta\)</span> and precision <span class="math inline">\(p\)</span> (both <span class="math inline">\(\beta\)</span> and <span class="math inline">\(p\)</span> are positive integers), FPNs are represented as</p>
 <p><span class="math display">\[
 d.dddddd \times \beta^e,
-\]</span> where <span class="math inline">\(d.dddddd\)</span> is called the <em>significand</em> and has <span class="math inline">\(\rho\)</span> digits.</p>
-<p>If the first <span class="math inline">\(d\)</span> is non-zero, the representation is called <em>normalized</em></p>
-<p>e.g.&nbsp;for # Floating point numbers have limits</p>
+\]</span> where <span class="math inline">\(d.dddddd\)</span> is called the <em>significand</em> and has <span class="math inline">\(p\)</span> digits.</p>
+<p>If the first <span class="math inline">\(d\)</span> is non-zero, the representation is called <em>normalized</em>. Normalized FP representations are unique.</p>
+</section>
+
+<section id="floating-point-numbers-have-limits" class="title-slide slide level1 center">
+<h1>Floating point numbers have limits</h1>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a>.Machine<span class="sc">$</span>double.xmin</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -259,6 +269,88 @@ d.dddddd \times \beta^e,
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a>.Machine<span class="sc">$</span>double.xmax</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1.797693e+308</code></pre>
+</div>
+</div>
+<p>Values outside of these limits are encoded as <code>Inf</code> and <code>-Inf</code> in R.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a><span class="fu">fac</span>(<span class="dv">170</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 7.257416e+306</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a><span class="fu">fac</span>(<span class="dv">171</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] Inf</code></pre>
+</div>
+</div>
+</section>
+
+<section id="your-turn-1" class="title-slide slide level1 center" data-background-color="#006666">
+<h1>Your Turn</h1>
+<p>Implement a recursive function <code>fibonacci (n, a, b)</code> that calculates the <span class="math inline">\(n\)</span>th fibonacci number using starting values <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span>:</p>
+<p>The Fibonacci series is defined as: <span class="math display">\[
+\begin{eqnarray*}
+x_1 &amp;=&amp; a,\ \  x_2 = b\\
+x_n &amp;=&amp; x_{n-2} + x_{n-1} \ \text{ for } n \ge 3
+\end{eqnarray*}
+\]</span></p>
+</section>
+
+<section id="direct-implementation" class="title-slide slide level1 center">
+<h1>Direct implementation</h1>
+<p>Functions with multiple calls (tree recursions) to themselves are inefficient and run the risk of stack overflows</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a>fibonacci <span class="ot">&lt;-</span> <span class="cf">function</span>(n, a, b) {</span>
+<span id="cb15-2"><a></a>  <span class="fu">stopifnot</span>(<span class="fu">is.numeric</span>(n), n <span class="sc">&gt;=</span> <span class="dv">0</span>)</span>
+<span id="cb15-3"><a></a>  <span class="cf">if</span> (n <span class="sc">==</span> <span class="dv">0</span>) <span class="fu">return</span>(a)</span>
+<span id="cb15-4"><a></a>  <span class="cf">if</span> (n <span class="sc">==</span> <span class="dv">1</span>) <span class="fu">return</span>(b)</span>
+<span id="cb15-5"><a></a>  <span class="fu">return</span>(<span class="fu">fibonacci</span>(n<span class="dv">-1</span>, a, b) <span class="sc">+</span> <span class="fu">fibonacci</span>(n<span class="dv">-2</span>, a, b))</span>
+<span id="cb15-6"><a></a>}</span>
+<span id="cb15-7"><a></a></span>
+<span id="cb15-8"><a></a><span class="fu">fibonacci</span>(<span class="dv">10</span>, <span class="dv">1</span>,<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 89</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a><span class="fu">fibonacci</span>(<span class="dv">25</span>, <span class="dv">1</span>,<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 121393</code></pre>
+</div>
+</div>
+</section>
+
+<section id="fibonacci-evaluation" class="title-slide slide level1 center">
+<h1>Fibonacci Evaluation</h1>
+
+<img data-src="fibonacci.png" class="r-stretch"></section>
+
+<section id="sequential-solution" class="title-slide slide level1 center">
+<h1>Sequential Solution</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a>fibonacci_seq <span class="ot">&lt;-</span> <span class="cf">function</span>(n, <span class="at">seq =</span> <span class="fu">c</span>(a, b)) {</span>
+<span id="cb19-2"><a></a>  <span class="fu">stopifnot</span>(<span class="fu">is.numeric</span>(n), n <span class="sc">&gt;=</span> <span class="dv">1</span>)</span>
+<span id="cb19-3"><a></a>  <span class="cf">if</span> (n <span class="sc">==</span> <span class="dv">1</span>) <span class="fu">return</span>(seq[<span class="dv">1</span>])</span>
+<span id="cb19-4"><a></a>  <span class="cf">if</span> (n <span class="sc">==</span> <span class="dv">2</span>) <span class="fu">return</span>(seq)</span>
+<span id="cb19-5"><a></a>  <span class="fu">return</span>(</span>
+<span id="cb19-6"><a></a>    <span class="fu">fibonacci_seq</span>(n<span class="dv">-1</span>, </span>
+<span id="cb19-7"><a></a>      <span class="at">seq =</span> <span class="fu">c</span>(seq, seq[<span class="fu">length</span>(seq)] <span class="sc">+</span> seq[<span class="fu">length</span>(seq)<span class="sc">-</span><span class="dv">1</span>]))</span>
+<span id="cb19-8"><a></a>  )</span>
+<span id="cb19-9"><a></a>}</span>
+<span id="cb19-10"><a></a></span>
+<span id="cb19-11"><a></a><span class="fu">fibonacci_seq</span>(<span class="dv">25</span>, <span class="at">seq=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1]     1     1     2     3     5     8    13    21    34    55    89   144
+[13]   233   377   610   987  1597  2584  4181  6765 10946 17711 28657 46368
+[25] 75025</code></pre>
+</div>
+</div>
+</section>
+
+<section id="what-happened-here" class="title-slide slide level1 center">
+<h1>What happened here?</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a><span class="fu">fac</span>(<span class="fl">0.05</span> <span class="sc">+</span> <span class="fl">0.1</span> <span class="sc">-</span> <span class="fl">0.15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `fac()`:
+! x &gt;= 0 is not TRUE</code></pre>
 </div>
 </div>
 
