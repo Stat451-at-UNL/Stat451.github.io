@@ -9,8 +9,8 @@
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.7.32">
 
-  <meta name="dcterms.date" content="2026-01-20">
-  <title>Stat 451 – More functions</title>
+  <meta name="dcterms.date" content="2026-01-22">
+  <title>Stat 451 – Environments</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -193,250 +193,129 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">More functions</h1>
+  <h1 class="title">Environments</h1>
 
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-01-20</p>
+  <p class="date">2026-01-22</p>
 </section>
-<section id="recursive-functions" class="title-slide slide level1 center">
-<h1>Recursive functions</h1>
-<p>the prototypical function - similar to proof by induction:</p>
+<section id="what-are-environments" class="title-slide slide level1 center">
+<h1>What are Environments?</h1>
 <ul>
-<li><p>define values for endings</p></li>
-<li><p>get value for f(x) from value of f(x-1)</p></li>
+<li>in R, environments are objects :)</li>
+<li>similar to lists of named objects</li>
+<li>BUT: environments are only <strong>references</strong> – i.e.&nbsp;they are not copied when passed into a function (C we would call them pointers)</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a>x <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb1-2"><a></a>y <span class="ot">&lt;-</span> x</span>
+<span id="cb1-3"><a></a>x <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb1-4"><a></a></span>
+<span id="cb1-5"><a></a><span class="co"># Value of y is not changed</span></span>
+<span id="cb1-6"><a></a>y</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2</code></pre>
+</div>
+</div>
+</section>
+
+<section id="every-environment-exists-only-once" class="title-slide slide level1 center">
+<h1>Every environment exists only once</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a><span class="fu">library</span>(rlang)</span>
+<span id="cb3-2"><a></a>e1 <span class="ot">&lt;-</span> <span class="fu">env</span>(<span class="at">x =</span> <span class="dv">2</span>, <span class="at">y =</span> <span class="dv">4</span>, <span class="at">z =</span> <span class="dv">6</span>)</span>
+<span id="cb3-3"><a></a><span class="fu">ls</span>(e1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "x" "y" "z"</code></pre>
+</div>
+</div>
+<p>Now create a ‘copy’ of e1 and change it</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a>e2 <span class="ot">&lt;-</span> e1</span>
+<span id="cb5-2"><a></a>e2<span class="sc">$</span>d <span class="ot">&lt;-</span> pi </span>
+<span id="cb5-3"><a></a><span class="fu">ls</span>(e1) <span class="co"># e1 has changed with e2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "d" "x" "y" "z"</code></pre>
+</div>
+</div>
+<p>The ‘two’ environments are just two different names for the same thing</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a><span class="fu">identical</span>(<span class="fu">ls</span>(e1), <span class="fu">ls</span>(e2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+</section>
+
+<section id="why-do-we-need-environments" class="title-slide slide level1 center">
+<h1>Why do we need Environments?</h1>
+<ul>
+<li><p>Environments are implementations for lexical scopes</p></li>
+<li><p>working directory is <code>.GlobalEnv</code> or <code>global_env</code></p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a><span class="fu">ls</span>(.GlobalEnv)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "e1" "e2" "x"  "y" </code></pre>
+</div>
+</div>
+<ul>
+<li>the current working directory is <code>current_env()</code></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a><span class="fu">ls</span>(<span class="fu">current_env</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "e1" "e2" "x"  "y" </code></pre>
+</div>
+</div>
+<ul>
+<li>when we are working in the console, these environments are the same</li>
 </ul>
 </section>
 
-<section id="factorials" class="title-slide slide level1 center">
-<h1>Factorials</h1>
+<section id="environments" class="title-slide slide level1 center">
+<h1>Environments</h1>
+<ul>
+<li>Every environment (except for the empty environment) has a parent environment (the environment from which it was created)</li>
+</ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a>fac <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
-<span id="cb1-2"><a></a>  <span class="fu">stopifnot</span>(<span class="fu">is.numeric</span>(x), x <span class="sc">&gt;=</span> <span class="dv">0</span>, <span class="fu">length</span>(x) <span class="sc">==</span> <span class="dv">1</span>)</span>
-<span id="cb1-3"><a></a>  <span class="cf">if</span> (x <span class="sc">==</span> <span class="dv">0</span>) <span class="fu">return</span>(<span class="dv">1</span>)</span>
-<span id="cb1-4"><a></a>  <span class="cf">if</span> (x <span class="sc">==</span> <span class="dv">1</span>) <span class="fu">return</span>(<span class="dv">1</span>)</span>
-<span id="cb1-5"><a></a>  <span class="fu">return</span>(x<span class="sc">*</span><span class="fu">fac</span>(x<span class="dv">-1</span>))</span>
-<span id="cb1-6"><a></a>}</span>
-<span id="cb1-7"><a></a></span>
-<span id="cb1-8"><a></a><span class="fu">fac</span>(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a><span class="fu">env_parent</span>(e1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 120</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a><span class="fu">fac</span>(<span class="dv">60</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 8.320987e+81</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a><span class="fu">fac</span>(<span class="fl">2.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-error">
-<pre><code>Error in `fac()`:
-! x &gt;= 0 is not TRUE</code></pre>
+<pre><code>&lt;environment: R_GlobalEnv&gt;</code></pre>
 </div>
 </div>
 </section>
 
-<section id="advantage-of-recursions-over-loops" class="title-slide slide level1 center">
-<h1>Advantage of recursions over loops</h1>
-<p>Calling functions generally leads to cleaner code (function naming is crucial!)</p>
-<p>Focus on “what” is done rather than “how”</p>
-<p>… at the cost of memory (function stack)</p>
+<section id="functions-and-environments" class="title-slide slide level1 center">
+<h1>Functions and Environments</h1>
+<ul>
+<li>When a function is called, a new environment is created for the function’s parameters and any objects defined in the function</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a>x <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb15-2"><a></a></span>
+<span id="cb15-3"><a></a>f <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb15-4"><a></a>  x <span class="ot">&lt;-</span> x <span class="sc">+</span> <span class="dv">4</span></span>
+<span id="cb15-5"><a></a>  x</span>
+<span id="cb15-6"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>What is the value of <code>f(1)</code>, what is the value of <code>x</code> before <code>f(1)</code> is called, what is it after <code>f(1)</code>?</li>
+</ul>
 </section>
 
 <section id="your-turn" class="title-slide slide level1 center" data-background-color="#006666">
 <h1>Your Turn</h1>
-<p>Use the factorial function to implement the binomial coefficient as a function <code>binom(n, k)</code></p>
-<p><span class="math inline">\(\binom{n}{k} = \frac{n!}{k! (n-k)!}\)</span></p>
-<p>What is the result for <code>binom(175,2)</code>?</p>
-<p>Rewrite the function to be able to deal with <code>binom(175,2)</code> and <code>binom(175,173)</code></p>
+<p>Call the library <code>rlang</code>. What is the parent environment of the global environment?</p>
+<p>In the <code>fac</code> function, add print of the current and the parent environment. Then run <code>fac(5)</code>.</p>
+<p><code>env_parents</code> returns a list of all parent environments.</p>
 </section>
 
-<section id="floating-point-numbers-fpn" class="title-slide slide level1 center">
-<h1>Floating Point Numbers (FPN)</h1>
-<p>For base <span class="math inline">\(\beta\)</span> and precision <span class="math inline">\(p\)</span> (both <span class="math inline">\(\beta\)</span> and <span class="math inline">\(p\)</span> are positive integers), FPNs are represented as</p>
-<p><span class="math display">\[
-d.dddddd \times \beta^e,
-\]</span> where <span class="math inline">\(d.dddddd\)</span> is called the <em>significand</em> and has <span class="math inline">\(p\)</span> digits.</p>
-<p>If the first <span class="math inline">\(d\)</span> is non-zero, the representation is called <em>normalized</em>. Normalized FP representations are unique.</p>
-</section>
-
-<section id="floating-point-numbers-have-limits" class="title-slide slide level1 center">
-<h1>Floating point numbers have limits</h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a>.Machine<span class="sc">$</span>double.xmax</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 1.797693e+308</code></pre>
-</div>
-</div>
-<p>Values outside of these limits are encoded as <code>Inf</code> (and <code>-Inf</code> for negative values) in R.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a><span class="fu">fac</span>(<span class="dv">170</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 7.257416e+306</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a><span class="fu">fac</span>(<span class="dv">171</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] Inf</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a><span class="sc">-</span><span class="fu">fac</span>(<span class="dv">171</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] -Inf</code></pre>
-</div>
-</div>
-</section>
-
-<section id="your-turn-1" class="title-slide slide level1 center" data-background-color="#006666">
-<h1>Your Turn</h1>
-<p>Implement a recursive function <code>fibonacci (n, a, b)</code> that calculates the <span class="math inline">\(n\)</span>th fibonacci number using starting values <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span>:</p>
-<p>The Fibonacci series is defined as: <span class="math display">\[
-\begin{eqnarray*}
-x_1 &amp;=&amp; a,\ \  x_2 = b\\
-x_n &amp;=&amp; x_{n-2} + x_{n-1} \ \text{ for } n \ge 3
-\end{eqnarray*}
-\]</span></p>
-</section>
-
-<section id="direct-implementation" class="title-slide slide level1 center">
-<h1>Direct implementation</h1>
-<p>Functions with multiple calls (tree recursions) to themselves are inefficient and run the risk of stack overflows</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a>fibonacci <span class="ot">&lt;-</span> <span class="cf">function</span>(n, a, b) {</span>
-<span id="cb15-2"><a></a>  <span class="fu">stopifnot</span>(<span class="fu">is.numeric</span>(n), n <span class="sc">&gt;=</span> <span class="dv">0</span>)</span>
-<span id="cb15-3"><a></a>  <span class="cf">if</span> (n <span class="sc">==</span> <span class="dv">0</span>) <span class="fu">return</span>(a)</span>
-<span id="cb15-4"><a></a>  <span class="cf">if</span> (n <span class="sc">==</span> <span class="dv">1</span>) <span class="fu">return</span>(b)</span>
-<span id="cb15-5"><a></a>  <span class="fu">return</span>(<span class="fu">fibonacci</span>(n<span class="dv">-1</span>, a, b) <span class="sc">+</span> <span class="fu">fibonacci</span>(n<span class="dv">-2</span>, a, b))</span>
-<span id="cb15-6"><a></a>}</span>
-<span id="cb15-7"><a></a></span>
-<span id="cb15-8"><a></a><span class="fu">fibonacci</span>(<span class="dv">10</span>, <span class="dv">1</span>,<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 89</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a><span class="fu">fibonacci</span>(<span class="dv">25</span>, <span class="dv">1</span>,<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 121393</code></pre>
-</div>
-</div>
-</section>
-
-<section id="fibonacci-evaluation" class="title-slide slide level1 center">
-<h1>Fibonacci Evaluation</h1>
-
-<img data-src="fibonacci.png" class="r-stretch"></section>
-
-<section id="sequential-solution" class="title-slide slide level1 center">
-<h1>Sequential Solution</h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a>fibonacci_seq <span class="ot">&lt;-</span> <span class="cf">function</span>(n, <span class="at">seq =</span> <span class="fu">c</span>(a, b)) {</span>
-<span id="cb19-2"><a></a>  <span class="fu">stopifnot</span>(<span class="fu">is.numeric</span>(n), n <span class="sc">&gt;=</span> <span class="dv">1</span>)</span>
-<span id="cb19-3"><a></a>  <span class="cf">if</span> (n <span class="sc">==</span> <span class="dv">1</span>) <span class="fu">return</span>(seq[<span class="dv">1</span>])</span>
-<span id="cb19-4"><a></a>  <span class="cf">if</span> (n <span class="sc">==</span> <span class="dv">2</span>) <span class="fu">return</span>(seq)</span>
-<span id="cb19-5"><a></a>  <span class="fu">return</span>(</span>
-<span id="cb19-6"><a></a>    <span class="fu">fibonacci_seq</span>(n<span class="dv">-1</span>, </span>
-<span id="cb19-7"><a></a>      <span class="at">seq =</span> <span class="fu">c</span>(seq, seq[<span class="fu">length</span>(seq)] <span class="sc">+</span> seq[<span class="fu">length</span>(seq)<span class="sc">-</span><span class="dv">1</span>]))</span>
-<span id="cb19-8"><a></a>  )</span>
-<span id="cb19-9"><a></a>}</span>
-<span id="cb19-10"><a></a></span>
-<span id="cb19-11"><a></a><span class="fu">fibonacci_seq</span>(<span class="dv">25</span>, <span class="at">seq=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code> [1]     1     1     2     3     5     8    13    21    34    55    89   144
-[13]   233   377   610   987  1597  2584  4181  6765 10946 17711 28657 46368
-[25] 75025</code></pre>
-</div>
-</div>
-</section>
-
-<section id="infix-functions" class="title-slide slide level1 center">
-<h1>Infix functions</h1>
-<p>Operators in R, such as <code>+</code>, <code>-</code>, <code>*</code>, <code>^</code>, … are defined as <strong>infix</strong> functions and equivalent to functions of the form <code>`operator`</code>(el1, el2)</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a><span class="dv">2</span> <span class="sc">+</span> <span class="dv">3</span> <span class="co"># same as </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 5</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a><span class="st">`</span><span class="at">+</span><span class="st">`</span>(<span class="dv">2</span>, <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 5</code></pre>
-</div>
-</div>
-<p>This also means that they can be overwritten …</p>
-</section>
-
-<section id="example-string-addition" class="title-slide slide level1 center">
-<h1>Example: String addition</h1>
-<p>We can define <code>+</code> between two strings as concatenation:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a></a><span class="st">`</span><span class="at">+</span><span class="st">`</span> <span class="ot">&lt;-</span> <span class="cf">function</span>(x, y) {</span>
-<span id="cb25-2"><a></a>  <span class="cf">if</span> (<span class="fu">all</span>(<span class="fu">is.character</span>(x) <span class="sc">&amp;</span> <span class="fu">is.character</span>(y))) {</span>
-<span id="cb25-3"><a></a>    <span class="fu">return</span>(<span class="fu">paste</span>(x, y, <span class="at">sep=</span><span class="st">""</span>))</span>
-<span id="cb25-4"><a></a>  }</span>
-<span id="cb25-5"><a></a>  base<span class="sc">::</span><span class="st">`</span><span class="at">+</span><span class="st">`</span>(x, y) <span class="co"># can't write x + y here - calls itself</span></span>
-<span id="cb25-6"><a></a>}</span>
-<span id="cb25-7"><a></a></span>
-<span id="cb25-8"><a></a><span class="st">"hel"</span> <span class="sc">+</span> <span class="st">"lo"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "hello"</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a></a><span class="fu">c</span>(<span class="st">"h"</span>, <span class="st">"m"</span>, <span class="st">"f"</span>, <span class="st">"r"</span>, <span class="st">"w"</span>, <span class="st">"p"</span>, <span class="st">"s"</span>) <span class="sc">+</span> <span class="st">"ound"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "hound" "mound" "found" "round" "wound" "pound" "sound"</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a></a><span class="fu">rm</span>(<span class="st">`</span><span class="at">+</span><span class="st">`</span>) <span class="co"># set the addition back to the original</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-
-<section id="replacement-functions" class="title-slide slide level1 center">
-<h1>Replacement functions</h1>
-<p>Some functions e.g.&nbsp;<code>names</code> are allowed on the left hand side of an assignment:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a></a>x <span class="ot">&lt;-</span> <span class="dv">5</span></span>
-<span id="cb30-2"><a></a><span class="fu">names</span>(x) <span class="ot">&lt;-</span> <span class="st">"this is a value"</span></span>
-<span id="cb30-3"><a></a>x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>this is a value 
-              5 </code></pre>
-</div>
-</div>
-<p>There are two implementations of this function: <code>names</code> and <code>names&lt;-</code></p>
-<p>The second function is called for replacements, such as the one above.</p>
-<p>Equivalently, we could have called it as:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a></a><span class="st">`</span><span class="at">names&lt;-</span><span class="st">`</span>(x, <span class="st">"this is a value"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>this is a value 
-              5 </code></pre>
-</div>
-</div>
-<p>Which other replacement functions can you think of?</p>
-<div class="fragment">
-<p>Check with <code>apropos("&lt;-")</code></p>
-</div>
-</section>
-
-<section id="what-happened-here" class="title-slide slide level1 center">
-<h1>What happened here?</h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a></a><span class="fu">fac</span>(<span class="fl">0.05</span> <span class="sc">+</span> <span class="fl">0.1</span> <span class="sc">-</span> <span class="fl">0.15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-error">
-<pre><code>Error in `fac()`:
-! x &gt;= 0 is not TRUE</code></pre>
-</div>
-</div>
-<div class="fragment">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a></a>fac</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>function (x) 
-{
-    stopifnot(is.numeric(x), x &gt;= 0, length(x) == 1)
-    if (x == 0) 
-        return(1)
-    if (x == 1) 
-        return(1)
-    return(x * fac(x - 1))
-}
-&lt;bytecode: 0x7fb91bc5d730&gt;</code></pre>
-</div>
-</div>
-</div>
+<section id="super-assignment--" class="title-slide slide level1 center">
+<h1>Super assignment <code>&lt;&lt;-</code></h1>
+<p><code>&lt;&lt;-</code> is the assignment of a value to an object in the (first) parent environment (in which the value is found).</p>
+<p>In a programming setting we might want to have more control, and specify the exact parent environment. Otherwise there might be unexpected side effects when somebody else uses our function.</p>
 
 
 </section>
