@@ -284,137 +284,10 @@ d.dddddd \times \beta^e,
 </div>
 </section>
 
-<section id="your-turn-1" class="title-slide slide level1 center" data-background-color="#006666">
-<h1>Your Turn</h1>
-<p>Implement a recursive function <code>fibonacci (n, a, b)</code> that calculates the <span class="math inline">\(n\)</span>th fibonacci number using starting values <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span>:</p>
-<p>The Fibonacci series is defined as: <span class="math display">\[
-\begin{eqnarray*}
-x_1 &amp;=&amp; a,\ \  x_2 = b\\
-x_n &amp;=&amp; x_{n-2} + x_{n-1} \ \text{ for } n \ge 3
-\end{eqnarray*}
-\]</span></p>
-</section>
-
-<section id="direct-implementation" class="title-slide slide level1 center">
-<h1>Direct implementation</h1>
-<p>Functions with multiple calls (tree recursions) to themselves are inefficient and run the risk of stack overflows</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a>fibonacci <span class="ot">&lt;-</span> <span class="cf">function</span>(n, a, b) {</span>
-<span id="cb15-2"><a></a>  <span class="fu">stopifnot</span>(<span class="fu">is.numeric</span>(n), n <span class="sc">&gt;=</span> <span class="dv">0</span>)</span>
-<span id="cb15-3"><a></a>  <span class="cf">if</span> (n <span class="sc">==</span> <span class="dv">0</span>) <span class="fu">return</span>(a)</span>
-<span id="cb15-4"><a></a>  <span class="cf">if</span> (n <span class="sc">==</span> <span class="dv">1</span>) <span class="fu">return</span>(b)</span>
-<span id="cb15-5"><a></a>  <span class="fu">return</span>(<span class="fu">fibonacci</span>(n<span class="dv">-1</span>, a, b) <span class="sc">+</span> <span class="fu">fibonacci</span>(n<span class="dv">-2</span>, a, b))</span>
-<span id="cb15-6"><a></a>}</span>
-<span id="cb15-7"><a></a></span>
-<span id="cb15-8"><a></a><span class="fu">fibonacci</span>(<span class="dv">10</span>, <span class="dv">1</span>,<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 89</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a><span class="fu">fibonacci</span>(<span class="dv">25</span>, <span class="dv">1</span>,<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 121393</code></pre>
-</div>
-</div>
-</section>
-
-<section id="fibonacci-evaluation" class="title-slide slide level1 center">
-<h1>Fibonacci Evaluation</h1>
-
-<img data-src="fibonacci.png" class="r-stretch"></section>
-
-<section id="sequential-solution" class="title-slide slide level1 center">
-<h1>Sequential Solution</h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a>fibonacci_seq <span class="ot">&lt;-</span> <span class="cf">function</span>(n, <span class="at">seq =</span> <span class="fu">c</span>(a, b)) {</span>
-<span id="cb19-2"><a></a>  <span class="fu">stopifnot</span>(<span class="fu">is.numeric</span>(n), n <span class="sc">&gt;=</span> <span class="dv">1</span>)</span>
-<span id="cb19-3"><a></a>  <span class="cf">if</span> (n <span class="sc">==</span> <span class="dv">1</span>) <span class="fu">return</span>(seq[<span class="dv">1</span>])</span>
-<span id="cb19-4"><a></a>  <span class="cf">if</span> (n <span class="sc">==</span> <span class="dv">2</span>) <span class="fu">return</span>(seq)</span>
-<span id="cb19-5"><a></a>  <span class="fu">return</span>(</span>
-<span id="cb19-6"><a></a>    <span class="fu">fibonacci_seq</span>(n<span class="dv">-1</span>, </span>
-<span id="cb19-7"><a></a>      <span class="at">seq =</span> <span class="fu">c</span>(seq, seq[<span class="fu">length</span>(seq)] <span class="sc">+</span> seq[<span class="fu">length</span>(seq)<span class="sc">-</span><span class="dv">1</span>]))</span>
-<span id="cb19-8"><a></a>  )</span>
-<span id="cb19-9"><a></a>}</span>
-<span id="cb19-10"><a></a></span>
-<span id="cb19-11"><a></a><span class="fu">fibonacci_seq</span>(<span class="dv">25</span>, <span class="at">seq=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code> [1]     1     1     2     3     5     8    13    21    34    55    89   144
-[13]   233   377   610   987  1597  2584  4181  6765 10946 17711 28657 46368
-[25] 75025</code></pre>
-</div>
-</div>
-</section>
-
-<section id="infix-functions" class="title-slide slide level1 center">
-<h1>Infix functions</h1>
-<p>Operators in R, such as <code>+</code>, <code>-</code>, <code>*</code>, <code>^</code>, … are defined as <strong>infix</strong> functions and equivalent to functions of the form <code>`operator`</code>(el1, el2)</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a><span class="dv">2</span> <span class="sc">+</span> <span class="dv">3</span> <span class="co"># same as </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 5</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a><span class="st">`</span><span class="at">+</span><span class="st">`</span>(<span class="dv">2</span>, <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 5</code></pre>
-</div>
-</div>
-<p>This also means that they can be overwritten …</p>
-</section>
-
-<section id="example-string-addition" class="title-slide slide level1 center">
-<h1>Example: String addition</h1>
-<p>We can define <code>+</code> between two strings as concatenation:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a></a><span class="st">`</span><span class="at">+</span><span class="st">`</span> <span class="ot">&lt;-</span> <span class="cf">function</span>(x, y) {</span>
-<span id="cb25-2"><a></a>  <span class="cf">if</span> (<span class="fu">all</span>(<span class="fu">is.character</span>(x) <span class="sc">&amp;</span> <span class="fu">is.character</span>(y))) {</span>
-<span id="cb25-3"><a></a>    <span class="fu">return</span>(<span class="fu">paste</span>(x, y, <span class="at">sep=</span><span class="st">""</span>))</span>
-<span id="cb25-4"><a></a>  }</span>
-<span id="cb25-5"><a></a>  base<span class="sc">::</span><span class="st">`</span><span class="at">+</span><span class="st">`</span>(x, y) <span class="co"># can't write x + y here - calls itself</span></span>
-<span id="cb25-6"><a></a>}</span>
-<span id="cb25-7"><a></a></span>
-<span id="cb25-8"><a></a><span class="st">"hel"</span> <span class="sc">+</span> <span class="st">"lo"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "hello"</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a></a><span class="fu">c</span>(<span class="st">"h"</span>, <span class="st">"m"</span>, <span class="st">"f"</span>, <span class="st">"r"</span>, <span class="st">"w"</span>, <span class="st">"p"</span>, <span class="st">"s"</span>) <span class="sc">+</span> <span class="st">"ound"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "hound" "mound" "found" "round" "wound" "pound" "sound"</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a></a><span class="fu">rm</span>(<span class="st">`</span><span class="at">+</span><span class="st">`</span>) <span class="co"># set the addition back to the original</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-
-<section id="replacement-functions" class="title-slide slide level1 center">
-<h1>Replacement functions</h1>
-<p>Some functions e.g.&nbsp;<code>names</code> are allowed on the left hand side of an assignment:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a></a>x <span class="ot">&lt;-</span> <span class="dv">5</span></span>
-<span id="cb30-2"><a></a><span class="fu">names</span>(x) <span class="ot">&lt;-</span> <span class="st">"this is a value"</span></span>
-<span id="cb30-3"><a></a>x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>this is a value 
-              5 </code></pre>
-</div>
-</div>
-<p>There are two implementations of this function: <code>names</code> and <code>names&lt;-</code></p>
-<p>The second function is called for replacements, such as the one above.</p>
-<p>Equivalently, we could have called it as:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a></a><span class="st">`</span><span class="at">names&lt;-</span><span class="st">`</span>(x, <span class="st">"this is a value"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>this is a value 
-              5 </code></pre>
-</div>
-</div>
-<p>Which other replacement functions can you think of?</p>
-<div class="fragment">
-<p>Check with <code>apropos("&lt;-")</code></p>
-</div>
-</section>
-
 <section id="what-happened-here" class="title-slide slide level1 center">
 <h1>What happened here?</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a></a><span class="fu">fac</span>(<span class="fl">0.05</span> <span class="sc">+</span> <span class="fl">0.1</span> <span class="sc">-</span> <span class="fl">0.15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a><span class="fu">fac</span>(<span class="fl">0.05</span> <span class="sc">+</span> <span class="fl">0.1</span> <span class="sc">-</span> <span class="fl">0.15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-error">
 <pre><code>Error in `fac()`:
 ! x &gt;= 0 is not TRUE</code></pre>
@@ -422,7 +295,7 @@ x_n &amp;=&amp; x_{n-2} + x_{n-1} \ \text{ for } n \ge 3
 </div>
 <div class="fragment">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a></a>fac</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a>fac</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>function (x) 
 {
@@ -433,7 +306,7 @@ x_n &amp;=&amp; x_{n-2} + x_{n-1} \ \text{ for } n \ge 3
         return(1)
     return(x * fac(x - 1))
 }
-&lt;bytecode: 0x7fb91bc5d730&gt;</code></pre>
+&lt;bytecode: 0x7fa9d6d27d50&gt;</code></pre>
 </div>
 </div>
 </div>
