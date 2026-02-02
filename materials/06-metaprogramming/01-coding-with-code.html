@@ -10,7 +10,7 @@
   <meta name="generator" content="quarto-1.7.32">
 
   <meta name="dcterms.date" content="2026-02-03">
-  <title>Stat 451 – Functionals</title>
+  <title>Stat 451 – Coding with code</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -193,237 +193,191 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">Functionals</h1>
+  <h1 class="title">Coding with code</h1>
 
 <div class="quarto-title-authors">
 </div>
 
   <p class="date">2026-02-03</p>
 </section>
-<section id="functionals" class="title-slide slide level1 center">
-<h1>Functionals</h1>
-<p>Functionals are functions that take a function as input and return a (vector of) number(s) as output:</p>
-<p>in base: e.g.&nbsp;<code>uniroot</code>, <code>integrate</code>, …</p>
-<p>in tidyverse: e.g.&nbsp;<code>summarize</code>, <code>mutate</code>, …</p>
-<div class="fragment">
-<p>another example: <code>purrr::map</code> applies a function on every element in a list</p>
+<section id="literally-everything-in-r-is-an-object" class="title-slide slide level1 center">
+<h1>Literally everything in R is an object</h1>
+<p>… even the language itself</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a>x <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb1-2"><a></a>e <span class="ot">&lt;-</span> <span class="fu">expr</span>(<span class="dv">2</span><span class="sc">*</span>x)</span>
+<span id="cb1-3"><a></a></span>
+<span id="cb1-4"><a></a>e</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2 * x</code></pre>
 </div>
-<div class="fragment">
-<p><img src="https://adv-r.hadley.nz/diagrams/functionals/map.png" height="300px"></p>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a><span class="fu">eval</span>(e)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 10</code></pre>
+</div>
+</div>
+<p><code>e</code> is called a <strong>defused expression</strong> (“unevaluated expression”, “call”, “blueprint”, “recipe”).</p>
+<p>Foremost <code>e</code> is a <strong>language</strong> object</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a><span class="fu">is.language</span>(e)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a><span class="fu">is.call</span>(e)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+</section>
+
+<section id="the-abstract-structure-tree" class="title-slide slide level1 center">
+<h1>The Abstract Structure Tree</h1>
+<p>Language objects form a(n) (abstract) tree of (pre-fix) functions:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a><span class="fu">library</span>(lobstr)</span>
+<span id="cb9-2"><a></a><span class="fu">ast</span>(<span class="dv">2</span><span class="sc">*</span>x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>█─`*` 
+├─2 
+└─x </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a><span class="fu">ast</span>(y <span class="ot">&lt;-</span> x <span class="sc">+</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>█─`&lt;-` 
+├─y 
+└─█─`+` 
+  ├─x 
+  └─1 </code></pre>
+</div>
+</div>
+<p>All leaves are either constants (<code>2</code>) or <strong>symbols</strong> (<code>x</code>, <code>y</code>)</p>
+</section>
+
+<section id="symbols-calls-and-expressions" class="title-slide slide level1 center">
+<h1>Symbols, Calls, and Expressions</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a>ll <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">a =</span> <span class="fu">expression</span>(x<span class="sc">^</span><span class="dv">2</span> <span class="sc">-</span> <span class="dv">2</span><span class="sc">*</span>x <span class="sc">+</span> <span class="dv">1</span>), <span class="at">b =</span> <span class="fu">as.symbol</span>(<span class="st">"Jim"</span>),</span>
+<span id="cb13-2"><a></a>           <span class="at">c =</span> <span class="fu">as.expression</span>(<span class="fu">exp</span>(<span class="dv">1</span>)), <span class="at">d =</span> <span class="fu">call</span>(<span class="st">"sin"</span>, pi))</span>
+<span id="cb13-3"><a></a><span class="fu">sapply</span>(ll, typeof) <span class="co"># most distinct</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           a            b            c            d 
+"expression"     "symbol" "expression"   "language" </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a><span class="fu">sapply</span>(ll, mode)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           a            b            c            d 
+"expression"       "name" "expression"       "call" </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a><span class="fu">sapply</span>(ll, is.language) <span class="co"># all are language objects</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   a    b    c    d 
+TRUE TRUE TRUE TRUE </code></pre>
+</div>
+</div>
+</section>
+
+<section id="evaluating-unevaluated-expressions" class="title-slide slide level1 center">
+<h1>Evaluating unevaluated expressions</h1>
+<p>Unevaluated expressions can be evaluated … result depends on environment in which they are evaluated</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a><span class="fu">eval</span>(e) <span class="co"># default environment is parent.frame() - i.e.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 10</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a><span class="co"># where call to eval was made</span></span>
+<span id="cb21-2"><a></a></span>
+<span id="cb21-3"><a></a><span class="fu">eval</span>(e, <span class="at">envir=</span><span class="fu">env</span>(<span class="at">x=</span>pi))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 6.283185</code></pre>
+</div>
+</div>
+</section>
+
+<section id="creating-calls-programmatically" class="title-slide slide level1 center">
+<h1>Creating calls programmatically</h1>
+<p><code>base::call</code> or <code>rlang::call2</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a><span class="fu">call</span>(<span class="st">"f"</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>f(1, 2, 3)</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a></a><span class="fu">call2</span>(<span class="st">"f"</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="fu">call2</span>(<span class="st">"+"</span>, <span class="dv">1</span>, <span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>f(1, 2, 1 + 2)</code></pre>
+</div>
 </div>
 </section>
 
 <section id="your-turn" class="title-slide slide level1 center" data-background-color="#006666">
 <h1>Your Turn</h1>
-<ol type="1">
-<li>Write a function(al) <code>apply_to(d,f)</code> in R that applies the function <code>f</code> to every variable of data set <code>d</code>.</li>
-</ol>
-<p>Run the statement <code>mtcars |&gt; apply_to(class)</code></p>
-<ol start="2" type="1">
-<li><p>Create a statement that returns the number of missing values in each of the variables of <code>txhousing</code> (in the <code>ggplot2</code> package)</p></li>
-<li><p>How do your results differ from corresponding calls to <code>sapply</code>?</p></li>
-</ol>
+<p>Write a function <code>regression(data, x, y)</code> that takes a dataset and shows a scatterplot of <code>y</code> versus <code>x</code> with the trend line.</p>
+<p>XXXX</p>
+<p>Use <code>ggplot2</code></p>
 </section>
 
-<section id="map-and-variants" class="title-slide slide level1 center">
-<h1><code>Map</code> and variants</h1>
-<ul>
-<li><p><code>map</code> applies a function to every item in a list</p></li>
-<li><p><code>map_XXX</code> additionally formats output as <code>XXX</code>: can be <code>chr</code> (character), <code>dbl</code> (numeric), <code>lgl</code> (logical), …</p></li>
-<li><p><code>walk</code> does not have any output, i.e.&nbsp;operates through side effects (e.g.&nbsp;print message, create files, …)</p></li>
-<li><p><code>map2</code> and <code>pmap</code> take two/arbitrarily many lists as input</p></li>
-</ul>
-</section>
-
-<section id="why-maps" class="title-slide slide level1 center">
-<h1>Why maps?</h1>
-<ul>
-<li><p><code>map</code> functions serve as iterators, i.e.&nbsp;replace (most) loops</p></li>
-<li><p><code>map</code> works within the tidyverse specs: apply either globally to each variable or within <code>mutate</code> to each element in a (set of) variable(s)</p></li>
-<li><p><code>map</code> doesn’t need to preserve the order in the variable, i.e.&nbsp;signal to processor that code could be run in parallel or distributed (e.g.&nbsp;good for large data)</p></li>
-</ul>
-</section>
-
-<section id="reduce-functionals" class="title-slide slide level1 center">
-<h1>Reduce functionals</h1>
-<ul>
-<li><p><code>reduce</code> takes a function <code>f</code> and a vector <code>x</code> and applies the function repeatedly to its output <code>f(f(f( ... f(x))))</code></p></li>
-<li><p><code>reduce</code> is conceptually a recursive approach</p></li>
-</ul>
+<section id="strings-and-symbols" class="title-slide slide level1 center">
+<h1>Strings and Symbols</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">10</span>)</span>
-<span id="cb1-2"><a></a>purrr<span class="sc">::</span><span class="fu">reduce</span>(x, <span class="st">`</span><span class="at">+</span><span class="st">`</span>) <span class="co"># cumulative sum</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a></a><span class="fu">ast</span>(x <span class="ot">&lt;-</span> <span class="st">"x"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 17</code></pre>
+<pre><code>█─`&lt;-` 
+├─x 
+└─"x" </code></pre>
 </div>
 </div>
+<p>Symbols are (names of) objects - represented without quotes</p>
+<p>Strings are shown with quotes</p>
+<p><code>sym</code> takes as input a character and returns a symbol</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a><span class="co"># x &lt;- 1:70</span></span>
-<span id="cb3-2"><a></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">1</span>,<span class="dv">70</span>, <span class="at">by=</span><span class="dv">1</span>)</span>
-<span id="cb3-3"><a></a>purrr<span class="sc">::</span><span class="fu">reduce</span>(x, <span class="st">`</span><span class="at">*</span><span class="st">`</span>) <span class="co"># factorial</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a></a><span class="fu">sym</span>(<span class="st">"cyl"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 1.197857e+100</code></pre>
+<pre><code>cyl</code></pre>
 </div>
 </div>
-</section>
-
-<section id="function-factories" class="title-slide slide level1 center">
-<h1>Function factories</h1>
-<ul>
-<li><p>a function that produces another function</p></li>
-<li><p>often a shift in perspective (re-express as function of another parameter, e.g.&nbsp;likelihood vs density)</p></li>
-<li><p>transformations (box-cox, scales in <code>ggplot2</code>)</p></li>
-</ul>
-</section>
-
-<section id="example-log-likelihood-of-poisson" class="title-slide slide level1 center">
-<h1>Example: Log likelihood of Poisson</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a>ll_poisson <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
-<span id="cb5-2"><a></a>  <span class="co"># for numeric vector x</span></span>
-<span id="cb5-3"><a></a>  n <span class="ot">&lt;-</span> <span class="fu">length</span>(x)</span>
-<span id="cb5-4"><a></a>  </span>
-<span id="cb5-5"><a></a>  <span class="cf">function</span>(lambda) {</span>
-<span id="cb5-6"><a></a>     <span class="fu">log</span>(lambda) <span class="sc">*</span> <span class="fu">sum</span>(x) <span class="sc">-</span> n <span class="sc">*</span> lambda <span class="sc">-</span> <span class="fu">sum</span>(<span class="fu">lfactorial</span>(x))</span>
-<span id="cb5-7"><a></a>  }</span>
-<span id="cb5-8"><a></a>}</span>
-<span id="cb5-9"><a></a></span>
-<span id="cb5-10"><a></a><span class="fu">ll_poisson</span>(<span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">1</span>,<span class="dv">4</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a></a><span class="fu">eval</span>(<span class="fu">sym</span>(<span class="st">"cyl"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error:
+! object 'cyl' not found</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a></a><span class="fu">eval</span>(<span class="fu">sym</span>(<span class="st">"cyl"</span>), <span class="at">envir =</span> mtcars)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>function (lambda) 
-{
-    log(lambda) * sum(x) - n * lambda - sum(lfactorial(x))
-}
-&lt;environment: 0x7fa5bf9a6d00&gt;</code></pre>
+<pre><code> [1] 6 6 4 6 8 6 8 4 4 6 6 8 8 8 8 8 8 4 4 4 4 8 8 8 8 4 4 4 8 6 8 4</code></pre>
 </div>
 </div>
 </section>
 
-<section id="example-log-likelihood-of-poisson-1" class="title-slide slide level1 center">
-<h1>Example: Log likelihood of Poisson</h1>
-<p>Better (because any terms in <code>x</code> are only evaluated once)</p>
+<section id="symbols-to-strings" class="title-slide slide level1 center">
+<h1>Symbols to strings</h1>
+<p><code>as.character</code> or <code>as_string</code> return a textual form of a symbol</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a>ll_poisson <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
-<span id="cb7-2"><a></a>  <span class="co"># for numeric vector x</span></span>
-<span id="cb7-3"><a></a>  n <span class="ot">&lt;-</span> <span class="fu">length</span>(x)</span>
-<span id="cb7-4"><a></a>  S <span class="ot">&lt;-</span> <span class="fu">sum</span>(x)</span>
-<span id="cb7-5"><a></a>  X <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">lfactorial</span>(x))</span>
-<span id="cb7-6"><a></a>  </span>
-<span id="cb7-7"><a></a>  <span class="cf">function</span>(lambda) {</span>
-<span id="cb7-8"><a></a>     <span class="fu">log</span>(lambda) <span class="sc">*</span> S <span class="sc">-</span> n <span class="sc">*</span> lambda <span class="sc">-</span> X</span>
-<span id="cb7-9"><a></a>  }</span>
-<span id="cb7-10"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a></a><span class="fu">as_string</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `as_string()`:
+! Can't convert a double vector to a string.</code></pre>
 </div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a></a>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
-<span id="cb8-2"><a></a>ll_x <span class="ot">&lt;-</span> <span class="fu">ll_poisson</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a></a>e <span class="ot">&lt;-</span> <span class="fu">expr</span>(<span class="dv">2</span>)</span>
+<span id="cb37-2"><a></a><span class="fu">as_string</span>(e)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `as_string()`:
+! Can't convert a double vector to a string.</code></pre>
 </div>
-</section>
-
-<section id="using-functions" class="title-slide slide level1 center">
-<h1>Using functions …</h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a><span class="fu">optimise</span>(ll_x, <span class="at">interval =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">5</span>), <span class="at">maximum =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a></a>e <span class="ot">&lt;-</span> <span class="fu">expr</span>(x)</span>
+<span id="cb39-2"><a></a><span class="fu">as_string</span>(e)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>$maximum
-[1] 1.199983
-
-$objective
-[1] -15.4751</code></pre>
+<pre><code>[1] "x"</code></pre>
 </div>
 </div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a><span class="fu">ggplot</span>() <span class="sc">+</span> <span class="fu">geom_function</span>(<span class="at">fun =</span> ll_x, <span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-
-</div>
-<img data-src="04-functionals_files/figure-revealjs/unnamed-chunk-7-1.png" width="960" class="r-stretch"></section>
-
-<section id="sampling-error-in-log-likelihood-functions" class="title-slide slide level1 center">
-<h1>Sampling error in log-likelihood functions</h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a></a><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
-<span id="cb12-2"><a></a>  <span class="fu">geom_function</span>(<span class="at">fun =</span> <span class="fu">ll_poisson</span>(<span class="fu">rpois</span>(<span class="dv">10</span>, lambda)), <span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5</span>)) <span class="sc">+</span> </span>
-<span id="cb12-3"><a></a>  <span class="fu">geom_function</span>(<span class="at">fun =</span> <span class="fu">ll_poisson</span>(<span class="fu">rpois</span>(<span class="dv">10</span>, lambda)), <span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5</span>)) <span class="sc">+</span> </span>
-<span id="cb12-4"><a></a>  <span class="fu">geom_function</span>(<span class="at">fun =</span> <span class="fu">ll_poisson</span>(<span class="fu">rpois</span>(<span class="dv">10</span>, lambda)), <span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5</span>)) <span class="sc">+</span></span>
-<span id="cb12-5"><a></a>  <span class="fu">geom_function</span>(<span class="at">fun =</span> <span class="fu">ll_poisson</span>(<span class="fu">rpois</span>(<span class="dv">20</span>, lambda)), <span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5</span>)) <span class="sc">+</span> </span>
-<span id="cb12-6"><a></a>  <span class="fu">geom_function</span>(<span class="at">fun =</span> <span class="fu">ll_poisson</span>(<span class="fu">rpois</span>(<span class="dv">20</span>, lambda)), <span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5</span>)) <span class="sc">+</span> </span>
-<span id="cb12-7"><a></a>  <span class="fu">geom_function</span>(<span class="at">fun =</span> <span class="fu">ll_poisson</span>(<span class="fu">rpois</span>(<span class="dv">20</span>, lambda)), <span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5</span>))   </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-
-</div>
-<img data-src="04-functionals_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch"></section>
+</section>
 
 <section id="your-turn-1" class="title-slide slide level1 center" data-background-color="#006666">
 <h1>Your Turn</h1>
-<p>Re-write the previous expression with an approach that avoids the duplication of lines</p>
+<p>Write a function <code>regression(data, x, y)</code> that takes a dataset and shows a scatterplot of <code>y</code> versus <code>x</code></p>
+
+
 </section>
-
-<section id="solution" class="title-slide slide level1 center">
-<h1>Solution</h1>
-<p>No peeking!</p>
-</section>
-
-<section id="solution---mapping" class="title-slide slide level1 center">
-<h1>Solution - mapping</h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a>layers <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="dv">10</span>,<span class="dv">10</span>,<span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">20</span>, <span class="dv">20</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb13-2"><a></a>  purrr<span class="sc">::</span><span class="fu">map</span>(<span class="at">.f =</span> <span class="cf">function</span>(n) <span class="fu">rpois</span>(n, <span class="at">lambda =</span> lambda)) <span class="sc">|&gt;</span></span>
-<span id="cb13-3"><a></a>  purrr<span class="sc">::</span><span class="fu">map</span>(<span class="at">.f =</span> ll_poisson) <span class="sc">|&gt;</span></span>
-<span id="cb13-4"><a></a>  purrr<span class="sc">::</span><span class="fu">map</span>(<span class="at">.f =</span> <span class="cf">function</span>(x) </span>
-<span id="cb13-5"><a></a>    <span class="fu">geom_function</span>(<span class="fu">aes</span>(), <span class="at">fun=</span>x, <span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">5</span>)))</span>
-<span id="cb13-6"><a></a>             </span>
-<span id="cb13-7"><a></a></span>
-<span id="cb13-8"><a></a><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
-<span id="cb13-9"><a></a>  layers</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-
-</div>
-<img data-src="04-functionals_files/figure-revealjs/unnamed-chunk-9-1.png" width="960" class="r-stretch"></section>
-
-<section id="solution---function-factory" class="title-slide slide level1 center">
-<h1>Solution - Function Factory</h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a></a>geom_function_sample <span class="ot">&lt;-</span> <span class="cf">function</span>(fun, sample, args) {</span>
-<span id="cb14-2"><a></a>  </span>
-<span id="cb14-3"><a></a>  <span class="cf">function</span>(n, samples, ...) {</span>
-<span id="cb14-4"><a></a>    args <span class="ot">=</span> <span class="fu">append</span>(args, <span class="fu">c</span>(<span class="st">"n"</span><span class="ot">=</span>n))</span>
-<span id="cb14-5"><a></a>    <span class="dv">1</span><span class="sc">:</span>samples <span class="sc">|&gt;</span> purrr<span class="sc">::</span><span class="fu">map</span>(</span>
-<span id="cb14-6"><a></a>      <span class="at">.f =</span> <span class="cf">function</span>(i) {</span>
-<span id="cb14-7"><a></a>        <span class="fu">geom_function</span>(<span class="at">fun =</span> <span class="fu">fun</span>(<span class="fu">do.call</span>(sample, <span class="at">args=</span>args)), ...)</span>
-<span id="cb14-8"><a></a>    })</span>
-<span id="cb14-9"><a></a>  }</span>
-<span id="cb14-10"><a></a>}</span>
-<span id="cb14-11"><a></a></span>
-<span id="cb14-12"><a></a>add_function_layer <span class="ot">&lt;-</span> <span class="fu">geom_function_sample</span>(</span>
-<span id="cb14-13"><a></a>  <span class="at">fun =</span> ll_poisson, <span class="at">sample=</span>rpois, </span>
-<span id="cb14-14"><a></a>  <span class="at">args =</span> <span class="fu">list</span>(<span class="at">lambda=</span>lambda))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-
-<section id="section" class="title-slide slide level1 center">
-<h1></h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a><span class="fu">ggplot</span>() <span class="sc">+</span> <span class="fu">xlim</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">10</span>)) <span class="sc">+</span></span>
-<span id="cb15-2"><a></a>  <span class="fu">add_function_layer</span>(<span class="dv">10</span>, <span class="dv">3</span>, <span class="fu">aes</span>(<span class="at">colour=</span><span class="st">"n = 10"</span>)) <span class="sc">+</span></span>
-<span id="cb15-3"><a></a>  <span class="fu">add_function_layer</span>(<span class="dv">20</span>, <span class="dv">3</span>, <span class="fu">aes</span>(<span class="at">colour=</span><span class="st">"n = 20"</span>)) <span class="sc">+</span></span>
-<span id="cb15-4"><a></a>  <span class="fu">add_function_layer</span>(<span class="dv">30</span>, <span class="dv">3</span>, <span class="fu">aes</span>(<span class="at">colour=</span><span class="st">"n = 30"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-
-</div>
-<img data-src="04-functionals_files/figure-revealjs/unnamed-chunk-11-1.png" width="960" class="r-stretch"></section>
-
-<section id="section-1" class="title-slide slide level1 center">
-<h1></h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a></a>add_rnorm_layer <span class="ot">&lt;-</span> <span class="fu">geom_function_sample</span>(</span>
-<span id="cb16-2"><a></a>  <span class="at">fun =</span> ll_poisson, <span class="at">sample=</span>rnorm, </span>
-<span id="cb16-3"><a></a>  <span class="at">args =</span> <span class="fu">list</span>(<span class="at">mean=</span>lambda, <span class="at">sd=</span>lambda))</span>
-<span id="cb16-4"><a></a></span>
-<span id="cb16-5"><a></a><span class="fu">ggplot</span>() <span class="sc">+</span> <span class="fu">xlim</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">10</span>)) <span class="sc">+</span></span>
-<span id="cb16-6"><a></a>  <span class="fu">add_rnorm_layer</span>(<span class="dv">30</span>, <span class="dv">10</span>, <span class="fu">aes</span>(<span class="at">colour=</span><span class="st">"Normal sample"</span>)) <span class="sc">+</span></span>
-<span id="cb16-7"><a></a>  <span class="fu">add_function_layer</span>(<span class="dv">30</span>, <span class="dv">10</span>, <span class="fu">aes</span>(<span class="at">colour=</span><span class="st">"Poisson"</span>)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-
-</div>
-
-
-<img data-src="04-functionals_files/figure-revealjs/unnamed-chunk-12-1.png" width="960" class="r-stretch"></section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
 <p><img src="../../N.svg" class="slide-logo"></p>

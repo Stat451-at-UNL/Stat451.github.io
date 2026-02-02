@@ -9,7 +9,7 @@
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.7.32">
 
-  <meta name="dcterms.date" content="2025-11-11">
+  <meta name="dcterms.date" content="2026-02-03">
   <title>Stat 451 – Setting up a Package</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -132,14 +132,14 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2025-11-11</p>
+  <p class="date">2026-02-03</p>
 </section>
 <section id="outline" class="title-slide slide level1 center">
 <h1>Outline</h1>
 <ul>
 <li><p>file structures of packages</p></li>
 <li><p>documentation</p></li>
-<li><p>data in packages</p></li>
+<li><p>development cycle</p></li>
 </ul>
 <p><br> <br> <br></p>
 <p>Resource: <a href="http://r-pkgs.had.co.nz/">R packages</a> by Hadley Wickham</p>
@@ -173,28 +173,36 @@
 <ul>
 <li><p>Create a new R package using the RStudio dialog to set it up in a new project.</p></li>
 <li><p>Build the package (CMD + shift + B) and run the function <code>hello()</code></p></li>
-<li><p>Have a look at the help for <code>hello</code></p></li>
+<li><p>Have a look at the help for <code>hello</code> with <code>?hello</code></p></li>
+<li><p>Have a look at the file <code>hello.Rd</code> in <code>man/</code></p></li>
 </ul>
 </section>
 
 <section id="your-turn-advanced" class="title-slide slide level1 center" data-background-color="#006666">
 <h1>Your Turn (Advanced)</h1>
 <ul>
-<li><p>Does the package pass R CMD check? (Cmd + Shift + E)</p></li>
-<li><p>Fix any warnings you might encounter … call <code>library(usethis)</code> and <code>apropos("license")</code></p></li>
+<li>Does the package pass R CMD check? (Cmd + Shift + E)</li>
 </ul>
-<p>… quick side remarks: <a href="https://thinkr-open.github.io/licensing-r/index.html#license" class="uri">https://thinkr-open.github.io/licensing-r/index.html#license</a></p>
 </section>
 
-<section id="devtools" class="title-slide slide level1 center">
-<h1><code>devtools</code></h1>
-<div class="small">
-<p>Once you have a package, the <code>devtools</code> package provides functionality to support your development</p>
-<p><code>devtools</code> functions operate on the active project (the folder of your project):</p>
+<section id="the-package-development-cycle" class="title-slide slide level1 center">
+<h1>The Package Development Cycle</h1>
 <ul>
-<li><p><code>document()</code> creates R help files from special comments in your code (talk about that in a bit)</p></li>
-<li><p><code>install()</code> installs the package, i.e.&nbsp;afterwards you can activate the package with the command <code>library("your package")</code></p></li>
-<li><p><code>check()</code> runs a couple of tests on your package. All of these have to be passed without warning before you can upload a package to CRAN</p></li>
+<li><p>R packages have rigorous file structures and code requirements</p></li>
+<li><p><code>R CMD check</code> used to check for adherence: errors, warnings, notes</p></li>
+<li><p>Generally best to start small and extend</p></li>
+</ul>
+</section>
+
+<section id="devtools-package" class="title-slide slide level1 center">
+<h1><code>devtools</code> package</h1>
+<div class="small">
+<p>supports package development</p>
+<p><code>devtools</code> functions operate on active project:</p>
+<ul>
+<li><p><code>document()</code> creates R help files from special comments in the code (<code>roxygen2</code>)</p></li>
+<li><p><code>install()</code> installs package locally - call with <code>library("pkgname")</code></p></li>
+<li><p><code>check()</code> runs <code>R CMD check</code> tests on your package.</p></li>
 </ul>
 </div>
 </section>
@@ -205,7 +213,7 @@
 <ul>
 <li><p>DESCRIPTION</p></li>
 <li><p>NAMESPACE</p></li>
-<li><p>R</p></li>
+<li><p>R #</p></li>
 <li><p>man</p></li>
 <li><p>data</p></li>
 </ul>
@@ -230,48 +238,6 @@ Imports: package1,package2
 Suggests: package3
 Depends: package4,package5</code></pre>
 <p><a href="http://r-pkgs.had.co.nz/description.html">Description file reference</a></p>
-</section>
-
-<section id="package-dependencies-imports-suggests" class="title-slide slide level1 center">
-<h1>Package dependencies: Imports, Suggests</h1>
-<ul>
-<li><strong>Imports:</strong> packages in this list must be present for your package to work
-<ul>
-<li>Imports are NOT attached when your package is loaded</li>
-<li>You must refer to functions in these packages using <code>package::function()</code> or import them using roxygen tags (<code>@import</code>, <code>@importFrom</code>)</li>
-</ul></li>
-<li><strong>Suggests:</strong> packages in this list may add functionality but are not necessary
-<ul>
-<li>e.g.&nbsp;for example data, unit tests, build vignettes</li>
-</ul></li>
-</ul>
-</section>
-
-<section id="package-dependencies-depends" class="title-slide slide level1 center">
-<h1>Package dependencies: Depends</h1>
-<ul>
-<li><strong>Depends:</strong> packages in this list are attached when your package is loaded<br>
-<strong>Hint:</strong> It is better practice to use <code>Imports</code> rather than <code>Depends</code>. <code>Depends</code> might overwrite a previously loaded function of the same name: <a href="http://r-pkgs.had.co.nz/namespace.html#namespace">Namespaces reference</a> - why Depends is a bad idea</li>
-</ul>
-<p>Try to keep dependencies as light as possible: <a href="https://r-pkgs.org/dependencies-mindset-background.html#dependencies-are-not-equal">It Depends</a></p>
-<p>DO NOT include <a href="https://www.tidyverse.org/blog/2018/06/tidyverse-not-for-packages/">tidyverse</a> as a dependency.</p>
-</section>
-
-<section id="licenses" class="title-slide slide level1 center">
-<h1>Licenses</h1>
-<div class="small">
-<ul>
-<li><p>There’s a (surprising?) range of common use licenses available: <a href="http://www.r-project.org/Licenses/" class="uri">http://www.r-project.org/Licenses/</a></p></li>
-<li><p>More licenses at <a href="http://creativecommons.org/choose/" class="uri">http://creativecommons.org/choose/</a> and <a href="http://www.opensource.org/licenses/category" class="uri">http://www.opensource.org/licenses/category</a></p></li>
-<li><p>Flowchart for picking a <a href="http://creativecommons.org.au/content/licensing-flowchart.pdf">(type of) license</a></p></li>
-<li><p>Most often used: GPL-2, GPL-3, MIT</p>
-<ul>
-<li><p>GPL-2/3: “run, copy, distribute, study, change and improve the software” now and in the future, i.e.&nbsp;preserve open-source nature</p></li>
-<li><p>GPL-3 clears up some inconsistencies and ambiguities in GPL-2 and should be used in new projects</p></li>
-<li><p>MIT releases software completely and also allows use in commercial projects, removes liability of provider.</p></li>
-</ul></li>
-</ul>
-</div>
 </section>
 
 <section id="documentation" class="title-slide slide level1 center">
@@ -310,11 +276,18 @@ hello()
 <section id="roxygen2" class="title-slide slide level1 center">
 <h1>Roxygen2</h1>
 <p>Roxygen comments start with <code>#'</code> to distinguish them from regular comments:</p>
-<pre><code>#' Add together two numbers.
-#' 
-#' @param x A number.
+<pre><code>#' Add together two numbers.                         #&lt;- Title 
+#'                                                   #&lt;- Free Line
+#' This command returns the sum of two numbers. The  #&lt;- Description
+#' description can take multiple lines. It ends
+#' with a second free line or the start of the 
+#' parameters.
+#'
+#' The second paragraph is optional. It goes into    #&lt;- Details
+#' the Details section. 
+#' @param x A number.                                #&lt;- Parameters
 #' @param y A number.
-#' @export
+#' @export                                           #&lt;- Make function visible
 #' @return The sum of \code{x} and \code{y}.
 #' @examples
 #' add(1, 1)
@@ -647,14 +620,14 @@ add(10, 1)
         previewLinks: false,
 
         // Transition style (none/fade/slide/convex/concave/zoom)
-        transition: 'slide',
+        transition: 'none',
 
         // Transition speed (default/fast/slow)
         transitionSpeed: 'default',
 
         // Transition style for full page slide backgrounds
         // (none/fade/slide/convex/concave/zoom)
-        backgroundTransition: 'fade',
+        backgroundTransition: 'none',
 
         // Number of slides away from the current that are visible
         viewDistance: 3,
@@ -701,6 +674,44 @@ add(10, 1)
         ]
       });
     </script>
+    
+    <script>
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+      // slide changes (different for each slide format).
+      (function () {
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
+          const event = window.document.createEvent("Event");
+          event.initEvent("slideenter", true, true);
+          window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
+
+          // dispatch for shiny
+          if (window.jQuery) {
+            if (previousSlide) {
+              window.jQuery(previousSlide).trigger("hidden");
+            }
+            if (currentSlide) {
+              window.jQuery(currentSlide).trigger("shown");
+            }
+          }
+        }
+
+        // hookup for slidy
+        if (window.w3c_slidy) {
+          window.w3c_slidy.add_observer(function (slide_num) {
+            // slide_num starts at position 1
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+          });
+        }
+
+      })();
+    </script>
+
     <script id="quarto-html-after-body" type="application/javascript">
       window.document.addEventListener("DOMContentLoaded", function (event) {
         const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
