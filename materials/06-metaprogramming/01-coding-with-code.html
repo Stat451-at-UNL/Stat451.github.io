@@ -9,8 +9,8 @@
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.7.32">
 
-  <meta name="dcterms.date" content="2026-02-03">
-  <title>Stat 451 – Coding with code</title>
+  <meta name="dcterms.date" content="2026-02-12">
+  <title>Stat 451 – Expressions</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -193,12 +193,12 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">Coding with code</h1>
+  <h1 class="title">Expressions</h1>
 
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-02-03</p>
+  <p class="date">2026-02-12</p>
 </section>
 <section id="literally-everything-in-r-is-an-object" class="title-slide slide level1 center">
 <h1>Literally everything in R is an object</h1>
@@ -230,95 +230,200 @@
 </div>
 </section>
 
-<section id="the-abstract-structure-tree" class="title-slide slide level1 center">
-<h1>The Abstract Structure Tree</h1>
-<p>Language objects form a(n) (abstract) tree of (pre-fix) functions:</p>
+<section id="expressions-are-list-like" class="title-slide slide level1 center">
+<h1>Expressions are list-like</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a><span class="fu">library</span>(lobstr)</span>
-<span id="cb9-2"><a></a><span class="fu">ast</span>(<span class="dv">2</span><span class="sc">*</span>x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a>x <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span></span>
+<span id="cb9-2"><a></a>e <span class="ot">&lt;-</span> <span class="fu">expr</span>(x[x<span class="sc">%%</span><span class="dv">3</span><span class="sc">==</span><span class="dv">0</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Expressions have multiple parts:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a></a><span class="fu">length</span>(e)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>█─`*` 
-├─2 
-└─x </code></pre>
+<pre><code>[1] 3</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a><span class="fu">ast</span>(y <span class="ot">&lt;-</span> x <span class="sc">+</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a></a><span class="fu">as.list</span>(e)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>█─`&lt;-` 
-├─y 
-└─█─`+` 
-  ├─x 
-  └─1 </code></pre>
+<pre><code>[[1]]
+`[`
+
+[[2]]
+x
+
+[[3]]
+x%%3 == 0</code></pre>
 </div>
 </div>
-<p>All leaves are either constants (<code>2</code>) or <strong>symbols</strong> (<code>x</code>, <code>y</code>)</p>
 </section>
 
-<section id="symbols-calls-and-expressions" class="title-slide slide level1 center">
-<h1>Symbols, Calls, and Expressions</h1>
+<section id="expressions-have-a-tree-structure" class="title-slide slide level1 center">
+<h1>Expressions have a tree structure</h1>
+<p><code>e</code> is of class <code>call</code> (and has type <code>language</code>)</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a>ll <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">a =</span> <span class="fu">expression</span>(x<span class="sc">^</span><span class="dv">2</span> <span class="sc">-</span> <span class="dv">2</span><span class="sc">*</span>x <span class="sc">+</span> <span class="dv">1</span>), <span class="at">b =</span> <span class="fu">as.symbol</span>(<span class="st">"Jim"</span>),</span>
-<span id="cb13-2"><a></a>           <span class="at">c =</span> <span class="fu">as.expression</span>(<span class="fu">exp</span>(<span class="dv">1</span>)), <span class="at">d =</span> <span class="fu">call</span>(<span class="st">"sin"</span>, pi))</span>
-<span id="cb13-3"><a></a><span class="fu">sapply</span>(ll, typeof) <span class="co"># most distinct</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a></a><span class="fu">as.list</span>(e)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>           a            b            c            d 
-"expression"     "symbol" "expression"   "language" </code></pre>
+<pre><code>[[1]]
+`[`
+
+[[2]]
+x
+
+[[3]]
+x%%3 == 0</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a><span class="fu">sapply</span>(ll, mode)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a></a><span class="fu">as.list</span>(e) <span class="sc">|&gt;</span> <span class="fu">sapply</span>(<span class="at">FUN =</span> class)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>           a            b            c            d 
-"expression"       "name" "expression"       "call" </code></pre>
+<pre><code>[1] "name" "name" "call"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a><span class="fu">sapply</span>(ll, is.language) <span class="co"># all are language objects</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a></a><span class="fu">as.list</span>(e) <span class="sc">|&gt;</span> <span class="fu">sapply</span>(<span class="at">FUN =</span> typeof)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>   a    b    c    d 
-TRUE TRUE TRUE TRUE </code></pre>
+<pre><code>[1] "symbol"   "symbol"   "language"</code></pre>
 </div>
 </div>
+</section>
+
+<section id="into-the-rabbit-hole-or-up-the-tree" class="title-slide slide level1 center">
+<h1>Into the rabbit hole or up the tree?</h1>
+<p><code>e[[3]]</code> is of class <code>call</code> (and has type <code>language</code>)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a></a><span class="fu">as.list</span>(e[[<span class="dv">3</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+`==`
+
+[[2]]
+x%%3
+
+[[3]]
+[1] 0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a></a><span class="fu">as.list</span>(e[[<span class="dv">3</span>]]) <span class="sc">|&gt;</span> <span class="fu">sapply</span>(<span class="at">FUN =</span> class)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "name"    "call"    "numeric"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a></a><span class="fu">as.list</span>(e[[<span class="dv">3</span>]]) <span class="sc">|&gt;</span> <span class="fu">sapply</span>(<span class="at">FUN =</span> typeof)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "symbol"   "language" "double"  </code></pre>
+</div>
+</div>
+</section>
+
+<section id="the-abstract-structure-tree" class="title-slide slide level1 center">
+<h1>The Abstract Structure Tree</h1>
+<p>Language objects form an abstract tree of pre-fix functions:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a></a><span class="fu">library</span>(lobstr)</span>
+<span id="cb26-2"><a></a><span class="fu">ast</span>(x[x<span class="sc">%%</span><span class="dv">3</span><span class="sc">==</span><span class="dv">0</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>█─`[` 
+├─x 
+└─█─`==` 
+  ├─█─`%%` 
+  │ ├─x 
+  │ └─3 
+  └─0 </code></pre>
+</div>
+</div>
+<p>All leaves are either constants (<code>0</code>, <code>3</code>) or <strong>symbols</strong> (<code>x</code>)</p>
+</section>
+
+<section id="replacement-operations-are-top-heavy" class="title-slide slide level1 center">
+<h1>Replacement operations are top heavy</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a></a><span class="co"># multiply all multiples of 3 in x by 15</span></span>
+<span id="cb28-2"><a></a><span class="fu">ast</span>(x[x<span class="sc">%%</span><span class="dv">3</span><span class="sc">==</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>█─`&lt;-` 
+├─█─`[` 
+│ ├─x 
+│ └─█─`==` 
+│   ├─█─`%%` 
+│   │ ├─x 
+│   │ └─3 
+│   └─0 
+└─15 </code></pre>
+</div>
+</div>
+<p>compare this to <code>ast(y &lt;- x[x%%3==0])</code></p>
+</section>
+
+<section id="an-expression-is" class="title-slide slide level1 center">
+<h1>An Expression is …</h1>
+<p>any element of the following inductively defined set:</p>
+<ul>
+<li>a <strong>constant</strong> (like <code>1, 2, pi</code>)</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a></a><span class="fu">expr</span>(<span class="dv">1</span>) <span class="sc">|&gt;</span> <span class="fu">str</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> num 1</code></pre>
+</div>
+</div>
+<ul>
+<li>a <strong>symbol</strong> (like <code>x, mtcars, diamonds</code>)</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a></a><span class="fu">expr</span>(mtcars) <span class="sc">|&gt;</span> <span class="fu">str</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> symbol mtcars</code></pre>
+</div>
+</div>
+<ul>
+<li>or a <strong>call</strong>, mathematical operation or function call</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a></a><span class="fu">expr</span>(x<span class="sc">^</span><span class="dv">2</span>) <span class="sc">|&gt;</span> <span class="fu">str</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> language x^2</code></pre>
+</div>
+</div>
+</section>
+
+<section id="base-r-also-allows-vectors-of-expressions" class="title-slide slide level1 center">
+<h1>Base R also allows vectors of expressions:</h1>
+<p><code>as.expression</code>, <code>expression</code>, and <code>is.expression</code> assume vectors of expressions … and react a bit differently.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a></a><span class="fu">is.expression</span>(<span class="fu">as.expression</span>(<span class="fu">exp</span>(<span class="dv">1</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a></a><span class="fu">is_expression</span>(<span class="fu">as.expression</span>(<span class="fu">exp</span>(<span class="dv">1</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a></a><span class="fu">is.expression</span>(<span class="fu">expr</span>(<span class="fu">exp</span>(<span class="dv">1</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a></a><span class="fu">is_expression</span>(<span class="fu">expr</span>(<span class="fu">exp</span>(<span class="dv">1</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<p>We will stick to <code>rlang</code> definitions (functions with <code>_</code>)</p>
 </section>
 
 <section id="evaluating-unevaluated-expressions" class="title-slide slide level1 center">
 <h1>Evaluating unevaluated expressions</h1>
 <p>Unevaluated expressions can be evaluated … result depends on environment in which they are evaluated</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a><span class="fu">eval</span>(e) <span class="co"># default environment is parent.frame() - i.e.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a></a><span class="fu">eval</span>(e) <span class="co"># default environment is parent.frame() - i.e.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 10</code></pre>
+<pre><code>[1] 3 6 9</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a><span class="co"># where call to eval was made</span></span>
-<span id="cb21-2"><a></a></span>
-<span id="cb21-3"><a></a><span class="fu">eval</span>(e, <span class="at">envir=</span><span class="fu">env</span>(<span class="at">x=</span>pi))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a></a><span class="co"># where call to eval was made</span></span>
+<span id="cb46-2"><a></a></span>
+<span id="cb46-3"><a></a><span class="fu">eval</span>(e, <span class="at">envir=</span><span class="fu">env</span>(<span class="at">x=</span>pi))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 6.283185</code></pre>
+<pre><code>numeric(0)</code></pre>
 </div>
 </div>
-</section>
-
-<section id="creating-calls-programmatically" class="title-slide slide level1 center">
-<h1>Creating calls programmatically</h1>
-<p><code>base::call</code> or <code>rlang::call2</code></p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a><span class="fu">call</span>(<span class="st">"f"</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>f(1, 2, 3)</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a></a><span class="fu">call2</span>(<span class="st">"f"</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="fu">call2</span>(<span class="st">"+"</span>, <span class="dv">1</span>, <span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>f(1, 2, 1 + 2)</code></pre>
-</div>
-</div>
-</section>
-
-<section id="your-turn" class="title-slide slide level1 center" data-background-color="#006666">
-<h1>Your Turn</h1>
-<p>Write a function <code>regression(data, x, y)</code> that takes a dataset and shows a scatterplot of <code>y</code> versus <code>x</code> with the trend line.</p>
-<p>XXXX</p>
-<p>Use <code>ggplot2</code></p>
 </section>
 
 <section id="strings-and-symbols" class="title-slide slide level1 center">
 <h1>Strings and Symbols</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a></a><span class="fu">ast</span>(x <span class="ot">&lt;-</span> <span class="st">"x"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a></a><span class="fu">ast</span>(x <span class="ot">&lt;-</span> <span class="st">"x"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>█─`&lt;-` 
 ├─x 
@@ -329,52 +434,206 @@ TRUE TRUE TRUE TRUE </code></pre>
 <p>Strings are shown with quotes</p>
 <p><code>sym</code> takes as input a character and returns a symbol</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a></a><span class="fu">sym</span>(<span class="st">"cyl"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a></a><span class="fu">sym</span>(<span class="st">"cyl"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>cyl</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a></a><span class="fu">eval</span>(<span class="fu">sym</span>(<span class="st">"cyl"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a></a><span class="fu">eval</span>(<span class="fu">sym</span>(<span class="st">"cyl"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-error">
 <pre><code>Error:
 ! object 'cyl' not found</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a></a><span class="fu">eval</span>(<span class="fu">sym</span>(<span class="st">"cyl"</span>), <span class="at">envir =</span> mtcars)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a></a><span class="fu">eval</span>(<span class="fu">sym</span>(<span class="st">"cyl"</span>), <span class="at">envir =</span> mtcars)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] 6 6 4 6 8 6 8 4 4 6 6 8 8 8 8 8 8 4 4 4 4 8 8 8 8 4 4 4 8 6 8 4</code></pre>
 </div>
 </div>
 </section>
 
-<section id="symbols-to-strings" class="title-slide slide level1 center">
-<h1>Symbols to strings</h1>
-<p><code>as.character</code> or <code>as_string</code> return a textual form of a symbol</p>
+<section id="names-of-symbols-and-multiple-symbols" class="title-slide slide level1 center">
+<h1>Names of symbols and multiple symbols</h1>
+<p>We get the name of a symbol back using <code>as_string</code>:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a></a><span class="fu">as_string</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-error">
-<pre><code>Error in `as_string()`:
-! Can't convert a double vector to a string.</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a></a>e <span class="ot">&lt;-</span> <span class="fu">expr</span>(<span class="dv">2</span>)</span>
-<span id="cb37-2"><a></a><span class="fu">as_string</span>(e)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-error">
-<pre><code>Error in `as_string()`:
-! Can't convert a double vector to a string.</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a></a>e <span class="ot">&lt;-</span> <span class="fu">expr</span>(x)</span>
-<span id="cb39-2"><a></a><span class="fu">as_string</span>(e)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a></a><span class="fu">as_string</span>(<span class="fu">sym</span>(<span class="st">"x"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "x"</code></pre>
 </div>
 </div>
+<p>… and we create multiple symbols using <code>syms</code>:</p>
+<p><code>syms</code> creates a list of symbols, i.e.&nbsp;</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a></a><span class="fu">syms</span>(<span class="fu">paste</span>(<span class="st">"means"</span>, LETTERS[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>], <span class="at">sep =</span> <span class="st">"_"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+means_A
+
+[[2]]
+means_B
+
+[[3]]
+means_C
+
+[[4]]
+means_D
+
+[[5]]
+means_E</code></pre>
+</div>
+</div>
 </section>
 
-<section id="your-turn-1" class="title-slide slide level1 center" data-background-color="#006666">
+<section id="programmatic-use" class="title-slide slide level1 center">
+<h1>Programmatic use</h1>
+<p>… in interactive use <code>sym</code>, <code>syms</code> or <code>as_string</code> are not very useful …</p>
+<p>making a function call <code>base::call</code> or <code>rlang::call2</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a></a><span class="fu">call</span>(<span class="st">"f"</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>f(1, 2, 3)</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a></a><span class="fu">call2</span>(<span class="st">"f"</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="fu">call2</span>(<span class="st">"+"</span>, <span class="dv">1</span>, <span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>f(1, 2, 1 + 2)</code></pre>
+</div>
+</div>
+</section>
+
+<section id="your-turn" class="title-slide slide level1 center" data-background-color="#006666">
 <h1>Your Turn</h1>
-<p>Write a function <code>regression(data, x, y)</code> that takes a dataset and shows a scatterplot of <code>y</code> versus <code>x</code></p>
+<p>Can we write the following expressions programmatically?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a></a>means_D <span class="ot">=</span> diamonds <span class="sc">%&gt;%</span> <span class="fu">filter</span>(color <span class="sc">==</span> <span class="st">"D"</span>)</span>
+<span id="cb64-2"><a></a>means_E <span class="ot">=</span> diamonds <span class="sc">%&gt;%</span> <span class="fu">filter</span>(color <span class="sc">==</span> <span class="st">"E"</span>)</span>
+<span id="cb64-3"><a></a>means_F <span class="ot">=</span> diamonds <span class="sc">%&gt;%</span> <span class="fu">filter</span>(color <span class="sc">==</span> <span class="st">"F"</span>)</span>
+<span id="cb64-4"><a></a>means_G <span class="ot">=</span> diamonds <span class="sc">%&gt;%</span> <span class="fu">filter</span>(color <span class="sc">==</span> <span class="st">"G"</span>)</span>
+<span id="cb64-5"><a></a>means_H <span class="ot">=</span> diamonds <span class="sc">%&gt;%</span> <span class="fu">filter</span>(color <span class="sc">==</span> <span class="st">"H"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+<section id="section" class="title-slide slide level1 center">
+<h1></h1>
+<p>all but the assignment:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb65-2"><a></a>diam_color <span class="ot">&lt;-</span> <span class="cf">function</span> (col) {</span>
+<span id="cb65-3"><a></a>  diamonds <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(color <span class="sc">==</span> col)</span>
+<span id="cb65-4"><a></a>}</span>
+<span id="cb65-5"><a></a></span>
+<span id="cb65-6"><a></a><span class="fu">lapply</span>(LETTERS[<span class="dv">4</span><span class="sc">:</span><span class="dv">8</span>], diam_color)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+# A tibble: 6,775 × 10
+   carat cut       color clarity depth table price     x     y     z
+   &lt;dbl&gt; &lt;ord&gt;     &lt;ord&gt; &lt;ord&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+ 1  0.23 Very Good D     VS2      60.5    61   357  3.96  3.97  2.4 
+ 2  0.23 Very Good D     VS1      61.9    58   402  3.92  3.96  2.44
+ 3  0.26 Very Good D     VS2      60.8    59   403  4.13  4.16  2.52
+ 4  0.26 Good      D     VS2      65.2    56   403  3.99  4.02  2.61
+ 5  0.26 Good      D     VS1      58.4    63   403  4.19  4.24  2.46
+ 6  0.22 Premium   D     VS2      59.3    62   404  3.91  3.88  2.31
+ 7  0.3  Premium   D     SI1      62.6    59   552  4.23  4.27  2.66
+ 8  0.3  Ideal     D     SI1      62.5    57   552  4.29  4.32  2.69
+ 9  0.3  Ideal     D     SI1      62.1    56   552  4.3   4.33  2.68
+10  0.24 Very Good D     VVS1     61.5    60   553  3.97  4     2.45
+# ℹ 6,765 more rows
+
+[[2]]
+# A tibble: 9,797 × 10
+   carat cut       color clarity depth table price     x     y     z
+   &lt;dbl&gt; &lt;ord&gt;     &lt;ord&gt; &lt;ord&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+ 1  0.23 Ideal     E     SI2      61.5    55   326  3.95  3.98  2.43
+ 2  0.21 Premium   E     SI1      59.8    61   326  3.89  3.84  2.31
+ 3  0.23 Good      E     VS1      56.9    65   327  4.05  4.07  2.31
+ 4  0.22 Fair      E     VS2      65.1    61   337  3.87  3.78  2.49
+ 5  0.2  Premium   E     SI2      60.2    62   345  3.79  3.75  2.27
+ 6  0.32 Premium   E     I1       60.9    58   345  4.38  4.42  2.68
+ 7  0.23 Very Good E     VS2      63.8    55   352  3.85  3.92  2.48
+ 8  0.23 Very Good E     VS1      60.7    59   402  3.97  4.01  2.42
+ 9  0.23 Very Good E     VS1      59.5    58   402  4.01  4.06  2.4 
+10  0.23 Good      E     VS1      64.1    59   402  3.83  3.85  2.46
+# ℹ 9,787 more rows
+
+[[3]]
+# A tibble: 9,542 × 10
+   carat cut       color clarity depth table price     x     y     z
+   &lt;dbl&gt; &lt;ord&gt;     &lt;ord&gt; &lt;ord&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+ 1  0.22 Premium   F     SI1      60.4    61   342  3.88  3.84  2.33
+ 2  0.23 Very Good F     VS1      60.9    57   357  3.96  3.99  2.42
+ 3  0.23 Very Good F     VS1      60      57   402  4     4.03  2.41
+ 4  0.23 Very Good F     VS1      59.8    57   402  4.04  4.06  2.42
+ 5  0.23 Good      F     VS1      58.2    59   402  4.06  4.08  2.37
+ 6  0.29 Premium   F     SI1      62.4    58   403  4.24  4.26  2.65
+ 7  0.24 Very Good F     SI1      60.9    61   404  4.02  4.03  2.45
+ 8  0.26 Very Good F     VVS2     59.2    60   554  4.19  4.22  2.49
+ 9  0.7  Good      F     VS1      59.4    62  2759  5.71  5.76  3.4 
+10  0.96 Fair      F     SI2      66.3    62  2759  6.27  5.95  4.07
+# ℹ 9,532 more rows
+
+[[4]]
+# A tibble: 11,292 × 10
+   carat cut       color clarity depth table price     x     y     z
+   &lt;dbl&gt; &lt;ord&gt;     &lt;ord&gt; &lt;ord&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+ 1  0.23 Very Good G     VVS2     60.4    58   354  3.97  4.01  2.41
+ 2  0.23 Ideal     G     VS1      61.9    54   404  3.93  3.95  2.44
+ 3  0.28 Ideal     G     VVS2     61.4    56   553  4.19  4.22  2.58
+ 4  0.31 Very Good G     SI1      63.3    57   553  4.33  4.3   2.73
+ 5  0.31 Premium   G     SI1      61.8    58   553  4.35  4.32  2.68
+ 6  0.24 Premium   G     VVS1     62.3    59   554  3.95  3.92  2.45
+ 7  0.7  Ideal     G     VS2      61.6    56  2757  5.7   5.67  3.5 
+ 8  0.78 Very Good G     SI2      63.8    56  2759  5.81  5.85  3.72
+ 9  0.74 Ideal     G     SI1      61.6    55  2760  5.8   5.85  3.59
+10  0.75 Premium   G     VS2      61.7    58  2760  5.85  5.79  3.59
+# ℹ 11,282 more rows
+
+[[5]]
+# A tibble: 8,304 × 10
+   carat cut       color clarity depth table price     x     y     z
+   &lt;dbl&gt; &lt;ord&gt;     &lt;ord&gt; &lt;ord&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+ 1  0.26 Very Good H     SI1      61.9    55   337  4.07  4.11  2.53
+ 2  0.23 Very Good H     VS1      59.4    61   338  4     4.05  2.39
+ 3  0.23 Very Good H     VS1      61      57   353  3.94  3.96  2.41
+ 4  0.31 Good      H     SI1      64      54   402  4.29  4.31  2.75
+ 5  0.32 Good      H     SI2      63.1    56   403  4.34  4.37  2.75
+ 6  0.32 Very Good H     SI2      61.8    55   403  4.35  4.42  2.71
+ 7  0.32 Good      H     SI2      63.8    56   403  4.36  4.38  2.79
+ 8  0.29 Very Good H     SI2      60.7    60   404  4.33  4.37  2.64
+ 9  0.3  Very Good H     SI1      63.1    56   554  4.29  4.27  2.7 
+10  0.3  Premium   H     SI1      62.9    59   554  4.28  4.24  2.68
+# ℹ 8,294 more rows</code></pre>
+</div>
+</div>
+</section>
+
+<section id="section-1" class="title-slide slide level1 center">
+<h1></h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a></a><span class="fu">call2</span>(<span class="st">"&lt;-"</span>, <span class="fu">sym</span>(<span class="st">"x"</span>), <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>x &lt;- 1</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a></a>long_list <span class="ot">&lt;-</span> <span class="fu">lapply</span>(LETTERS[<span class="dv">4</span><span class="sc">:</span><span class="dv">8</span>], <span class="cf">function</span>(x) {</span>
+<span id="cb69-2"><a></a>  <span class="fu">call2</span>(<span class="st">"&lt;&lt;-"</span>, <span class="fu">sym</span>(<span class="fu">paste</span>(<span class="st">"diamonds"</span>, x, <span class="at">sep=</span><span class="st">"_"</span>)), <span class="fu">diam_color</span>(x)) <span class="sc">|&gt;</span> <span class="fu">eval</span>()</span>
+<span id="cb69-3"><a></a>})</span>
+<span id="cb69-4"><a></a></span>
+<span id="cb69-5"><a></a><span class="fu">head</span>(diamonds_D)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 10
+  carat cut       color clarity depth table price     x     y     z
+  &lt;dbl&gt; &lt;ord&gt;     &lt;ord&gt; &lt;ord&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1  0.23 Very Good D     VS2      60.5    61   357  3.96  3.97  2.4 
+2  0.23 Very Good D     VS1      61.9    58   402  3.92  3.96  2.44
+3  0.26 Very Good D     VS2      60.8    59   403  4.13  4.16  2.52
+4  0.26 Good      D     VS2      65.2    56   403  3.99  4.02  2.61
+5  0.26 Good      D     VS1      58.4    63   403  4.19  4.24  2.46
+6  0.22 Premium   D     VS2      59.3    62   404  3.91  3.88  2.31</code></pre>
+</div>
+</div>
 
 
 </section>

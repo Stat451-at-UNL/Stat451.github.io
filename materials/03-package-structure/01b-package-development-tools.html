@@ -9,8 +9,8 @@
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.7.32">
 
-  <meta name="dcterms.date" content="2026-02-05">
-  <title>Stat 451 – Setting up a Package</title>
+  <meta name="dcterms.date" content="2026-02-12">
+  <title>Stat 451 – Package development cycle</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -127,61 +127,293 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">Setting up a Package</h1>
+  <h1 class="title">Package development cycle</h1>
 
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-02-05</p>
+  <p class="date">2026-02-12</p>
 </section>
 <section id="outline" class="title-slide slide level1 center">
 <h1>Outline</h1>
 <ul>
 <li><p>file structures of packages</p></li>
 <li><p>documentation</p></li>
-<li><p>development cycle</p></li>
+<li><p><strong>development cycle</strong></p></li>
 </ul>
 <p><br> <br> <br></p>
 <p>Resource: <a href="http://r-pkgs.had.co.nz/">R packages</a> by Hadley Wickham</p>
 </section>
 
-<section id="rstudio-and-r-packages" class="title-slide slide level1 center">
-<h1>RStudio and R packages</h1>
-<p>RStudio supports creating new packages. Follow the dialogs through <code>New Project ...</code></p>
-<p><img src="images/package-01.png" height="450"></p>
+<section id="the-package-development-cycle" class="title-slide slide level1 center">
+<h1>The Package Development Cycle</h1>
+<ul>
+<li><p>R packages have rigorous file structures and code requirements</p></li>
+<li><p><code>R CMD check</code> used to check for adherence: errors, warnings, notes</p></li>
+<li><p>Generally best to start small and extend</p></li>
+</ul>
 </section>
 
-<section id="rstudio-and-r-packages-contd" class="title-slide slide level1 center">
-<h1>RStudio and R packages (cont’d)</h1>
-<p>RStudio supports creating new packages. Follow the dialogs through <code>New Project ...</code></p>
-<p><img src="images/package-02.png" height="450"></p>
+<section id="devtools-package" class="title-slide slide level1 center">
+<h1><code>devtools</code> package</h1>
+<div class="small">
+<p>supports package development</p>
+<p><code>devtools</code> functions operate on active project:</p>
+<ul>
+<li><p><code>document()</code> creates R help files from special comments in the code (<code>roxygen2</code>)</p></li>
+<li><p><code>install()</code> installs package locally - call with <code>library("pkgname")</code></p></li>
+<li><p><code>check()</code> runs <code>R CMD check</code> tests on your package.</p></li>
+</ul>
+</div>
 </section>
 
-<section id="rstudio-and-r-packages-contd-1" class="title-slide slide level1 center">
-<h1>RStudio and R packages (cont’d)</h1>
-<p>RStudio supports creating new packages. Follow the dialogs through <code>New Project ...</code></p>
-<p><img src="images/package-03.png" height="450"></p>
+<section id="file-structure" class="title-slide slide level1 center">
+<h1>File structure</h1>
+<p>Within folder that has the same name as your R package:</p>
+<ul>
+<li><p>DESCRIPTION</p></li>
+<li><p>NAMESPACE</p></li>
+<li><p>R #</p></li>
+<li><p>man</p></li>
+<li><p>data</p></li>
+</ul>
+<p>R code files go into the folder <code>R</code>, data sets go into the folder <code>data</code>, Rd files contain documentation and go into <code>man</code></p>
 </section>
 
-<section id="section" class="title-slide slide level1 center">
-<h1></h1>
+<section id="description" class="title-slide slide level1 center">
+<h1>DESCRIPTION</h1>
+<p>plain text file with all the meta information on a package</p>
+<pre><code>Package: happyR
+Type: Package
+Title: What the Package Does (Title Case)
+Version: 0.1.0
+Author: Who wrote it
+Maintainer: The package maintainer &lt;yourself@somewhere.net&gt;
+Description: More about what it does (maybe more than one line)
+    Use four spaces when indenting paragraphs within the Description.
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+Imports: package1,package2
+Suggests: package3
+Depends: package4,package5</code></pre>
+<p><a href="http://r-pkgs.had.co.nz/description.html">Description file reference</a></p>
+</section>
 
-<img src="images/package-04.png" class="cover r-stretch"></section>
+<section id="documentation" class="title-slide slide level1 center">
+<h1>Documentation</h1>
+<p>hello.Rd:</p>
+<pre><code>\name{hello}
+\alias{hello}
+\title{Hello, World!}
+\usage{
+hello()
+}
+\description{
+Prints 'Hello, world!'.
+}
+\examples{
+hello()
+}</code></pre>
+<p><code>Rd</code> is the extension used for <strong>R d</strong>ocumentation.</p>
+<p>Rd files are clearly structured, yet, we DO NOT want to write these ourselves (way too many places to mess up)</p>
+</section>
+
+<section id="the-documentation-workflow" class="title-slide slide level1 center">
+<h1>The documentation workflow</h1>
+<p>First: Prep the DESCRIPTION file by adding the line</p>
+<pre><code>Roxygen: list(markdown = TRUE)</code></pre>
+<p>or use <code>usethis::use_roxygen_md()</code></p>
+<ol type="1">
+<li><p>Add tags to your .R files in form of roxygen (next slide) comments</p></li>
+<li><p>Run <code>devtools::document()</code> (or press <code>Ctrl/Cmd + Shift + D</code> in RStudio) to convert roxygen comments to .Rd files.</p></li>
+<li><p>Preview documentation with <code>?</code>.</p></li>
+<li><p>Rinse and repeat 1-3 until the documentation looks the way you want.</p></li>
+</ol>
+<p>Additional help: <a href="https://roxygen2.r-lib.org/articles/markdown.html">roxygen2 documentation</a></p>
+</section>
+
+<section id="roxygen2" class="title-slide slide level1 center">
+<h1>Roxygen2</h1>
+<p>Roxygen comments start with <code>#'</code> to distinguish them from regular comments:</p>
+<pre><code>#' Add together two numbers.                         #&lt;- Title 
+#'                                                   #&lt;- Free Line
+#' This command returns the sum of two numbers. The  #&lt;- Description
+#' description can take multiple lines. It ends
+#' with a second free line or the start of the 
+#' parameters.
+#'
+#' The second paragraph is optional. It goes into    #&lt;- Details
+#' the Details section. 
+#' @param x A number.                                #&lt;- Parameters
+#' @param y A number.
+#' @export                                           #&lt;- Make function visible
+#' @return The sum of \code{x} and \code{y}.
+#' @examples
+#' add(1, 1)
+#' add(10, 1)
+add &lt;- function(x, y) {
+  x + y
+}</code></pre>
+</section>
+
+<section id="roxygen2-and-namespace" class="title-slide slide level1 center">
+<h1>Roxygen2 and NAMESPACE</h1>
+<p><code>@export</code>, <code>@import</code>, <code>@importFrom</code> do not write anything into the help file<br>
+instead, they write to <code>NAMESPACE</code></p>
+<ul>
+<li><p><code>@export</code> makes the function visible to package users</p></li>
+<li><p><code>@import</code> makes the imported package visible to the function code so you don’t have to use <code>package::function()</code> notation</p></li>
+<li><p><code>@importFrom</code> makes the imported function from the specified package visible (a more limited version of <code>@import</code>) <strong>my personal favorite</strong></p></li>
+</ul>
+</section>
+
+<section id="roxygenized-example-in-add.rd" class="title-slide slide level1 center">
+<h1>Roxygenized example in <code>add.Rd</code></h1>
+<pre><code>% Generated by roxygen2 (4.0.0): do not edit by hand
+\name{add}
+\alias{add}
+\title{Add together two numbers}
+\usage{
+add(x, y)
+}
+\arguments{
+  \item{x}{A number}
+
+  \item{y}{A number}
+}
+\value{
+The sum of \code{x} and \code{y}
+}
+\description{
+Add together two numbers
+}
+\examples{
+add(1, 1)
+add(10, 1)
+}</code></pre>
+</section>
 
 <section id="your-turn" class="title-slide slide level1 center" data-background-color="#006666">
 <h1>Your Turn</h1>
 <ul>
-<li><p>Create a new R package using the RStudio dialog to set it up in a new project.</p></li>
-<li><p>Build the package (CMD + shift + B) and run the function <code>hello()</code></p></li>
-<li><p>Have a look at the help for <code>hello</code> with <code>?hello</code></p></li>
-<li><p>Have a look at the file <code>hello.Rd</code> in <code>man/</code></p></li>
+<li><p>Delete the file <code>hello.Rd</code> in the folder <code>man</code></p></li>
+<li><p>Prep the DESCRIPTION file by adding the Roxygen tag.</p></li>
+<li><p>Include roxygen comments for the function <code>hello()</code> in the file <code>hello.R</code> to create the same help for <code>hello</code> as was there before.</p></li>
+<li><p>Run <code>devtools::document()</code> to create the file <code>hello.Rd</code>.</p></li>
+<li><p>Build the package and run <code>?hello</code>.</p></li>
+<li><p>Already done? Expand the functionality of <code>hello</code> to produce an output of <code>Hello, string!</code> for <code>hello(string)</code>. Update <code>?hello</code> accordingly.</p></li>
 </ul>
 </section>
 
-<section id="your-turn-advanced" class="title-slide slide level1 center" data-background-color="#006666">
-<h1>Your Turn (Advanced)</h1>
+<section id="roxygen-tags" class="title-slide slide level1 center">
+<h1>Roxygen tags</h1>
+<table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 66%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Tag</th>
+<th style="text-align: left;">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>@export</code></td>
+<td style="text-align: left;">Make the function visible to users of the package</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>@param</code></td>
+<td style="text-align: left;">Describe inputs</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>@return</code></td>
+<td style="text-align: left;">Describe outputs</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>@examples</code></td>
+<td style="text-align: left;">Show how the function works</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>@author</code></td>
+<td style="text-align: left;">Who wrote the function (if different from package)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>@seealso</code></td>
+<td style="text-align: left;">Pointers to related functions</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>@aliases</code></td>
+<td style="text-align: left;">Make it easier for users to find</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>@rdname</code></td>
+<td style="text-align: left;">Useful for functions that are invalid filenames and for combining docs</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>@import</code></td>
+<td style="text-align: left;">Call all functions from another package natively (without <code>package::function</code>)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>@importFrom</code></td>
+<td style="text-align: left;">Call a single function from another package natively</td>
+</tr>
+</tbody>
+</table>
+</section>
+
+<section id="commands-in-roxygen" class="title-slide slide level1 center">
+<h1>Commands in Roxygen</h1>
+<p>Most of these elements can also be replaced by markdown</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 66%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Tag</th>
+<th style="text-align: left;">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>\code{}</code></td>
+<td style="text-align: left;">Discuss R code — backticks work here as well</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>\link{}</code></td>
+<td style="text-align: left;">Make link to another function (usually wrapped in <code>\code{}</code>)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>\eqn{}</code></td>
+<td style="text-align: left;">Inline equation (standard LaTeX)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>\emph{}</code></td>
+<td style="text-align: left;">Italic text — or use <code>*</code> at the beginning and end</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>\strong{}</code></td>
+<td style="text-align: left;">Bold text — or use <code>**</code> at the beginning and end</td>
+</tr>
+</tbody>
+</table>
+<p>Numbered list (Use <code>\itemize{}</code> for bulleted):</p>
+<pre><code>\enumerate{
+  \item First item
+}</code></pre>
+</section>
+
+<section id="your-turn-1" class="title-slide slide level1 center" data-background-color="#006666">
+<h1>Your Turn</h1>
 <ul>
-<li>Does the package pass R CMD check? (Cmd + Shift + E)</li>
+<li><p>Expand the functionality of <code>hello</code> to produce an output of <code>Hello, string!</code> for <code>hello(string)</code>.</p></li>
+<li><p>Insert the corresponding roxygen tags to expand on the documentation</p></li>
+<li><p>Run <code>devtools::document()</code></p></li>
+<li><p>Check that the help for <code>hello</code> is updated</p></li>
 </ul>
 
 

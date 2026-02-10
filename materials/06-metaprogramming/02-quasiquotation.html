@@ -9,8 +9,8 @@
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.7.32">
 
-  <meta name="dcterms.date" content="2026-02-12">
-  <title>Stat 451 – Package dependencies</title>
+  <meta name="dcterms.date" content="2026-02-10">
+  <title>Stat 451 – Quasiquotation</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -193,173 +193,323 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">Package dependencies</h1>
+  <h1 class="title">Quasiquotation</h1>
 
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-02-12</p>
+  <p class="date">2026-02-10</p>
 </section>
-<section id="outline" class="title-slide slide level1 center">
-<h1>Outline</h1>
-<ul>
-<li><p>file structures of packages</p></li>
-<li><p>documentation</p></li>
-<li><p>development cycle</p></li>
-</ul>
-<p><br> <br> <br></p>
-<p>Resource: <a href="http://r-pkgs.had.co.nz/">R packages</a> by Hadley Wickham</p>
-</section>
-
-<section id="package-dependencies" class="title-slide slide level1 center">
-<h1>Package dependencies</h1>
-<p>declared through <code>DESCRIPTION</code> file</p>
-<p>three levels: Suggests, <strong>Imports</strong>, Depends (weakest to strongest)</p>
-</section>
-
-<section id="package-dependencies-imports-suggests" class="title-slide slide level1 center">
-<h1>Package dependencies: Imports, Suggests</h1>
-<ul>
-<li><strong>Imports:</strong> packages in this list must be present for your package to work
-<ul>
-<li>Imports are NOT attached when your package is loaded</li>
-<li>You must refer to functions in these packages using <code>package::function()</code> or import them using roxygen tags (<code>@import</code>, <code>@importFrom</code>)</li>
-</ul></li>
-<li><strong>Suggests:</strong> packages in this list may add functionality but are not necessary
-<ul>
-<li>e.g.&nbsp;for example data, unit tests, build vignettes</li>
-</ul></li>
-</ul>
-</section>
-
-<section id="package-dependencies-depends" class="title-slide slide level1 center">
-<h1>Package dependencies: Depends</h1>
-<ul>
-<li><strong>Depends:</strong> packages in this list are attached when your package is loaded<br>
-<strong>Hint:</strong> It is better practice to use <code>Imports</code> rather than <code>Depends</code>. <code>Depends</code> might overwrite a previously loaded function of the same name: <a href="http://r-pkgs.had.co.nz/namespace.html#namespace">Namespaces reference</a> - why Depends is a bad idea</li>
-</ul>
-</section>
-
-<section id="minimize-dependencies" class="title-slide slide level1 center">
-<h1>Minimize dependencies!</h1>
-<p>Try to keep dependencies as light as possible: <a href="https://r-pkgs.org/dependencies-mindset-background.html#dependencies-are-not-equal">It Depends</a></p>
-<p>DO NOT include <a href="https://www.tidyverse.org/blog/2018/06/tidyverse-not-for-packages/">tidyverse</a> as a dependency.</p>
-<p><code>pak</code> shows dependencies</p>
+<section id="r-sometimes-quotes-and-sometimes-doesnt" class="title-slide slide level1 center">
+<h1>R sometimes quotes and sometimes doesn’t …</h1>
+<p>a call to <code>library</code> doesn’t need quotes, but would work just fine with them:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a>pak<span class="sc">::</span><span class="fu">pkg_deps_tree</span>(<span class="st">"glue"</span>) <span class="co"># light package</span></span>
-<span id="cb1-2"><a></a>pak<span class="sc">::</span><span class="fu">pkg_deps_tree</span>(<span class="st">"devtools"</span>) <span class="co"># heavy package</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="fu">library</span>(ggplot2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>a call to <code>install.packages</code> needs a quoted argument or it fails:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a><span class="fu">install.packages</span>(ggplot2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error:
+! object 'ggplot2' not found</code></pre>
+</div>
+</div>
+<p>Idea of <strong>quasiquotation</strong></p>
+</section>
+
+<section id="quasiquotation-is" class="title-slide slide level1 center">
+<h1>Quasiquotation is …</h1>
+<p>the combination of</p>
+<ul>
+<li><p><strong>quotation</strong>: capturing an expression before evaluation</p></li>
+<li><p><strong>unquotation</strong>: selectively evaluate parts of a (quoted/unevaluated) expression.</p></li>
+</ul>
+<p>… useful for programming (really, meta-programming)</p>
+</section>
+
+<section id="quoting" class="title-slide slide level1 center">
+<h1>Quoting</h1>
+<ul>
+<li><p>behind a call to <code>library</code> without quotes</p></li>
+<li><p>takes an argument and puts quotes around it</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a>like_paste <span class="ot">&lt;-</span> <span class="cf">function</span>(..., <span class="at">sep =</span> <span class="st">" "</span>) {</span>
+<span id="cb4-2"><a></a>  args <span class="ot">&lt;-</span> <span class="fu">ensyms</span>(...)</span>
+<span id="cb4-3"><a></a>  <span class="fu">paste</span>(<span class="fu">sapply</span>(args, as_string), <span class="at">collapse =</span> sep)</span>
+<span id="cb4-4"><a></a>}</span>
+<span id="cb4-5"><a></a></span>
+<span id="cb4-6"><a></a><span class="fu">like_paste</span>(I, just, wanted, to, say, hello, <span class="st">"!"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "I just wanted to say hello !"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a></a><span class="fu">paste</span>(<span class="st">"I"</span>, <span class="st">"just"</span>, <span class="st">"wanted"</span>, <span class="st">"to"</span>, <span class="st">"say"</span>, <span class="st">"hello"</span>, <span class="st">"!"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "I just wanted to say hello !"</code></pre>
+</div>
 </div>
 </section>
 
-<section id="common-problems" class="title-slide slide level1 center">
-<h1>Common Problems</h1>
-<pre><code>❯ checking dependencies in R code ... WARNING
-  'library' or 'require' call to ‘dplyr’ in package code.
-    Please use :: or requireNamespace() instead.
-    See section 'Suggested packages' in the 'Writing R Extensions' manual.</code></pre>
-<pre><code>❯ checking dependencies in R code ... WARNING
-  '::' or ':::' imports not declared from:
-    ‘gh’ ‘lubridate’ ‘purrr’ ‘stringdist’
-  'library' or 'require' call not declared from: ‘dplyr’
-  ':::' call which should be '::': ‘purrr:::map_chr’
-    See the note in ?`:::` about the use of this operator.</code></pre>
-<pre><code>❯ checking R code for possible problems ... NOTE
-  ghc: no visible global function definition for ‘hclust’
-  ghc: no visible global function definition for ‘as.dist’
-  ghc: no visible global function definition for ‘cutree’
-  ghc: no visible global function definition for ‘mutate’
-  ghc: no visible global function definition for ‘group_by’</code></pre>
-<pre><code>❯ checking package dependencies ... ERROR
-  Namespace dependency missing from DESCRIPTION Imports/Depends entries: ‘gh’</code></pre>
-</section>
-
-<section id="common-problems-and-approaches" class="title-slide slide level1 center">
-<h1>Common Problems … and approaches</h1>
-<pre><code>❯ checking dependencies in R code ... WARNING
-  'library' or 'require' call to ‘dplyr’ in package code.
-    Please use :: or requireNamespace() instead.
-    See section 'Suggested packages' in the 'Writing R Extensions' manual.</code></pre>
-<div class="fragment">
-<p>remove any calls to <code>library</code> or <code>require</code></p>
+<section id="unquoting" class="title-slide slide level1 center">
+<h1>Unquoting</h1>
+<p>When we program, we sometimes don’t want the automatic quotes</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a></a>time <span class="ot">&lt;-</span> <span class="st">"morning"</span></span>
+<span id="cb8-2"><a></a>person <span class="ot">&lt;-</span> <span class="st">"Heike"</span></span>
+<span id="cb8-3"><a></a></span>
+<span id="cb8-4"><a></a><span class="fu">paste</span>(<span class="st">"Good"</span>, time, person)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Good morning Heike"</code></pre>
 </div>
-<div class="fragment">
-<p>in the console run <code>usethis::use_package("dplyr")</code> (places package “dplyr” into the DESCRIPTION file)</p>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a></a><span class="fu">like_paste</span>(Good, time, person)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Good time person"</code></pre>
 </div>
-<div class="fragment">
-<p>specifying (minimal) version is optional</p>
 </div>
-<div class="fragment">
-<p>Call functions as <code>dplyr::fun</code> or add to function documentation the line:</p>
-<pre><code>#' @importFrom dplyr group_by mutate</code></pre>
+<p>Bang-bang operator <code>!!</code> prevents the automatic quoting:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a></a><span class="fu">like_paste</span>(Good, <span class="sc">!!</span>time, <span class="sc">!!</span>person)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Good morning Heike"</code></pre>
+</div>
 </div>
 </section>
 
-<section id="common-problems-and-approaches-2" class="title-slide slide level1 center">
-<h1>Common Problems … and approaches (2)</h1>
-<pre><code>❯ checking dependencies in R code ... WARNING
-  '::' or ':::' imports not declared from:
-    ‘gh’ ‘lubridate’ ‘purrr’ ‘stringdist’
-  'library' or 'require' call not declared from: ‘dplyr’
-  ':::' call which should be '::': ‘purrr:::map_chr’
-    See the note in ?`:::` about the use of this operator.</code></pre>
-<div class="fragment">
-<p>add four more packages to DESCRIPTION</p>
-<pre><code>usethis::use_package("gh")
-usethis::use_package("lubridate")
-usethis::use_package("purrr")
-usethis::use_package("stringdist")</code></pre>
-</div>
-<div class="fragment">
-<p>change <code>:::</code> to <code>::</code> in call to <code>purrr::map_chr</code></p>
+<section id="partial-unquoting" class="title-slide slide level1 center">
+<h1>Partial Unquoting</h1>
+<p>In the example we call the arguments to <code>paste</code> and <code>like_paste</code> in exactly the opposite way:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a></a><span class="fu">paste</span>(<span class="st">"Good"</span>, time, person)</span>
+<span id="cb14-2"><a></a><span class="fu">like_paste</span>(Good, <span class="sc">!!</span>time, <span class="sc">!!</span>person)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 
-<section id="common-problems-and-approaches-3" class="title-slide slide level1 center">
-<h1>Common Problems … and approaches (3)</h1>
-<pre><code>❯ checking R code for possible problems ... NOTE
-  ghc: no visible global function definition for ‘hclust’
-  ghc: no visible global function definition for ‘as.dist’
-  ghc: no visible global function definition for ‘cutree’
-  ghc: no visible global function definition for ‘mutate’
-  ghc: no visible global function definition for ‘group_by’</code></pre>
-<div class="fragment">
-<p>all of these problems are solved by using</p>
-<pre><code>importFrom pkg function</code></pre>
+<section id="closer-look-at-quoting" class="title-slide slide level1 center">
+<h1>Closer look at Quoting</h1>
+<p>Four main functions for quoting (i.e.&nbsp;functions that capture an expression/symbol before it’s evaluated)</p>
+<ul>
+<li><p>Capturing Expressions:</p>
+<ul>
+<li>single expression: <code>expr</code> and <code>enexpr</code></li>
+<li>multiple expressions: <code>exprs</code> and <code>enexprs</code></li>
+</ul></li>
+<li><p>Capturing Symbols: <code>sym</code>, <code>ensym</code>, and <code>ensyms</code> (multiple)</p></li>
+</ul>
+</section>
+
+<section id="expr-and-enexpr" class="title-slide slide level1 center">
+<h1><code>expr</code> and <code>enexpr</code></h1>
+<p><code>expr</code> is for interactive use:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a>e1 <span class="ot">&lt;-</span> <span class="fu">expr</span>(x) <span class="co"># prevents `x` from being evaluated</span></span>
+<span id="cb15-2"><a></a>e2 <span class="ot">&lt;-</span> <span class="fu">expr</span>((a <span class="sc">+</span> b)<span class="sc">/</span><span class="dv">2</span>)</span>
+<span id="cb15-3"><a></a></span>
+<span id="cb15-4"><a></a>e1; e2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>x</code></pre>
 </div>
-<div class="fragment">
-<p>Might need a call to <code>?fun</code> to find the package in which a function is defined</p>
-<pre><code>importFrom stats hclust as.dist cutree</code></pre>
+<div class="cell-output cell-output-stdout">
+<pre><code>(a + b)/2</code></pre>
+</div>
+</div>
+<p>In a function we are usually more interested in how the function was called, need <code>en</code>riched version of <code>expr</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a></a>f1 <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">expr</span>(x) </span>
+<span id="cb18-2"><a></a><span class="fu">f1</span>(a<span class="sc">+</span>b<span class="sc">/</span>c) <span class="co"># duh</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>x</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a></a>f2 <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">enexpr</span>(x) </span>
+<span id="cb20-2"><a></a><span class="fu">f2</span>(a<span class="sc">+</span>b<span class="sc">/</span>c)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>a + b/c</code></pre>
+</div>
 </div>
 </section>
 
-<section id="common-problems-and-approaches-4" class="title-slide slide level1 center">
-<h1>Common Problems … and approaches (4)</h1>
-<pre><code>❯ checking package dependencies ... ERROR
-  Namespace dependency missing from DESCRIPTION Imports/Depends entries: ‘gh’</code></pre>
-<div class="fragment">
-<p>another call to <code>usethis::use_package("gh")</code></p>
+<section id="capturing-symbols" class="title-slide slide level1 center">
+<h1>Capturing symbols</h1>
+<p><code>ensym</code> and <code>ensyms</code> are special cases of <code>enexpr</code> and <code>enexprs</code> that capture the expression(s) and also check that each expression is a symbol:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a></a>f3 <span class="ot">&lt;-</span> <span class="cf">function</span>(...) <span class="fu">ensyms</span>(...)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a><span class="fu">f3</span>(a, <span class="at">bb =</span> b)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+a
 
-<section id="common-problems-with-tidyverse-functions" class="title-slide slide level1 center">
-<h1>Common problems with tidyverse functions</h1>
-<pre><code>❯ checking R code for possible problems ... NOTE
-  ghc: no visible binding for global variable ‘cluster’
-  ghc: no visible binding for global variable ‘prefix’
-  last_pushed: no visible binding for global variable ‘pushed_at’
-  last_pushed: no visible binding for global variable ‘name’
-  Undefined global functions or variables:
-    cluster name prefix pushed_at</code></pre>
+$bb
+b</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a></a><span class="fu">f3</span>(a<span class="sc">/</span><span class="dv">2</span>, b)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `sym()`:
+! Can't convert a call to a symbol.</code></pre>
+</div>
+</div>
 </section>
 
 <section id="your-turn" class="title-slide slide level1 center" data-background-color="#006666">
 <h1>Your Turn</h1>
+<p>Can we implement a function <code>my_select</code> now that works the same way as <code>dplyr::select</code>?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a></a>my_select <span class="ot">&lt;-</span> <span class="cf">function</span> (.data, ...) {</span>
+<span id="cb27-2"><a></a></span>
+<span id="cb27-3"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a></a>mtcars <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">"mpg"</span>, cyl, disp) <span class="sc">|&gt;</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                   mpg cyl disp
+Mazda RX4         21.0   6  160
+Mazda RX4 Wag     21.0   6  160
+Datsun 710        22.8   4  108
+Hornet 4 Drive    21.4   6  258
+Hornet Sportabout 18.7   8  360
+Valiant           18.1   6  225</code></pre>
+</div>
+</div>
+</section>
+
+<section id="section" class="title-slide slide level1 center">
+<h1></h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a></a>my_select <span class="ot">&lt;-</span> <span class="cf">function</span> (.data, ...) {</span>
+<span id="cb30-2"><a></a>  vars <span class="ot">&lt;-</span> <span class="fu">ensyms</span>(...)</span>
+<span id="cb30-3"><a></a><span class="co">#  browser()</span></span>
+<span id="cb30-4"><a></a>  varnames <span class="ot">&lt;-</span> <span class="fu">sapply</span>(vars, as_string)</span>
+<span id="cb30-5"><a></a>  .data[,varnames]</span>
+<span id="cb30-6"><a></a>}</span>
+<span id="cb30-7"><a></a></span>
+<span id="cb30-8"><a></a>mtcars <span class="sc">|&gt;</span> <span class="fu">my_select</span>(<span class="st">"mpg"</span>, cyl, disp) <span class="sc">|&gt;</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                   mpg cyl disp
+Mazda RX4         21.0   6  160
+Mazda RX4 Wag     21.0   6  160
+Datsun 710        22.8   4  108
+Hornet 4 Drive    21.4   6  258
+Hornet Sportabout 18.7   8  360
+Valiant           18.1   6  225</code></pre>
+</div>
+</div>
+</section>
+
+<section id="does-my_select-also-work-with-indices" class="title-slide slide level1 center">
+<h1>Does <code>my_select</code> also work with indices?</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a></a>mtcars <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>) <span class="sc">|&gt;</span> <span class="fu">dim</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 32  3</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a></a>mtcars <span class="sc">|&gt;</span> <span class="fu">my_select</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>) <span class="sc">|&gt;</span> <span class="fu">dim</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `sym()`:
+! Can't convert a double vector to a symbol.</code></pre>
+</div>
+</div>
+<p><code>ensyms</code> allows only symbols</p>
+</section>
+
+<section id="another-approach" class="title-slide slide level1 center">
+<h1>Another approach</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a></a>my_select <span class="ot">&lt;-</span> <span class="cf">function</span> (.data, ...) {</span>
+<span id="cb36-2"><a></a>  vars <span class="ot">&lt;-</span> <span class="fu">enexprs</span>(...)</span>
+<span id="cb36-3"><a></a>  select_expr <span class="ot">&lt;-</span> <span class="cf">function</span>(e) {</span>
+<span id="cb36-4"><a></a>    <span class="cf">if</span> (<span class="fu">is_symbol</span>(e) <span class="sc">|</span> <span class="fu">is.numeric</span>(e)) <span class="fu">return</span>(.data[,<span class="fu">eval</span>(e)])</span>
+<span id="cb36-5"><a></a>      <span class="co"># more complicated case: we have an expression</span></span>
+<span id="cb36-6"><a></a>    <span class="fu">browser</span>()</span>
+<span id="cb36-7"><a></a>  }</span>
+<span id="cb36-8"><a></a>  <span class="fu">lapply</span>(vars, <span class="at">FUN =</span> select_expr) <span class="sc">|&gt;</span> <span class="fu">data.frame</span>()</span>
+<span id="cb36-9"><a></a>}</span>
+<span id="cb36-10"><a></a></span>
+<span id="cb36-11"><a></a>mtcars <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>) <span class="sc">|&gt;</span> <span class="fu">dim</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 32  3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a></a>mtcars <span class="sc">|&gt;</span> <span class="fu">my_select</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>) <span class="sc">|&gt;</span> <span class="fu">dim</span>() <span class="co"># dimension is right, names are horribly wrong</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 32  3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a></a>mtcars <span class="sc">|&gt;</span> <span class="fu">my_select</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>) <span class="sc">|&gt;</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  c.21..21..22.8..21.4..18.7..18.1..14.3..24.4..22.8..19.2..17.8..
+1                                                             21.0
+2                                                             21.0
+3                                                             22.8
+4                                                             21.4
+5                                                             18.7
+6                                                             18.1
+  c.6..6..4..6..8..6..8..4..4..6..6..8..8..8..8..8..8..4..4..4..
+1                                                              6
+2                                                              6
+3                                                              4
+4                                                              6
+5                                                              8
+6                                                              6
+  c.160..160..108..258..360..225..360..146.7..140.8..167.6..167.6..
+1                                                               160
+2                                                               160
+3                                                               108
+4                                                               258
+5                                                               360
+6                                                               225</code></pre>
+</div>
+</div>
+</section>
+
+<section id="we-could-use-the-base-function-subset" class="title-slide slide level1 center">
+<h1>We could use the base function <code>subset</code> …?</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a></a>my_select <span class="ot">&lt;-</span> <span class="cf">function</span> (.data, ...) {</span>
+<span id="cb42-2"><a></a>  vars <span class="ot">&lt;-</span> <span class="fu">enexprs</span>(...)</span>
+<span id="cb42-3"><a></a>  select_expr <span class="ot">&lt;-</span> <span class="cf">function</span>(e) {</span>
+<span id="cb42-4"><a></a>    <span class="fu">subset</span>(.data, <span class="at">select =</span> <span class="fu">eval</span>(e), <span class="at">subset=</span>T, <span class="at">drop=</span><span class="cn">FALSE</span>)</span>
+<span id="cb42-5"><a></a>  }</span>
+<span id="cb42-6"><a></a>  <span class="fu">lapply</span>(vars, <span class="at">FUN =</span> select_expr) <span class="sc">|&gt;</span> <span class="fu">data.frame</span>()</span>
+<span id="cb42-7"><a></a>}</span>
+<span id="cb42-8"><a></a></span>
+<span id="cb42-9"><a></a>mtcars <span class="sc">|&gt;</span> <span class="fu">my_select</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>) <span class="sc">|&gt;</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                   mpg cyl disp
+Mazda RX4         21.0   6  160
+Mazda RX4 Wag     21.0   6  160
+Datsun 710        22.8   4  108
+Hornet 4 Drive    21.4   6  258
+Hornet Sportabout 18.7   8  360
+Valiant           18.1   6  225</code></pre>
+</div>
+</div>
+</section>
+
+<section id="using-any-selector-function-fails" class="title-slide slide level1 center">
+<h1>Using any selector function fails</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a></a>mtcars <span class="sc">|&gt;</span> <span class="fu">my_select</span>(<span class="fu">everything</span>()) <span class="sc">|&gt;</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `everything()`:
+! could not find function "everything"</code></pre>
+</div>
+</div>
+<p><code>tidyselect</code> (re-)implements a partial indexing system with <code>:</code>, <code>!</code>, <code>&amp;</code>, <code>|</code> and <code>c()</code></p>
+<p>… we would have the tools though :)</p>
+</section>
+
+<section id="base-r-and-rlang" class="title-slide slide level1 center">
+<h1>Base R and <code>rlang</code></h1>
 <ul>
-<li><p>Expand the functionality of <code>hello</code> to produce an output of <code>Hello, string!</code> for <code>hello(string)</code>.</p></li>
-<li><p>Insert the corresponding roxygen tags to expand on the documentation</p></li>
-<li><p>Run <code>devtools::document()</code></p></li>
-<li><p>Check that the help for <code>hello</code> is updated</p></li>
+<li><p><code>quote</code> acts like <code>expr</code></p></li>
+<li><p><code>alist</code> acts like <code>exprs</code></p></li>
+<li><p><code>substitute</code> is most like <code>enexpr</code></p></li>
 </ul>
+<p>We will stick with <code>rlang</code> for now.</p>
 
 
 </section>
