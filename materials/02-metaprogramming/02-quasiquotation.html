@@ -9,7 +9,7 @@
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.7.32">
 
-  <meta name="dcterms.date" content="2026-02-10">
+  <meta name="dcterms.date" content="2026-02-17">
   <title>Stat 451 – Quasiquotation</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -198,7 +198,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-02-10</p>
+  <p class="date">2026-02-17</p>
 </section>
 <section id="r-sometimes-quotes-and-sometimes-doesnt" class="title-slide slide level1 center">
 <h1>R sometimes quotes and sometimes doesn’t …</h1>
@@ -510,6 +510,89 @@ Valiant           18.1   6  225</code></pre>
 <li><p><code>substitute</code> is most like <code>enexpr</code></p></li>
 </ul>
 <p>We will stick with <code>rlang</code> for now.</p>
+</section>
+
+<section id="unquoting-operations" class="title-slide slide level1 center">
+<h1>Unquoting operations</h1>
+<ul>
+<li><p>we have used two functions so far: <code>eval</code> and <code>!!</code></p></li>
+<li><p>generally, we use <code>eval</code> to evaluate a whole statement</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a></a>e <span class="ot">&lt;-</span> <span class="fu">expr</span>(x <span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">*</span><span class="fu">exp</span>(<span class="dv">1</span>))</span>
+<span id="cb46-2"><a></a></span>
+<span id="cb46-3"><a></a><span class="fu">identical</span>(<span class="fu">eval</span>(e), x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<ul>
+<li><code>!!</code> is evaluating individual arguments in functions</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a></a>x <span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">*</span><span class="fu">exp</span>(<span class="dv">1</span>)</span>
+<span id="cb48-2"><a></a></span>
+<span id="cb48-3"><a></a><span class="fu">identical</span>(<span class="fu">expr</span>(<span class="sc">!!</span>x), x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+</section>
+
+<section id="your-turn-1" class="title-slide slide level1 center" data-background-color="#006666">
+<h1>Your Turn</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a></a>xy <span class="ot">&lt;-</span> <span class="fu">expr</span>(x <span class="sc">+</span> y)</span>
+<span id="cb50-2"><a></a>xz <span class="ot">&lt;-</span> <span class="fu">expr</span>(x <span class="sc">+</span> z)</span>
+<span id="cb50-3"><a></a>yz <span class="ot">&lt;-</span> <span class="fu">expr</span>(y <span class="sc">+</span> z)</span>
+<span id="cb50-4"><a></a>abc <span class="ot">&lt;-</span> <span class="fu">exprs</span>(a, b, c)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Use quasiquotation to construct the following calls:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a></a>(x <span class="sc">+</span> y) <span class="sc">/</span> (y <span class="sc">+</span> z)</span>
+<span id="cb51-2"><a></a><span class="sc">-</span>(x <span class="sc">+</span> z) <span class="sc">^</span> (y <span class="sc">+</span> z)</span>
+<span id="cb51-3"><a></a>(x <span class="sc">+</span> y) <span class="sc">+</span> (y <span class="sc">+</span> z) <span class="sc">-</span> (x <span class="sc">+</span> y)</span>
+<span id="cb51-4"><a></a><span class="fu">atan2</span>(x <span class="sc">+</span> y, y <span class="sc">+</span> z)</span>
+<span id="cb51-5"><a></a><span class="fu">sum</span>(x <span class="sc">+</span> y, x <span class="sc">+</span> y, y <span class="sc">+</span> z)</span>
+<span id="cb51-6"><a></a><span class="fu">sum</span>(a, b, c)</span>
+<span id="cb51-7"><a></a><span class="fu">mean</span>(<span class="fu">c</span>(a, b, c), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb51-8"><a></a><span class="fu">foo</span>(<span class="at">a =</span> x <span class="sc">+</span> y, <span class="at">b =</span> y <span class="sc">+</span> z)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Note: <code>!!!</code> evaluates all expressions in a list</p>
+</section>
+
+<section id="section-1" class="title-slide slide level1 center">
+<h1></h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a></a><span class="fu">expr</span>(<span class="sc">!!</span>xy <span class="sc">/</span> <span class="sc">!!</span>yz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(x + y)/(y + z)</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a></a><span class="fu">expr</span>(<span class="sc">-</span>(<span class="sc">!!</span>xz) <span class="sc">^</span> (<span class="sc">!!</span>yz))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>-(x + z)^(y + z)</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a></a><span class="fu">expr</span>((<span class="sc">!!</span>xy) <span class="sc">+</span> <span class="sc">!!</span>yz <span class="sc">-</span> (<span class="sc">!!</span>xy))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>x + y + (y + z) - (x + y)</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a></a><span class="fu">expr</span>(<span class="fu">atan</span>((<span class="sc">!!</span>xy), (<span class="sc">!!</span>yz)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>atan(x + y, y + z)</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a></a><span class="fu">expr</span>(<span class="fu">sum</span>(<span class="sc">!!!</span>abc))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>sum(a, b, c)</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a></a><span class="fu">expr</span>(<span class="fu">mean</span>(<span class="fu">c</span>(<span class="sc">!!!</span>abc), <span class="at">na.rm=</span><span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>mean(c(a, b, c), na.rm = TRUE)</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a></a><span class="fu">expr</span>(<span class="fu">foo</span>(<span class="at">a =</span> <span class="sc">!!</span>xy, <span class="at">b =</span> <span class="sc">!!</span>yz))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>foo(a = x + y, b = y + z)</code></pre>
+</div>
+</div>
 
 
 </section>
