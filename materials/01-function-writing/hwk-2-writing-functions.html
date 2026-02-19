@@ -299,9 +299,11 @@ L82</code></pre>
 </ol>
 <p>Make sure that your function returns 3 for the following call:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stops_at_zero</span>(<span class="dv">50</span>, <span class="fu">c</span>(<span class="st">"L68"</span>, <span class="st">"L30"</span>, <span class="st">"R48"</span>, <span class="st">"L5"</span>, <span class="st">"R60"</span>, <span class="st">"L55"</span>, <span class="st">"L1"</span>, <span class="st">"L99"</span>, <span class="st">"R14"</span>, <span class="st">"L82"</span>))</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Error in `stops_at_zero()`:</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ! could not find function "stops_at_zero"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stops_at_zero</span>(<span class="dv">50</span>, <span class="fu">c</span>(<span class="st">"L68"</span>, <span class="st">"L30"</span>, <span class="st">"R48"</span>, <span class="st">"L5"</span>, <span class="st">"R60"</span>, <span class="st">"L55"</span>, <span class="st">"L1"</span>, <span class="st">"L99"</span>, <span class="st">"R14"</span>, <span class="st">"L82"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `stops_at_zero()`:
+! could not find function "stops_at_zero"</code></pre>
+</div>
 </div>
 <p>What result does your function give for the larger input? Most likely, your function will return an error for the larger input. Make sure to include <code>error = TRUE</code> in the corresponding code chunk so that the markdown document still runs to completion.</p>
 <ol start="2" type="a">
