@@ -337,7 +337,9 @@ env:  global</code></pre>
 
 <section id="data-masks" class="title-slide slide level1 center">
 <h1>Data Masks</h1>
-<p>The function <code>eval_tidy</code> has <code>data</code> as a third argument; if it is specified, it will be used first when evaluating expressions:</p>
+<p>Sometimes we are dealing with expressions that contain both variables (symbols from a data frame) and objects from an environment</p>
+<p>In evaluations we need to consider both the data frame and the environment</p>
+<p>The function eval_tidy has <code>data</code> as a third argument; if it is specified, it will be used first when evaluating expressions:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a></a><span class="fu">eval_tidy</span>(<span class="fu">expr</span>(mpg), <span class="at">data =</span> mtcars)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -348,89 +350,19 @@ env:  global</code></pre>
 </div>
 </section>
 
-<section id="your-turn-1" class="title-slide slide level1 center" data-background-color="#006666">
-<h1>Your Turn</h1>
-<p>Can we implement a function <code>my_select</code> now that works the same way as <code>dplyr::select</code>?</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a></a>my_select <span class="ot">&lt;-</span> <span class="cf">function</span> (.data, ...) {</span>
-<span id="cb22-2"><a></a></span>
-<span id="cb22-3"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a>mtcars <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">"mpg"</span>, cyl, <span class="dv">3</span>, <span class="fu">starts_with</span>(<span class="st">"w"</span>)) <span class="sc">|&gt;</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>                   mpg cyl disp    wt
-Mazda RX4         21.0   6  160 2.620
-Mazda RX4 Wag     21.0   6  160 2.875
-Datsun 710        22.8   4  108 2.320
-Hornet 4 Drive    21.4   6  258 3.215
-Hornet Sportabout 18.7   8  360 3.440
-Valiant           18.1   6  225 3.460</code></pre>
-</div>
-</div>
-</section>
-
-<section id="section-2" class="title-slide slide level1 center">
-<h1></h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a></a>my_select <span class="ot">&lt;-</span> <span class="cf">function</span> (.data, ...) {</span>
-<span id="cb25-2"><a></a>  vars <span class="ot">&lt;-</span> <span class="fu">enquos</span>(...)</span>
-<span id="cb25-3"><a></a>  </span>
-<span id="cb25-4"><a></a>  res <span class="ot">&lt;-</span> <span class="fu">lapply</span>(vars, <span class="at">FUN =</span> <span class="cf">function</span>(x) {</span>
-<span id="cb25-5"><a></a>    e <span class="ot">&lt;-</span> <span class="fu">get_expr</span>(x)</span>
-<span id="cb25-6"><a></a>    <span class="cf">if</span> (<span class="fu">is_symbol</span>(e)) e <span class="ot">&lt;-</span> <span class="fu">as_string</span>(e)</span>
-<span id="cb25-7"><a></a>    <span class="cf">if</span> (<span class="fu">is_call</span>(e)) e <span class="ot">&lt;-</span> tidyselect<span class="sc">::</span><span class="fu">eval_select</span>(e, <span class="at">data=</span>.data)</span>
-<span id="cb25-8"><a></a>    <span class="st">`</span><span class="at">[</span><span class="st">`</span>(.data, e) </span>
-<span id="cb25-9"><a></a>  }) <span class="sc">|&gt;</span> <span class="fu">data.frame</span>()</span>
-<span id="cb25-10"><a></a>}</span>
-<span id="cb25-11"><a></a></span>
-<span id="cb25-12"><a></a>mtcars <span class="sc">|&gt;</span> <span class="fu">my_select</span>(<span class="st">"mpg"</span>, cyl, <span class="dv">3</span>, tidyr<span class="sc">::</span><span class="fu">starts_with</span>(<span class="st">"d"</span>)) <span class="sc">|&gt;</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>                   mpg cyl disp disp.1 drat
-Mazda RX4         21.0   6  160    160 3.90
-Mazda RX4 Wag     21.0   6  160    160 3.90
-Datsun 710        22.8   4  108    108 3.85
-Hornet 4 Drive    21.4   6  258    258 3.08
-Hornet Sportabout 18.7   8  360    360 3.15
-Valiant           18.1   6  225    225 2.76</code></pre>
-</div>
-</div>
-</section>
-
-<section id="another-approach" class="title-slide slide level1 center">
-<h1>Another approach</h1>
-<p>from <a href="https://adv-r.hadley.nz/evaluation.html#select">Advanced R</a></p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a></a>my_select <span class="ot">&lt;-</span> <span class="cf">function</span>(data, ...) {</span>
-<span id="cb27-2"><a></a>  dots <span class="ot">&lt;-</span> <span class="fu">enquos</span>(...)</span>
-<span id="cb27-3"><a></a></span>
-<span id="cb27-4"><a></a>  vars <span class="ot">&lt;-</span> <span class="fu">as.list</span>(<span class="fu">set_names</span>(<span class="fu">seq_along</span>(data), <span class="fu">names</span>(data)))</span>
-<span id="cb27-5"><a></a>  cols <span class="ot">&lt;-</span> <span class="fu">unlist</span>(purrr<span class="sc">::</span><span class="fu">map</span>(dots, eval_tidy, vars))</span>
-<span id="cb27-6"><a></a></span>
-<span id="cb27-7"><a></a>  data[, cols, drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
-<span id="cb27-8"><a></a>}</span>
-<span id="cb27-9"><a></a></span>
-<span id="cb27-10"><a></a>mtcars <span class="sc">|&gt;</span> <span class="fu">my_select</span>(<span class="st">"mpg"</span>, cyl, <span class="dv">3</span>) <span class="sc">|&gt;</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-error">
-<pre><code>Error in `[.data.frame`:
-! undefined columns selected</code></pre>
-</div>
-</div>
-</section>
-
 <section id="tidyverse-programming" class="title-slide slide level1 center">
 <h1>Tidyverse programming</h1>
 <p>Data masking introduces some ambiguity about the environment in which each object lives, e.g</p>
-<p><code>1/mpg / mile_to_100km * gallons_to_liter</code></p>
+<pre><code>1/mpg / mile_to_100km * gallons_to_liter</code></pre>
 <p>In the <code>.data</code> or in the parent environment <code>.env</code>?</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a></a>gallons_to_liter <span class="ot">=</span>  <span class="fl">3.79</span></span>
-<span id="cb29-2"><a></a>mile_to_100km <span class="ot">=</span> <span class="fl">1.60934</span> <span class="sc">/</span><span class="dv">100</span></span>
-<span id="cb29-3"><a></a></span>
-<span id="cb29-4"><a></a>mtcars <span class="sc">|&gt;</span> </span>
-<span id="cb29-5"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb29-6"><a></a>    <span class="at">lper100km =</span> <span class="dv">1</span><span class="sc">/</span>mpg <span class="sc">/</span> mile_to_100km <span class="sc">*</span> gallons_to_liter</span>
-<span id="cb29-7"><a></a>) <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(mpg, lper100km) <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">arrange</span>(lper100km)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a>gallons_to_liter <span class="ot">=</span>  <span class="fl">3.79</span></span>
+<span id="cb23-2"><a></a>mile_to_100km <span class="ot">=</span> <span class="fl">1.60934</span> <span class="sc">/</span><span class="dv">100</span></span>
+<span id="cb23-3"><a></a></span>
+<span id="cb23-4"><a></a>mtcars <span class="sc">|&gt;</span> </span>
+<span id="cb23-5"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb23-6"><a></a>    <span class="at">lper100km =</span> <span class="dv">1</span><span class="sc">/</span>mpg <span class="sc">/</span> mile_to_100km <span class="sc">*</span> gallons_to_liter</span>
+<span id="cb23-7"><a></a>) <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(mpg, lper100km) <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">arrange</span>(lper100km)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                     mpg lper100km
 Toyota Corolla      33.9  6.946911
@@ -471,12 +403,67 @@ Lincoln Continental 10.4 22.644256</code></pre>
 
 <section id="data-pronouns" class="title-slide slide level1 center">
 <h1>Data Pronouns</h1>
-<p><code>.data$x</code> is always the <code>x</code> variable in the data frame <code>.data</code></p>
-<p><code>.env$x</code> is always the <code>x</code> object in the environment <code>.env</code></p>
-<p>When data masking is used in programming, the expectation of <code>R CMD check</code> is that the ambiguity is resolved</p>
+<p><code>.data$x</code> is always the x variable in the data frame <code>.data</code></p>
+<p><code>.env$x</code> is always the x object in the environment <code>.env</code></p>
+<p>When data masking is used in programming, the expectation of R CMD check is that the ambiguity is resolved</p>
 <p>e.g.:</p>
 <pre><code>  ghc: no visible binding for global variable ‘cluster’</code></pre>
-<p>would be reolved by using <code>.data$cluster</code> in the code</p>
+<p>is resolved by using <code>.data$cluster</code> in the code (this introduces a dependence to the <code>rlang</code> package)</p>
+</section>
+
+<section id="your-turn-1" class="title-slide slide level1 center" data-background-color="#006666">
+<h1>Your Turn</h1>
+<p>Can we implement a function <code>my_select</code> now that works the same way as <code>dplyr::select</code>?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a></a>my_select <span class="ot">&lt;-</span> <span class="cf">function</span> (.data, ...) {</span>
+<span id="cb26-2"><a></a></span>
+<span id="cb26-3"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+<section id="section-2" class="title-slide slide level1 center">
+<h1></h1>
+<p>From <a href="https://adv-r.hadley.nz/evaluation.html#select">Advanced R</a></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a></a>select2 <span class="ot">&lt;-</span> <span class="cf">function</span>(data, ...) {</span>
+<span id="cb27-2"><a></a>  dots <span class="ot">&lt;-</span> <span class="fu">enquos</span>(...)</span>
+<span id="cb27-3"><a></a></span>
+<span id="cb27-4"><a></a>  vars <span class="ot">&lt;-</span> <span class="fu">as.list</span>(<span class="fu">set_names</span>(<span class="fu">seq_along</span>(data), <span class="fu">names</span>(data)))</span>
+<span id="cb27-5"><a></a>  cols <span class="ot">&lt;-</span> <span class="fu">unlist</span>(purrr<span class="sc">::</span><span class="fu">map</span>(dots, eval_tidy, vars))</span>
+<span id="cb27-6"><a></a></span>
+<span id="cb27-7"><a></a>  data[, cols, drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
+<span id="cb27-8"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<pre><code>select2(mtcars, 1:2, "wt", dplyr::starts_with("d"))</code></pre>
+<p>Still a no.</p>
+</section>
+
+<section id="my_select-with-a-cheat" class="title-slide slide level1 center">
+<h1><code>my_select</code> with a cheat</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a></a>my_select <span class="ot">&lt;-</span> <span class="cf">function</span> (.data, ...) {</span>
+<span id="cb29-2"><a></a>  vars <span class="ot">&lt;-</span> <span class="fu">enquos</span>(...)</span>
+<span id="cb29-3"><a></a>  </span>
+<span id="cb29-4"><a></a>  res <span class="ot">&lt;-</span> <span class="fu">lapply</span>(vars, <span class="at">FUN =</span> <span class="cf">function</span>(x) {</span>
+<span id="cb29-5"><a></a>    e <span class="ot">&lt;-</span> <span class="fu">get_expr</span>(x)</span>
+<span id="cb29-6"><a></a>    <span class="cf">if</span> (<span class="fu">is_symbol</span>(e)) e <span class="ot">&lt;-</span> <span class="fu">as_string</span>(e)</span>
+<span id="cb29-7"><a></a>    <span class="cf">if</span> (<span class="fu">is_call</span>(e)) e <span class="ot">&lt;-</span> tidyselect<span class="sc">::</span><span class="fu">eval_select</span>(e, <span class="at">data=</span>.data)</span>
+<span id="cb29-8"><a></a>    <span class="st">`</span><span class="at">[</span><span class="st">`</span>(.data, e) </span>
+<span id="cb29-9"><a></a>  }) <span class="sc">|&gt;</span> <span class="fu">data.frame</span>()</span>
+<span id="cb29-10"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a></a>mtcars <span class="sc">|&gt;</span> <span class="fu">my_select</span>(<span class="st">"mpg"</span>, cyl, <span class="dv">3</span>, tidyr<span class="sc">::</span><span class="fu">starts_with</span>(<span class="st">"d"</span>)) <span class="sc">|&gt;</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                   mpg cyl disp disp.1 drat
+Mazda RX4         21.0   6  160    160 3.90
+Mazda RX4 Wag     21.0   6  160    160 3.90
+Datsun 710        22.8   4  108    108 3.85
+Hornet 4 Drive    21.4   6  258    258 3.08
+Hornet Sportabout 18.7   8  360    360 3.15
+Valiant           18.1   6  225    225 2.76</code></pre>
+</div>
+</div>
 
 
 </section>
