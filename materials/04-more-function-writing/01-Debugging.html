@@ -9,8 +9,8 @@
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.7.32">
 
-  <meta name="dcterms.date" content="2026-02-24">
-  <title>Stat 451 – Tidy Evaluation</title>
+  <meta name="dcterms.date" content="2026-03-03">
+  <title>Stat 451 – Debugging</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -193,277 +193,172 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">Tidy Evaluation</h1>
+  <h1 class="title">Debugging</h1>
 
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-02-24</p>
+  <p class="date">2026-03-03</p>
 </section>
-<section id="tidy-evaluation-is-comprised-of" class="title-slide slide level1 center">
-<h1>Tidy Evaluation is comprised of</h1>
+<section id="debugging" class="title-slide slide level1 center">
+<h1>Debugging</h1>
+
+<img data-src="https://imgs.xkcd.com/comics/fixing_problems.png" class="r-stretch"><p><a href="https://xkcd.com/1739/">Fixing problems</a></p>
+</section>
+
+<section id="main-tools" class="title-slide slide level1 center">
+<h1>Main Tools</h1>
 <ul>
-<li><p>quasiquotation,</p></li>
-<li><p>quosures,</p></li>
-<li><p>and data masks</p></li>
+<li><code>traceback()</code> - the sequence of calls that led to the error
+<ul>
+<li>runs after you’ve gotten the error</li>
+</ul></li>
+<li>Setting breakpoints</li>
+<li><code>browser()</code> - open an interactive session at an arbitrary breakpoint
+<ul>
+<li>can be used to create conditional breakpoints</li>
+</ul></li>
+<li><code>debug()</code> - open an interactive session where the error occurred
+<ul>
+<li>RStudio has a <code>rerun with debug</code> option</li>
+</ul></li>
 </ul>
 </section>
 
-<section id="quosures" class="title-slide slide level1 center">
-<h1>Quosures</h1>
-<p>Idea: capture an expression with its environment (for later evaluation)</p>
+<section id="or-low-tech" class="title-slide slide level1 center">
+<h1>Or … low tech</h1>
 <ul>
-<li>functions <code>enquo</code> and <code>enquos</code> (and lesser used, <code>quo</code> and <code>quos</code>):</li>
+<li><code>print()</code> statements</li>
+<li>going line-by-line through the code interactively</li>
 </ul>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="fu">quo</span>(x <span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">*</span><span class="fu">exp</span>(<span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>&lt;quosure&gt;
-expr: ^x &lt;- 2 * exp(1)
-env:  global</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a>f <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">enquo</span>(x)</span>
-<span id="cb3-2"><a></a></span>
-<span id="cb3-3"><a></a><span class="fu">f</span>(a<span class="sc">+</span>b<span class="sc">+</span>d<span class="sc">/</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>&lt;quosure&gt;
-expr: ^a + b + d / 2
-env:  global</code></pre>
-</div>
-</div>
-<ul>
-<li>also: <code>new_quosure</code></li>
-</ul>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a>qu <span class="ot">&lt;-</span> <span class="fu">new_quosure</span>(<span class="fu">expr</span>(x<span class="sc">^</span><span class="dv">2</span><span class="sc">+</span>y), <span class="fu">env</span>(<span class="at">x =</span> <span class="dv">2</span>, <span class="at">y =</span> <span class="dv">1</span>))</span>
-<span id="cb5-2"><a></a>qu</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>&lt;quosure&gt;
-expr: ^x^2 + y
-env:  0x7fbda79ce780</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a><span class="fu">eval_tidy</span>(qu)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 5</code></pre>
-</div>
-</div>
+<p><br><br></p>
+<p>Useful References: - Chapters <a href="https://adv-r.hadley.nz/conditions.html">Condition handling</a> and <a href="https://adv-r.hadley.nz/debugging.html">Debugging</a> by Hadley Wickham - <a href="https://support.rstudio.com/hc/en-us/articles/205612627-Debugging-with-RStudio">RStudio Debugging Tools</a></p>
 </section>
 
-<section id="quosures-1" class="title-slide slide level1 center">
-<h1>Quosures</h1>
+<section id="first-go-to-when-you-get-an-unexpected-result" class="title-slide slide level1 center">
+<h1>First go to when you get an unexpected result</h1>
+<p>Placing output such as</p>
+<ul>
+<li><code>cat()</code></li>
+<li><code>str()</code></li>
+<li><code>head()</code></li>
+<li><code>summary()</code></li>
+<li><code>print()</code></li>
+</ul>
+<p>in strategic places in functions, are simple ways to build code up step-wise ensuring that each piece works (and figuring out where it fails)</p>
+</section>
+
+<section id="example-read-code" class="title-slide slide level1 center">
+<h1>Example: Read code</h1>
+<p>What does this function do? How does it work?</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a>f <span class="ot">&lt;-</span> <span class="cf">function</span>(...) {</span>
-<span id="cb9-2"><a></a>  x <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb9-3"><a></a>  <span class="fu">g</span>(..., <span class="at">f =</span> x)</span>
-<span id="cb9-4"><a></a>}</span>
-<span id="cb9-5"><a></a>g <span class="ot">&lt;-</span> <span class="cf">function</span>(...) {</span>
-<span id="cb9-6"><a></a>  <span class="fu">enquos</span>(...)</span>
-<span id="cb9-7"><a></a>}</span>
-<span id="cb9-8"><a></a></span>
-<span id="cb9-9"><a></a>x <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb9-10"><a></a>qs <span class="ot">&lt;-</span> <span class="fu">f</span>(<span class="at">global =</span> x)</span>
-<span id="cb9-11"><a></a>qs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>&lt;list_of&lt;quosure&gt;&gt;
-
-$global
-&lt;quosure&gt;
-expr: ^x
-env:  global
-
-$f
-&lt;quosure&gt;
-expr: ^x
-env:  0x7fbd87f03bd0</code></pre>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a>somefunction <span class="ot">&lt;-</span> <span class="cf">function</span> (...) </span>
+<span id="cb1-2"><a></a>{</span>
+<span id="cb1-3"><a></a>    k <span class="ot">&lt;-</span> <span class="fu">length</span>(ll <span class="ot">&lt;-</span> <span class="fu">list</span>(...))</span>
+<span id="cb1-4"><a></a>    <span class="cf">if</span> (k <span class="sc">==</span> <span class="dv">0</span>L) </span>
+<span id="cb1-5"><a></a>        <span class="fu">return</span>(<span class="fu">invisible</span>())</span>
+<span id="cb1-6"><a></a>    mc <span class="ot">&lt;-</span> <span class="fu">match.call</span>()</span>
+<span id="cb1-7"><a></a>    <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span>L<span class="sc">:</span>k) <span class="cf">if</span> (<span class="sc">!</span>(<span class="fu">is.logical</span>(r <span class="ot">&lt;-</span> ll[[i]]) <span class="sc">&amp;&amp;</span> <span class="sc">!</span><span class="fu">any</span>(<span class="fu">is.na</span>(r)) <span class="sc">&amp;&amp;</span> </span>
+<span id="cb1-8"><a></a>        <span class="fu">all</span>(r))) {</span>
+<span id="cb1-9"><a></a>        ch <span class="ot">&lt;-</span> <span class="fu">deparse</span>(mc[[i <span class="sc">+</span> <span class="dv">1</span>]], <span class="at">width.cutoff =</span> <span class="dv">60</span>L)</span>
+<span id="cb1-10"><a></a>        <span class="cf">if</span> (<span class="fu">length</span>(ch) <span class="sc">&gt;</span> <span class="dv">1</span>L) </span>
+<span id="cb1-11"><a></a>            ch <span class="ot">&lt;-</span> <span class="fu">paste</span>(ch[<span class="dv">1</span>L], <span class="st">"...."</span>)</span>
+<span id="cb1-12"><a></a>        <span class="fu">stop</span>(<span class="fu">paste</span>(ch, <span class="st">" is not "</span>, <span class="cf">if</span> (<span class="fu">length</span>(r) <span class="sc">&gt;</span> <span class="dv">1</span>L) </span>
+<span id="cb1-13"><a></a>            <span class="st">"all "</span>, <span class="st">"TRUE"</span>, <span class="at">sep =</span> <span class="st">""</span>), <span class="at">call. =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-14"><a></a>    }</span>
+<span id="cb1-15"><a></a>    <span class="fu">invisible</span>()</span>
+<span id="cb1-16"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<!-- precursor of the stopifnot function -->
+</section>
+
+<section id="step-by-step-code-checking" class="title-slide slide level1 center">
+<h1>Step-by-step code checking</h1>
+<p>The <code>browser()</code> function allows stepping through your code.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a><span class="fu">help</span>(browser)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li><p><code>n</code>= executes the next line of code</p></li>
+<li><p><code>s</code>= step into next line. Same as <code>n</code> except if the line is a function. Will step into function</p></li>
+<li><p><code>f</code> = finish execution of this loop</p></li>
+<li><p><code>c</code>= continue execution until the end of the function, and exit</p></li>
+<li><p><code>where</code> gives you the stack information, the trace of the active function calls</p></li>
+<li><p><code>Q</code> exits browser()</p></li>
+</ul>
+</section>
+
+<section id="lets-try-browser" class="title-slide slide level1 center">
+<h1>Let’s try browser()</h1>
+<p><code>somefunction2()</code> function has <code>browser()</code> in first line of function</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a>somefunction2 <span class="ot">&lt;-</span> <span class="cf">function</span> (...) </span>
+<span id="cb3-2"><a></a>{</span>
+<span id="cb3-3"><a></a>    <span class="fu">browser</span>()</span>
+<span id="cb3-4"><a></a>    k <span class="ot">&lt;-</span> <span class="fu">length</span>(ll <span class="ot">&lt;-</span> <span class="fu">list</span>(...))</span>
+<span id="cb3-5"><a></a>    <span class="cf">if</span> (k <span class="sc">==</span> <span class="dv">0</span>L) </span>
+<span id="cb3-6"><a></a>        <span class="fu">return</span>(<span class="fu">invisible</span>())</span>
+<span id="cb3-7"><a></a>    mc <span class="ot">&lt;-</span> <span class="fu">match.call</span>()</span>
+<span id="cb3-8"><a></a>    <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span>L<span class="sc">:</span>k) <span class="cf">if</span> (<span class="sc">!</span>(<span class="fu">is.logical</span>(r <span class="ot">&lt;-</span> ll[[i]]) <span class="sc">&amp;&amp;</span> <span class="sc">!</span><span class="fu">any</span>(<span class="fu">is.na</span>(r)) <span class="sc">&amp;&amp;</span> </span>
+<span id="cb3-9"><a></a>        <span class="fu">all</span>(r))) {</span>
+<span id="cb3-10"><a></a>        ch <span class="ot">&lt;-</span> <span class="fu">deparse</span>(mc[[i <span class="sc">+</span> <span class="dv">1</span>]], <span class="at">width.cutoff =</span> <span class="dv">60</span>L)</span>
+<span id="cb3-11"><a></a>        <span class="cf">if</span> (<span class="fu">length</span>(ch) <span class="sc">&gt;</span> <span class="dv">1</span>L) </span>
+<span id="cb3-12"><a></a>            ch <span class="ot">&lt;-</span> <span class="fu">paste</span>(ch[<span class="dv">1</span>L], <span class="st">"...."</span>)</span>
+<span id="cb3-13"><a></a>        <span class="fu">stop</span>(<span class="fu">paste</span>(ch, <span class="st">" is not "</span>, <span class="cf">if</span> (<span class="fu">length</span>(r) <span class="sc">&gt;</span> <span class="dv">1</span>L) </span>
+<span id="cb3-14"><a></a>            <span class="st">"all "</span>, <span class="st">"TRUE"</span>, <span class="at">sep =</span> <span class="st">""</span>), <span class="at">call. =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb3-15"><a></a>    }</span>
+<span id="cb3-16"><a></a>    <span class="fu">invisible</span>()</span>
+<span id="cb3-17"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 
 <section id="section" class="title-slide slide level1 center">
 <h1></h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a>q4 <span class="ot">&lt;-</span> <span class="fu">new_quosure</span>(<span class="fu">expr</span>(x <span class="sc">+</span> y <span class="sc">+</span> z))</span>
-<span id="cb11-2"><a></a></span>
-<span id="cb11-3"><a></a>q4</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>&lt;quosure&gt;
-expr: ^x + y + z
-env:  global</code></pre>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a>x <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb4-2"><a></a><span class="fu">somefunction2</span>(x<span class="sc">==</span>x, <span class="dv">1</span><span class="sc">+</span><span class="dv">1</span><span class="sc">==</span><span class="dv">2</span>, <span class="fu">c</span>(<span class="dv">7</span><span class="sc">+</span><span class="dv">5</span><span class="sc">==</span><span class="fl">11.99999</span>, <span class="dv">1</span><span class="sc">+</span><span class="dv">1</span><span class="sc">==</span><span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a>q4 <span class="sc">|&gt;</span> <span class="fu">get_expr</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>x + y + z</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a>q4 <span class="sc">|&gt;</span> <span class="fu">get_env</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>&lt;environment: R_GlobalEnv&gt;</code></pre>
-</div>
-</div>
+<p>Browser enables:</p>
+<ul>
+<li><p>printing of result of each line</p></li>
+<li><p>checking changes to values</p></li>
+<li><p>make sure that it results in what is expected</p></li>
+</ul>
 </section>
 
-<section id="your-turn" class="title-slide slide level1 center" data-background-color="#006666">
-<h1>Your Turn</h1>
-<p><a href="https://adv-r.hadley.nz/evaluation.html#exercises-62">From Advanced R</a>:</p>
-<ol type="1">
-<li>Predict what each of the following quosures will return if evaluated.</li>
-</ol>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a>x <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb17-2"><a></a>q1 <span class="ot">&lt;-</span> <span class="fu">new_quosure</span>(<span class="fu">expr</span>(x), <span class="fu">env</span>(<span class="at">x =</span> <span class="dv">1</span>))</span>
-<span id="cb17-3"><a></a>q2 <span class="ot">&lt;-</span> <span class="fu">new_quosure</span>(<span class="fu">expr</span>(x <span class="sc">+</span> <span class="sc">!!</span>q1), <span class="fu">env</span>(<span class="at">x =</span> <span class="dv">10</span>))</span>
-<span id="cb17-4"><a></a>q3 <span class="ot">&lt;-</span> <span class="fu">new_quosure</span>(x <span class="sc">+</span> <span class="fu">eval_tidy</span>(q2), <span class="fu">env</span>(<span class="at">x =</span> <span class="dv">100</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<ol start="2" type="1">
-<li>Write an <code>enenv()</code> function that captures the environment associated with an argument. (Hint: this should only require two function calls.)</li>
-</ol>
+<section id="debug" class="title-slide slide level1 center">
+<h1><code>debug()</code></h1>
+<ul>
+<li><p><code>debug(f)</code> <br> automatically places a <code>browser()</code> statement in the first line of function <code>f</code>, i.e.&nbsp;browser starts every time the function <code>f</code> is being executed</p></li>
+<li><p><code>undebug(f)</code> <br> removes it.</p></li>
+<li><p><code>debugonce(f)</code> <br> Convenient alternative: starts the browser the next time function <code>f</code> is being executed</p></li>
+</ul>
 </section>
 
-<section id="section-1" class="title-slide slide level1 center">
-<h1></h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a></a>enenv <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
-<span id="cb18-2"><a></a>  qu <span class="ot">&lt;-</span> <span class="fu">enquo</span>(x)</span>
-<span id="cb18-3"><a></a>  <span class="fu">get_env</span>(qu)</span>
-<span id="cb18-4"><a></a>}</span>
-<span id="cb18-5"><a></a></span>
-<span id="cb18-6"><a></a><span class="fu">enenv</span>(q3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>&lt;environment: R_GlobalEnv&gt;</code></pre>
-</div>
-</div>
+<section id="setting-error-handling" class="title-slide slide level1 center">
+<h1>Setting error handling</h1>
+<ul>
+<li><p><code>options(error=recover)</code> will drop user into <code>browser()</code> upon an error</p></li>
+<li><p><code>options(error=NULL)</code> default, do nothing</p></li>
+<li><p><code>options(warn=2)</code> sets maximum number of warnings to be 2</p></li>
+<li><p><code>options(warn=0)</code> warnings are stored until top level function finishes (default)</p></li>
+<li><p><code>options(warn=-1)</code> ignore all warnings</p></li>
+</ul>
 </section>
 
-<section id="data-masks" class="title-slide slide level1 center">
-<h1>Data Masks</h1>
-<p>Sometimes we are dealing with expressions that contain both variables (symbols from a data frame) and objects from an environment</p>
-<p>In evaluations we need to consider both the data frame and the environment</p>
-<p>The function eval_tidy has <code>data</code> as a third argument; if it is specified, it will be used first when evaluating expressions:</p>
+<section id="your-turn-fix-this" class="title-slide slide level1 center" data-background-color="#006666">
+<h1>Your Turn: fix this!!</h1>
+<p><code>larger(x,y)</code> is supposed to return the element-wise maximum of two vectors</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a></a><span class="fu">eval_tidy</span>(<span class="fu">expr</span>(mpg), <span class="at">data =</span> mtcars)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code> [1] 21.0 21.0 22.8 21.4 18.7 18.1 14.3 24.4 22.8 19.2 17.8 16.4 17.3 15.2 10.4
-[16] 10.4 14.7 32.4 30.4 33.9 21.5 15.5 15.2 13.3 19.2 27.3 26.0 30.4 15.8 19.7
-[31] 15.0 21.4</code></pre>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a>larger <span class="ot">&lt;-</span> <span class="cf">function</span>(x, y) { </span>
+<span id="cb5-2"><a></a>  y.is.bigger <span class="ot">&lt;-</span> y <span class="sc">&gt;</span> x </span>
+<span id="cb5-3"><a></a>    x[y.is.bigger] <span class="ot">&lt;-</span> y[y.is.bigger] </span>
+<span id="cb5-4"><a></a>    x</span>
+<span id="cb5-5"><a></a>} </span>
+<span id="cb5-6"><a></a><span class="fu">larger</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">10</span>), <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">11</span>)) </span>
+<span id="cb5-7"><a></a><span class="fu">larger</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">10</span>), <span class="dv">6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</div>
-</section>
-
-<section id="tidyverse-programming" class="title-slide slide level1 center">
-<h1>Tidyverse programming</h1>
-<p>Data masking introduces some ambiguity about the environment in which each object lives, e.g</p>
-<pre><code>1/mpg / mile_to_100km * gallons_to_liter</code></pre>
-<p>In the <code>.data</code> or in the parent environment <code>.env</code>?</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a>gallons_to_liter <span class="ot">=</span>  <span class="fl">3.79</span></span>
-<span id="cb23-2"><a></a>mile_to_100km <span class="ot">=</span> <span class="fl">1.60934</span> <span class="sc">/</span><span class="dv">100</span></span>
-<span id="cb23-3"><a></a></span>
-<span id="cb23-4"><a></a>mtcars <span class="sc">|&gt;</span> </span>
-<span id="cb23-5"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb23-6"><a></a>    <span class="at">lper100km =</span> <span class="dv">1</span><span class="sc">/</span>mpg <span class="sc">/</span> mile_to_100km <span class="sc">*</span> gallons_to_liter</span>
-<span id="cb23-7"><a></a>) <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(mpg, lper100km) <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">arrange</span>(lper100km)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>                     mpg lper100km
-Toyota Corolla      33.9  6.946911
-Fiat 128            32.4  7.268527
-Honda Civic         30.4  7.746719
-Lotus Europa        30.4  7.746719
-Fiat X1-9           27.3  8.626383
-Porsche 914-2       26.0  9.057703
-Merc 240D           24.4  9.651650
-Datsun 710          22.8 10.328959
-Merc 230            22.8 10.328959
-Toyota Corona       21.5 10.953501
-Hornet 4 Drive      21.4 11.004685
-Volvo 142E          21.4 11.004685
-Mazda RX4           21.0 11.214298
-Mazda RX4 Wag       21.0 11.214298
-Ferrari Dino        19.7 11.954328
-Merc 280            19.2 12.265639
-Pontiac Firebird    19.2 12.265639
-Hornet Sportabout   18.7 12.593597
-Valiant             18.1 13.011064
-Merc 280C           17.8 13.230352
-Merc 450SL          17.3 13.612732
-Merc 450SE          16.4 14.359772
-Ford Pantera L      15.8 14.905080
-Dodge Challenger    15.5 15.193566
-Merc 450SLC         15.2 15.493439
-AMC Javelin         15.2 15.493439
-Maserati Bora       15.0 15.700018
-Chrysler Imperial   14.7 16.020426
-Duster 360          14.3 16.468550
-Camaro Z28          13.3 17.706787
-Cadillac Fleetwood  10.4 22.644256
-Lincoln Continental 10.4 22.644256</code></pre>
-</div>
-</div>
-</section>
-
-<section id="data-pronouns" class="title-slide slide level1 center">
-<h1>Data Pronouns</h1>
-<p><code>.data$x</code> is always the x variable in the data frame <code>.data</code></p>
-<p><code>.env$x</code> is always the x object in the environment <code>.env</code></p>
-<p>When data masking is used in programming, the expectation of R CMD check is that the ambiguity is resolved</p>
-<p>e.g.:</p>
-<pre><code>  ghc: no visible binding for global variable ‘cluster’</code></pre>
-<p>is resolved by using <code>.data$cluster</code> in the code (this introduces a dependence to the <code>rlang</code> package)</p>
-</section>
-
-<section id="your-turn-1" class="title-slide slide level1 center" data-background-color="#006666">
-<h1>Your Turn</h1>
-<p>Can we implement a function <code>my_select</code> now that works the same way as <code>dplyr::select</code>?</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a></a>my_select <span class="ot">&lt;-</span> <span class="cf">function</span> (.data, ...) {</span>
-<span id="cb26-2"><a></a></span>
-<span id="cb26-3"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-
-<section id="section-2" class="title-slide slide level1 center">
-<h1></h1>
-<p>From <a href="https://adv-r.hadley.nz/evaluation.html#select">Advanced R</a></p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a></a>select2 <span class="ot">&lt;-</span> <span class="cf">function</span>(data, ...) {</span>
-<span id="cb27-2"><a></a>  dots <span class="ot">&lt;-</span> <span class="fu">enquos</span>(...)</span>
-<span id="cb27-3"><a></a></span>
-<span id="cb27-4"><a></a>  vars <span class="ot">&lt;-</span> <span class="fu">as.list</span>(<span class="fu">set_names</span>(<span class="fu">seq_along</span>(data), <span class="fu">names</span>(data)))</span>
-<span id="cb27-5"><a></a>  cols <span class="ot">&lt;-</span> <span class="fu">unlist</span>(purrr<span class="sc">::</span><span class="fu">map</span>(dots, eval_tidy, vars))</span>
-<span id="cb27-6"><a></a></span>
-<span id="cb27-7"><a></a>  data[, cols, drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
-<span id="cb27-8"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<pre><code>select2(mtcars, 1:2, "wt", dplyr::starts_with("d"))</code></pre>
-<p>Still a no.</p>
-</section>
-
-<section id="my_select-with-a-cheat" class="title-slide slide level1 center">
-<h1><code>my_select</code> with a cheat</h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a></a>my_select <span class="ot">&lt;-</span> <span class="cf">function</span> (.data, ...) {</span>
-<span id="cb29-2"><a></a>  vars <span class="ot">&lt;-</span> <span class="fu">enquos</span>(...)</span>
-<span id="cb29-3"><a></a>  </span>
-<span id="cb29-4"><a></a>  res <span class="ot">&lt;-</span> <span class="fu">lapply</span>(vars, <span class="at">FUN =</span> <span class="cf">function</span>(x) {</span>
-<span id="cb29-5"><a></a>    e <span class="ot">&lt;-</span> <span class="fu">get_expr</span>(x)</span>
-<span id="cb29-6"><a></a>    <span class="cf">if</span> (<span class="fu">is_symbol</span>(e)) e <span class="ot">&lt;-</span> <span class="fu">as_string</span>(e)</span>
-<span id="cb29-7"><a></a>    <span class="cf">if</span> (<span class="fu">is_call</span>(e)) e <span class="ot">&lt;-</span> tidyselect<span class="sc">::</span><span class="fu">eval_select</span>(e, <span class="at">data=</span>.data)</span>
-<span id="cb29-8"><a></a>    <span class="st">`</span><span class="at">[</span><span class="st">`</span>(.data, e) </span>
-<span id="cb29-9"><a></a>  }) <span class="sc">|&gt;</span> <span class="fu">data.frame</span>()</span>
-<span id="cb29-10"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a></a>mtcars <span class="sc">|&gt;</span> <span class="fu">my_select</span>(<span class="st">"mpg"</span>, cyl, <span class="dv">3</span>, tidyr<span class="sc">::</span><span class="fu">starts_with</span>(<span class="st">"d"</span>)) <span class="sc">|&gt;</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>                   mpg cyl disp disp.1 drat
-Mazda RX4         21.0   6  160    160 3.90
-Mazda RX4 Wag     21.0   6  160    160 3.90
-Datsun 710        22.8   4  108    108 3.85
-Hornet 4 Drive    21.4   6  258    258 3.08
-Hornet Sportabout 18.7   8  360    360 3.15
-Valiant           18.1   6  225    225 2.76</code></pre>
-</div>
-</div>
+<p>why is there an <code>NA</code> in the second example? It should be a 6. Figure out why this happens, and try to fix it.</p>
 
 
 </section>
