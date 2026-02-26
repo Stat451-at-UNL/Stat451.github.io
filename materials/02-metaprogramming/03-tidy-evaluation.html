@@ -9,7 +9,7 @@
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.7.32">
 
-  <meta name="dcterms.date" content="2026-02-24">
+  <meta name="dcterms.date" content="2026-02-26">
   <title>Stat 451 – Tidy Evaluation</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -198,7 +198,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-02-24</p>
+  <p class="date">2026-02-26</p>
 </section>
 <section id="tidy-evaluation-is-comprised-of" class="title-slide slide level1 center">
 <h1>Tidy Evaluation is comprised of</h1>
@@ -296,7 +296,11 @@ env:  global</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>x + y + z</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a>q4 <span class="sc">|&gt;</span> <span class="fu">get_env</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a>q4 <span class="sc">|&gt;</span> <span class="fu">get_expr</span>() <span class="sc">|&gt;</span> <span class="fu">expr_text</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "x + y + z"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a>q4 <span class="sc">|&gt;</span> <span class="fu">get_env</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;environment: R_GlobalEnv&gt;</code></pre>
 </div>
@@ -310,10 +314,10 @@ env:  global</code></pre>
 <li>Predict what each of the following quosures will return if evaluated.</li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a>x <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb17-2"><a></a>q1 <span class="ot">&lt;-</span> <span class="fu">new_quosure</span>(<span class="fu">expr</span>(x), <span class="fu">env</span>(<span class="at">x =</span> <span class="dv">1</span>))</span>
-<span id="cb17-3"><a></a>q2 <span class="ot">&lt;-</span> <span class="fu">new_quosure</span>(<span class="fu">expr</span>(x <span class="sc">+</span> <span class="sc">!!</span>q1), <span class="fu">env</span>(<span class="at">x =</span> <span class="dv">10</span>))</span>
-<span id="cb17-4"><a></a>q3 <span class="ot">&lt;-</span> <span class="fu">new_quosure</span>(x <span class="sc">+</span> <span class="fu">eval_tidy</span>(q2), <span class="fu">env</span>(<span class="at">x =</span> <span class="dv">100</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a>x <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb19-2"><a></a>q1 <span class="ot">&lt;-</span> <span class="fu">new_quosure</span>(<span class="fu">expr</span>(x), <span class="fu">env</span>(<span class="at">x =</span> <span class="dv">1</span>))</span>
+<span id="cb19-3"><a></a>q2 <span class="ot">&lt;-</span> <span class="fu">new_quosure</span>(<span class="fu">expr</span>(x <span class="sc">+</span> <span class="sc">!!</span>q1), <span class="fu">env</span>(<span class="at">x =</span> <span class="dv">10</span>))</span>
+<span id="cb19-4"><a></a>q3 <span class="ot">&lt;-</span> <span class="fu">new_quosure</span>(x <span class="sc">+</span> <span class="fu">eval_tidy</span>(q2), <span class="fu">env</span>(<span class="at">x =</span> <span class="dv">100</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ol start="2" type="1">
 <li>Write an <code>enenv()</code> function that captures the environment associated with an argument. (Hint: this should only require two function calls.)</li>
@@ -323,12 +327,12 @@ env:  global</code></pre>
 <section id="section-1" class="title-slide slide level1 center">
 <h1></h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a></a>enenv <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
-<span id="cb18-2"><a></a>  qu <span class="ot">&lt;-</span> <span class="fu">enquo</span>(x)</span>
-<span id="cb18-3"><a></a>  <span class="fu">get_env</span>(qu)</span>
-<span id="cb18-4"><a></a>}</span>
-<span id="cb18-5"><a></a></span>
-<span id="cb18-6"><a></a><span class="fu">enenv</span>(q3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a></a>enenv <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb20-2"><a></a>  qu <span class="ot">&lt;-</span> <span class="fu">enquo</span>(x)</span>
+<span id="cb20-3"><a></a>  <span class="fu">get_env</span>(qu)</span>
+<span id="cb20-4"><a></a>}</span>
+<span id="cb20-5"><a></a></span>
+<span id="cb20-6"><a></a><span class="fu">enenv</span>(q3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;environment: R_GlobalEnv&gt;</code></pre>
 </div>
@@ -341,7 +345,7 @@ env:  global</code></pre>
 <p>In evaluations we need to consider both the data frame and the environment</p>
 <p>The function eval_tidy has <code>data</code> as a third argument; if it is specified, it will be used first when evaluating expressions:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a></a><span class="fu">eval_tidy</span>(<span class="fu">expr</span>(mpg), <span class="at">data =</span> mtcars)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a></a><span class="fu">eval_tidy</span>(<span class="fu">expr</span>(mpg), <span class="at">data =</span> mtcars)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] 21.0 21.0 22.8 21.4 18.7 18.1 14.3 24.4 22.8 19.2 17.8 16.4 17.3 15.2 10.4
 [16] 10.4 14.7 32.4 30.4 33.9 21.5 15.5 15.2 13.3 19.2 27.3 26.0 30.4 15.8 19.7
@@ -356,13 +360,13 @@ env:  global</code></pre>
 <pre><code>1/mpg / mile_to_100km * gallons_to_liter</code></pre>
 <p>In the <code>.data</code> or in the parent environment <code>.env</code>?</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a>gallons_to_liter <span class="ot">=</span>  <span class="fl">3.79</span></span>
-<span id="cb23-2"><a></a>mile_to_100km <span class="ot">=</span> <span class="fl">1.60934</span> <span class="sc">/</span><span class="dv">100</span></span>
-<span id="cb23-3"><a></a></span>
-<span id="cb23-4"><a></a>mtcars <span class="sc">|&gt;</span> </span>
-<span id="cb23-5"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb23-6"><a></a>    <span class="at">lper100km =</span> <span class="dv">1</span><span class="sc">/</span>mpg <span class="sc">/</span> mile_to_100km <span class="sc">*</span> gallons_to_liter</span>
-<span id="cb23-7"><a></a>) <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(mpg, lper100km) <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">arrange</span>(lper100km)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a></a>gallons_to_liter <span class="ot">=</span>  <span class="fl">3.79</span></span>
+<span id="cb25-2"><a></a>mile_to_100km <span class="ot">=</span> <span class="fl">1.60934</span> <span class="sc">/</span><span class="dv">100</span></span>
+<span id="cb25-3"><a></a></span>
+<span id="cb25-4"><a></a>mtcars <span class="sc">|&gt;</span> </span>
+<span id="cb25-5"><a></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb25-6"><a></a>    <span class="at">lper100km =</span> <span class="dv">1</span><span class="sc">/</span>mpg <span class="sc">/</span> mile_to_100km <span class="sc">*</span> gallons_to_liter</span>
+<span id="cb25-7"><a></a>) <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(mpg, lper100km) <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">arrange</span>(lper100km)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                     mpg lper100km
 Toyota Corolla      33.9  6.946911
@@ -415,9 +419,9 @@ Lincoln Continental 10.4 22.644256</code></pre>
 <h1>Your Turn</h1>
 <p>Can we implement a function <code>my_select</code> now that works the same way as <code>dplyr::select</code>?</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a></a>my_select <span class="ot">&lt;-</span> <span class="cf">function</span> (.data, ...) {</span>
-<span id="cb26-2"><a></a></span>
-<span id="cb26-3"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a></a>my_select <span class="ot">&lt;-</span> <span class="cf">function</span> (.data, ...) {</span>
+<span id="cb28-2"><a></a></span>
+<span id="cb28-3"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 
@@ -425,14 +429,14 @@ Lincoln Continental 10.4 22.644256</code></pre>
 <h1></h1>
 <p>From <a href="https://adv-r.hadley.nz/evaluation.html#select">Advanced R</a></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a></a>select2 <span class="ot">&lt;-</span> <span class="cf">function</span>(data, ...) {</span>
-<span id="cb27-2"><a></a>  dots <span class="ot">&lt;-</span> <span class="fu">enquos</span>(...)</span>
-<span id="cb27-3"><a></a></span>
-<span id="cb27-4"><a></a>  vars <span class="ot">&lt;-</span> <span class="fu">as.list</span>(<span class="fu">set_names</span>(<span class="fu">seq_along</span>(data), <span class="fu">names</span>(data)))</span>
-<span id="cb27-5"><a></a>  cols <span class="ot">&lt;-</span> <span class="fu">unlist</span>(purrr<span class="sc">::</span><span class="fu">map</span>(dots, eval_tidy, vars))</span>
-<span id="cb27-6"><a></a></span>
-<span id="cb27-7"><a></a>  data[, cols, drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
-<span id="cb27-8"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a></a>select2 <span class="ot">&lt;-</span> <span class="cf">function</span>(data, ...) {</span>
+<span id="cb29-2"><a></a>  dots <span class="ot">&lt;-</span> <span class="fu">enquos</span>(...)</span>
+<span id="cb29-3"><a></a></span>
+<span id="cb29-4"><a></a>  vars <span class="ot">&lt;-</span> <span class="fu">as.list</span>(<span class="fu">set_names</span>(<span class="fu">seq_along</span>(data), <span class="fu">names</span>(data)))</span>
+<span id="cb29-5"><a></a>  cols <span class="ot">&lt;-</span> <span class="fu">unlist</span>(purrr<span class="sc">::</span><span class="fu">map</span>(dots, eval_tidy, vars))</span>
+<span id="cb29-6"><a></a></span>
+<span id="cb29-7"><a></a>  data[, cols, drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
+<span id="cb29-8"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <pre><code>select2(mtcars, 1:2, "wt", dplyr::starts_with("d"))</code></pre>
 <p>Still a no.</p>
@@ -441,19 +445,19 @@ Lincoln Continental 10.4 22.644256</code></pre>
 <section id="my_select-with-a-cheat" class="title-slide slide level1 center">
 <h1><code>my_select</code> with a cheat</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a></a>my_select <span class="ot">&lt;-</span> <span class="cf">function</span> (.data, ...) {</span>
-<span id="cb29-2"><a></a>  vars <span class="ot">&lt;-</span> <span class="fu">enquos</span>(...)</span>
-<span id="cb29-3"><a></a>  </span>
-<span id="cb29-4"><a></a>  res <span class="ot">&lt;-</span> <span class="fu">lapply</span>(vars, <span class="at">FUN =</span> <span class="cf">function</span>(x) {</span>
-<span id="cb29-5"><a></a>    e <span class="ot">&lt;-</span> <span class="fu">get_expr</span>(x)</span>
-<span id="cb29-6"><a></a>    <span class="cf">if</span> (<span class="fu">is_symbol</span>(e)) e <span class="ot">&lt;-</span> <span class="fu">as_string</span>(e)</span>
-<span id="cb29-7"><a></a>    <span class="cf">if</span> (<span class="fu">is_call</span>(e)) e <span class="ot">&lt;-</span> tidyselect<span class="sc">::</span><span class="fu">eval_select</span>(e, <span class="at">data=</span>.data)</span>
-<span id="cb29-8"><a></a>    <span class="st">`</span><span class="at">[</span><span class="st">`</span>(.data, e) </span>
-<span id="cb29-9"><a></a>  }) <span class="sc">|&gt;</span> <span class="fu">data.frame</span>()</span>
-<span id="cb29-10"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a></a>my_select <span class="ot">&lt;-</span> <span class="cf">function</span> (.data, ...) {</span>
+<span id="cb31-2"><a></a>  vars <span class="ot">&lt;-</span> <span class="fu">enquos</span>(...)</span>
+<span id="cb31-3"><a></a>  </span>
+<span id="cb31-4"><a></a>  res <span class="ot">&lt;-</span> <span class="fu">lapply</span>(vars, <span class="at">FUN =</span> <span class="cf">function</span>(x) {</span>
+<span id="cb31-5"><a></a>    e <span class="ot">&lt;-</span> <span class="fu">get_expr</span>(x)</span>
+<span id="cb31-6"><a></a>    <span class="cf">if</span> (<span class="fu">is_symbol</span>(e)) e <span class="ot">&lt;-</span> <span class="fu">as_string</span>(e)</span>
+<span id="cb31-7"><a></a>    <span class="cf">if</span> (<span class="fu">is_call</span>(e)) e <span class="ot">&lt;-</span> tidyselect<span class="sc">::</span><span class="fu">eval_select</span>(e, <span class="at">data=</span>.data)</span>
+<span id="cb31-8"><a></a>    <span class="st">`</span><span class="at">[</span><span class="st">`</span>(.data, e) </span>
+<span id="cb31-9"><a></a>  }) <span class="sc">|&gt;</span> <span class="fu">data.frame</span>()</span>
+<span id="cb31-10"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a></a>mtcars <span class="sc">|&gt;</span> <span class="fu">my_select</span>(<span class="st">"mpg"</span>, cyl, <span class="dv">3</span>, tidyr<span class="sc">::</span><span class="fu">starts_with</span>(<span class="st">"d"</span>)) <span class="sc">|&gt;</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a></a>mtcars <span class="sc">|&gt;</span> <span class="fu">my_select</span>(<span class="st">"mpg"</span>, cyl, <span class="dv">3</span>, tidyr<span class="sc">::</span><span class="fu">starts_with</span>(<span class="st">"d"</span>)) <span class="sc">|&gt;</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                   mpg cyl disp disp.1 drat
 Mazda RX4         21.0   6  160    160 3.90
