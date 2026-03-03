@@ -28,6 +28,72 @@
       margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
       vertical-align: middle;
     }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
   <link rel="stylesheet" href="../../site_libs/revealjs/dist/theme/quarto-f563837468303362081e247dddd440d0.css">
   <link href="../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
@@ -134,18 +200,221 @@
 
   <p class="date">2026-03-05</p>
 </section>
-<section id="more-function-writing" class="title-slide slide level1 center">
-<h1>More function writing</h1>
-<p>Dealing with errors:</p>
+<section id="writing-code-for-easy-debugging" class="title-slide slide level1 center">
+<h1>Writing Code for Easy Debugging</h1>
+<ol type="1">
+<li><p>Format your code well (<code>styler</code> package is useful)</p></li>
+<li><p>Leave comments</p>
 <ul>
-<li>Debugging</li>
-<li>Error handling</li>
-</ul>
-<p>Defensive programming:</p>
+<li><p>describe what the code is supposed to be doing</p></li>
+<li><p>what the input is supposed to be</p></li>
+<li><p>what the output should look like<br>
+…For each functional unit of code</p></li>
+</ul></li>
+<li><p>Check inputs and verify outputs</p>
 <ul>
-<li>Assertions</li>
-<li>unit testing</li>
+<li><p><code>stopifnot()</code> in base R</p></li>
+<li><p><code>assertthat</code> package (https://github.com/hadley/assertthat)</p>
+<ul>
+<li>error signaling, input validation, better error messages</li>
+</ul></li>
+<li><p><code>checkmate</code> package (https://github.com/mllg/checkmate)</p>
+<ul>
+<li>fast and concise input validation</li>
+</ul></li>
+</ul></li>
+</ol>
+</section>
+
+<section id="assertthat" class="title-slide slide level1 center">
+<h1><code>assertthat</code></h1>
+<p>Compare the error messages:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="fu">stopifnot</span>(<span class="fu">is.character</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>))</span>
+<span id="cb1-2"><a></a></span>
+<span id="cb1-3"><a></a></span>
+<span id="cb1-4"><a></a><span class="fu">library</span>(assertthat)</span>
+<span id="cb1-5"><a></a><span class="fu">assert_that</span>(<span class="fu">is.character</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+<section id="other-assertthat-functions" class="title-slide slide level1 center">
+<h1>Other <code>assertthat</code> functions</h1>
+<table class="caption-top">
+<colgroup>
+<col style="width: 53%">
+<col style="width: 46%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>function</th>
+<th>purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>is.flag(x)</code></td>
+<td>is <code>x</code> <code>TRUE</code> or <code>FALSE</code>? (a boolean flag)</td>
+</tr>
+<tr class="even">
+<td><code>is.string(x)</code></td>
+<td>is <code>x</code> a length 1 character vector?</td>
+</tr>
+<tr class="odd">
+<td><code>has_name(x, nm)</code></td>
+<td>does <code>x</code> have a component named <code>nm</code>?</td>
+</tr>
+<tr class="even">
+<td><code>has_attr(x, attr)</code></td>
+<td>does <code>x</code> have attribute <code>attr</code>?</td>
+</tr>
+<tr class="odd">
+<td><code>is.count(x)</code></td>
+<td>is <code>x</code> a single positive integer?</td>
+</tr>
+<tr class="even">
+<td><code>not_empty(x)</code></td>
+<td>are all dimensions of <code>x</code> greater than 0?</td>
+</tr>
+<tr class="odd">
+<td><code>noNA(x)</code></td>
+<td>is <code>x</code> free from missing values?</td>
+</tr>
+<tr class="even">
+<td><code>is.dir(path)</code></td>
+<td>is <code>path</code> a directory?</td>
+</tr>
+<tr class="odd">
+<td><code>is.writeable(path)</code></td>
+<td>is <code>path</code> writeable?</td>
+</tr>
+<tr class="even">
+<td><code>is.readable(path)</code></td>
+<td>is <code>path</code> readable?</td>
+</tr>
+<tr class="odd">
+<td><code>has_extension(path, ext)</code></td>
+<td>does <code>file</code> have the specified extension <code>ext</code>?</td>
+</tr>
+</tbody>
+</table>
+</section>
+
+<section id="your-turn" class="title-slide slide level1 center">
+<h1>Your Turn</h1>
+<p>Use <code>assertthat</code> functions to check inputs and output for the col_means function, ensuring that they make sense.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a>col_means <span class="ot">&lt;-</span> <span class="cf">function</span>(df) {</span>
+<span id="cb2-2"><a></a>  numeric <span class="ot">&lt;-</span> <span class="fu">sapply</span>(df, is.numeric)</span>
+<span id="cb2-3"><a></a>  numeric_cols <span class="ot">&lt;-</span> df[, numeric]</span>
+<span id="cb2-4"><a></a></span>
+<span id="cb2-5"><a></a>  <span class="fu">data.frame</span>(<span class="fu">lapply</span>(numeric_cols, mean))</span>
+<span id="cb2-6"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+<section id="section" class="title-slide slide level1 center">
+<h1></h1>
+<p>This is not an exhaustive list of checks…</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a><span class="fu">library</span>(assertthat)</span>
+<span id="cb3-2"><a></a></span>
+<span id="cb3-3"><a></a>col_means <span class="ot">&lt;-</span> <span class="cf">function</span>(df) {</span>
+<span id="cb3-4"><a></a>  <span class="fu">assert_that</span>(</span>
+<span id="cb3-5"><a></a>    <span class="fu">is.data.frame</span>(df), <span class="co"># Check input is a data frame</span></span>
+<span id="cb3-6"><a></a>    <span class="fu">not_empty</span>(df) <span class="co"># Check that df has at least one row and column</span></span>
+<span id="cb3-7"><a></a>  )</span>
+<span id="cb3-8"><a></a>  numeric <span class="ot">&lt;-</span> <span class="fu">sapply</span>(df, is.numeric)</span>
+<span id="cb3-9"><a></a>  <span class="fu">assert_that</span>(<span class="fu">length</span>(numeric) <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="co"># &gt;= one numeric column</span></span>
+<span id="cb3-10"><a></a>  </span>
+<span id="cb3-11"><a></a>  numeric_cols <span class="ot">&lt;-</span> df[, numeric]</span>
+<span id="cb3-12"><a></a>  <span class="co"># ensure numeric_cols has at least one row and column</span></span>
+<span id="cb3-13"><a></a>  <span class="fu">assert_that</span>(<span class="fu">length</span>(<span class="fu">dim</span>(numeric)) <span class="sc">==</span> <span class="dv">2</span>) </span>
+<span id="cb3-14"><a></a>  list_res <span class="ot">&lt;-</span> <span class="fu">lapply</span>(numeric_cols, mean)</span>
+<span id="cb3-15"><a></a>  res <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(list_res)</span>
+<span id="cb3-16"><a></a>  <span class="fu">assert_that</span>(</span>
+<span id="cb3-17"><a></a>    <span class="fu">is.data.frame</span>(res), <span class="co"># output is data frame</span></span>
+<span id="cb3-18"><a></a>    <span class="fu">are_equal</span>(<span class="fu">ncol</span>(res), <span class="fu">length</span>(numeric_cols)) <span class="co"># correct # cols</span></span>
+<span id="cb3-19"><a></a>  )</span>
+<span id="cb3-20"><a></a>  </span>
+<span id="cb3-21"><a></a>  res</span>
+<span id="cb3-22"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+<section id="checkmate" class="title-slide slide level1 center">
+<h1><code>checkmate</code></h1>
+<p>Package <code>checkmate</code> implements assertions and checks for speedy evalution …</p>
+<p>Goals:</p>
+<ul>
+<li><p>Faster (C backend)</p></li>
+<li><p>Better memory handling - no intermediate objects created</p></li>
+<li><p>Single call to check e.g.&nbsp;length, missingness, and lower/upper bounds (more concise)</p></li>
 </ul>
+<p>(Preview…) Also interfaces with <code>testthat</code> for unit tests.</p>
+</section>
+
+<section id="checkmate-1" class="title-slide slide level1 center">
+<h1><code>checkmate</code></h1>
+<ul>
+<li><p><code>assert*</code> : single statement to check type, length, type-specific attrs<br>
+also <code>assert_*</code> if you prefer that syntax</p>
+<ul>
+<li><p>Throw an error if the check fails</p></li>
+<li><p>Checked object returned invisibly on success</p>
+<ul>
+<li>can be used with pipes!</li>
+</ul></li>
+</ul></li>
+<li><p><code>test*</code> return TRUE or FALSE - best used to combine different checks</p></li>
+<li><p><code>expect*</code> functions to be used in unit tests</p></li>
+<li><p><code>check*</code> functions</p>
+<ul>
+<li><p>return error message as a string if the conditions fail</p></li>
+<li><p>return TRUE otherwise</p></li>
+<li><p>used in <code>assert*</code>, <code>test*</code>, <code>expect*</code> functions</p></li>
+</ul></li>
+</ul>
+</section>
+
+<section id="your-turn-1" class="title-slide slide level1 center">
+<h1>Your Turn</h1>
+<p>Use <code>checkmate</code> functions to check inputs and output for the <code>col_means</code> function, ensuring that they make sense.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a>col_means <span class="ot">&lt;-</span> <span class="cf">function</span>(df) {</span>
+<span id="cb4-2"><a></a>  numeric <span class="ot">&lt;-</span> <span class="fu">sapply</span>(df, is.numeric)</span>
+<span id="cb4-3"><a></a>  numeric_cols <span class="ot">&lt;-</span> df[, numeric]</span>
+<span id="cb4-4"><a></a></span>
+<span id="cb4-5"><a></a>  <span class="fu">data.frame</span>(<span class="fu">lapply</span>(numeric_cols, mean))</span>
+<span id="cb4-6"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+<section id="section-1" class="title-slide slide level1 center">
+<h1></h1>
+<p>This is not an exhaustive list of checks…</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a><span class="fu">library</span>(checkmate)</span>
+<span id="cb5-2"><a></a></span>
+<span id="cb5-3"><a></a>col_means <span class="ot">&lt;-</span> <span class="cf">function</span>(df) {</span>
+<span id="cb5-4"><a></a>  <span class="fu">assert_data_frame</span>(df, <span class="at">min.rows =</span> <span class="dv">1</span>, <span class="at">min.cols =</span> <span class="dv">1</span>) <span class="co"># Check input is a data frame</span></span>
+<span id="cb5-5"><a></a>  </span>
+<span id="cb5-6"><a></a>  numeric <span class="ot">&lt;-</span> <span class="fu">sapply</span>(df, is.numeric)</span>
+<span id="cb5-7"><a></a>  <span class="fu">assert_atomic_vector</span>(numeric, <span class="at">min.len =</span> <span class="dv">1</span>) <span class="co"># &gt;= one numeric col</span></span>
+<span id="cb5-8"><a></a>  </span>
+<span id="cb5-9"><a></a>  numeric_cols <span class="ot">&lt;-</span> df[, numeric]</span>
+<span id="cb5-10"><a></a>  <span class="fu">assert_data_frame</span>(df, <span class="at">min.rows =</span> <span class="dv">1</span>, <span class="at">min.cols =</span> <span class="dv">1</span>) <span class="co"># numeric_cols is a data frame</span></span>
+<span id="cb5-11"><a></a>  </span>
+<span id="cb5-12"><a></a>  list_res <span class="ot">&lt;-</span> <span class="fu">lapply</span>(numeric_cols, mean)</span>
+<span id="cb5-13"><a></a>  res <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(list_res)</span>
+<span id="cb5-14"><a></a>  <span class="fu">assert_data_frame</span>(</span>
+<span id="cb5-15"><a></a>    res, <span class="co"># output is data frame</span></span>
+<span id="cb5-16"><a></a>    <span class="at">ncols =</span> <span class="fu">length</span>(numeric_cols) <span class="co"># correct # cols</span></span>
+<span id="cb5-17"><a></a>  ) </span>
+<span id="cb5-18"><a></a>  </span>
+<span id="cb5-19"><a></a>  res</span>
+<span id="cb5-20"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 
 
 </section>
