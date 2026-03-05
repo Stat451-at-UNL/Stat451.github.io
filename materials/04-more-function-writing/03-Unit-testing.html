@@ -10,7 +10,7 @@
   <meta name="generator" content="quarto-1.7.32">
 
   <meta name="dcterms.date" content="2026-03-05">
-  <title>Stat 451 – Error handling and Assertions</title>
+  <title>Stat 451 – Unit Testing</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -193,228 +193,334 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">Error handling and Assertions</h1>
+  <h1 class="title">Unit Testing</h1>
 
 <div class="quarto-title-authors">
 </div>
 
   <p class="date">2026-03-05</p>
 </section>
-<section id="writing-code-for-easy-debugging" class="title-slide slide level1 center">
-<h1>Writing Code for Easy Debugging</h1>
+<section id="outline" class="title-slide slide level1 center">
+<h1>Outline</h1>
+<ul>
+<li><p>Motivation</p></li>
+<li><p>Automated Testing and Unit Tests</p></li>
+<li><p>Testing Functions in R with <code>testthat</code></p></li>
+<li><p>Coverage</p></li>
+<li><p>Package Checks</p></li>
+</ul>
+</section>
+
+<section id="informal-testing" class="title-slide slide level1 center">
+<h1>Informal Testing</h1>
+<ul>
+<li><p>testing is part of function writing</p></li>
+<li><p>sometimes we forget to test a special case</p></li>
+<li><p>also: functions can create side effects and introduce new errors</p></li>
+</ul>
+</section>
+
+<section id="automate-testing-with-unit-tests" class="title-slide slide level1 center">
+<h1>Automate Testing with Unit Tests</h1>
+<ul>
+<li><p>Unit tests are tests that evaluate one feature of a function</p></li>
+<li><p>run automatically after you make changes to the code</p></li>
+<li><p>Unit tests are one part of the larger framework of <em>Test Driven Development</em></p></li>
+</ul>
+</section>
+
+<section id="test-driven-development" class="title-slide slide level1 center">
+<h1>Test Driven Development</h1>
+<p><em>Test Driven Development</em> is an approach to programming where the unit tests are written before the actual code:</p>
+<ul>
+<li><p>Requirements are decided in advance</p></li>
+<li><p>Code must meet the requirements (and only the requirements)</p></li>
+</ul>
+</section>
+
+<section id="why-use-unit-tests" class="title-slide slide level1 smaller center">
+<h1>Why use unit tests?</h1>
+<p>For a bit of extra work, you get:</p>
+<ul>
+<li>Fewer bugs
+<ul>
+<li>Essential functions are tested and issues are caught quickly</li>
+<li>Visual confirmation that essential features are working</li>
+<li>When debugging, write a test to pinpoint the bug (and stop it from reoccurring)</li>
+</ul></li>
+<li>Better code structure
+<ul>
+<li>Modular code: do only one thing per function</li>
+<li>Document functions as you write them to satisfy tests</li>
+</ul></li>
+<li>Robust code
+<ul>
+<li>make big changes quickly and without downstream problems</li>
+<li>Any changes that break things should be caught with tests</li>
+</ul></li>
+<li>(in theory) Easier to start after a break:<br>
+pick up at the last failed test and write code to satisfy that test</li>
+</ul>
+</section>
+
+<section id="tools-testthat" class="title-slide slide level1 center">
+<h1>Tools: <code>testthat</code></h1>
+<p><code>testthat</code>: unit testing for R packages</p>
+<ul>
+<li><p>structured R package testing</p></li>
+<li><p>provides functions to set up and tear down testing environments</p></li>
+<li><p>runs each set of tests in a clean environment</p></li>
+<li><p>reports whether each test passes or fails</p></li>
+</ul>
+</section>
+
+<section id="tools-usethis" class="title-slide slide level1 center">
+<h1>Tools: <code>usethis</code></h1>
+<p><code>usethis</code>: helper functions for R package development</p>
+<ul>
+<li><p>set up <code>testthat</code> for your package: <code>usethis::use_testthat()</code></p></li>
+<li><p>create new test files: <code>usethis::use_test("test1")</code> creates a new test file</p></li>
+</ul>
+<p><br> Note: <code>testthat</code> works with packages. <a href="https://github.com/r-lib/testthat/issues/659">This github issue</a> has a good discussion of testing outside of the package framework</p>
+</section>
+
+<section id="package-testing-workflow" class="title-slide slide level1 center">
+<h1>Package Testing Workflow</h1>
 <ol type="1">
-<li><p>Format your code well (<code>styler</code> package is useful)</p></li>
-<li><p>Leave comments</p>
-<ul>
-<li><p>describe what the code is supposed to be doing</p></li>
-<li><p>what the input is supposed to be</p></li>
-<li><p>what the output should look like<br>
-…For each functional unit of code</p></li>
-</ul></li>
-<li><p>Check inputs and verify outputs</p>
-<ul>
-<li><p><code>stopifnot()</code> in base R</p></li>
-<li><p><code>assertthat</code> package (https://github.com/hadley/assertthat)</p>
-<ul>
-<li>error signaling, input validation, better error messages</li>
-</ul></li>
-<li><p><code>checkmate</code> package (https://github.com/mllg/checkmate)</p>
-<ul>
-<li>fast and concise input validation</li>
-</ul></li>
-</ul></li>
+<li><p>Modify your code or tests</p></li>
+<li><p>Test your package (<code>Ctrl/CMD - Shift - T</code>)</p></li>
+<li><p>Repeat until all tests pass</p></li>
 </ol>
-</section>
-
-<section id="assertthat" class="title-slide slide level1 center">
-<h1><code>assertthat</code></h1>
-<p>Compare the error messages:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="fu">stopifnot</span>(<span class="fu">is.character</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>))</span>
-<span id="cb1-2"><a></a></span>
-<span id="cb1-3"><a></a></span>
-<span id="cb1-4"><a></a><span class="fu">library</span>(assertthat)</span>
-<span id="cb1-5"><a></a><span class="fu">assert_that</span>(<span class="fu">is.character</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-
-<section id="other-assertthat-functions" class="title-slide slide level1 center">
-<h1>Other <code>assertthat</code> functions</h1>
-<table class="caption-top">
-<colgroup>
-<col style="width: 53%">
-<col style="width: 46%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>function</th>
-<th>purpose</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>is.flag(x)</code></td>
-<td>is <code>x</code> <code>TRUE</code> or <code>FALSE</code>? (a boolean flag)</td>
-</tr>
-<tr class="even">
-<td><code>is.string(x)</code></td>
-<td>is <code>x</code> a length 1 character vector?</td>
-</tr>
-<tr class="odd">
-<td><code>has_name(x, nm)</code></td>
-<td>does <code>x</code> have a component named <code>nm</code>?</td>
-</tr>
-<tr class="even">
-<td><code>has_attr(x, attr)</code></td>
-<td>does <code>x</code> have attribute <code>attr</code>?</td>
-</tr>
-<tr class="odd">
-<td><code>is.count(x)</code></td>
-<td>is <code>x</code> a single positive integer?</td>
-</tr>
-<tr class="even">
-<td><code>not_empty(x)</code></td>
-<td>are all dimensions of <code>x</code> greater than 0?</td>
-</tr>
-<tr class="odd">
-<td><code>noNA(x)</code></td>
-<td>is <code>x</code> free from missing values?</td>
-</tr>
-<tr class="even">
-<td><code>is.dir(path)</code></td>
-<td>is <code>path</code> a directory?</td>
-</tr>
-<tr class="odd">
-<td><code>is.writeable(path)</code></td>
-<td>is <code>path</code> writeable?</td>
-</tr>
-<tr class="even">
-<td><code>is.readable(path)</code></td>
-<td>is <code>path</code> readable?</td>
-</tr>
-<tr class="odd">
-<td><code>has_extension(path, ext)</code></td>
-<td>does <code>file</code> have the specified extension <code>ext</code>?</td>
-</tr>
-</tbody>
-</table>
 </section>
 
 <section id="your-turn" class="title-slide slide level1 center" data-background-color="#006666">
 <h1>Your Turn</h1>
-<p>Use <code>assertthat</code> functions to check inputs and output for the col_means function, ensuring that they make sense.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a>col_means <span class="ot">&lt;-</span> <span class="cf">function</span>(df) {</span>
-<span id="cb2-2"><a></a>  numeric <span class="ot">&lt;-</span> <span class="fu">sapply</span>(df, is.numeric)</span>
-<span id="cb2-3"><a></a>  numeric_cols <span class="ot">&lt;-</span> df[, numeric]</span>
-<span id="cb2-4"><a></a></span>
-<span id="cb2-5"><a></a>  <span class="fu">data.frame</span>(<span class="fu">lapply</span>(numeric_cols, mean))</span>
-<span id="cb2-6"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="do">## install.packages(c("testthat", "usethis"))</span></span>
+<span id="cb1-2"><a></a><span class="fu">library</span>(testthat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<ol type="1">
+<li><p>Install the <code>testthat</code> package for unit testing and the <code>usethis</code> package (helper functions to make package development easy)</p></li>
+<li><p>Set the <code>happyR</code> package up to work with <code>testthat</code></p></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a><span class="co"># Run create_package to add package infrastructure </span></span>
+<span id="cb2-2"><a></a><span class="co"># Adjust the path to refer to your current project directory</span></span>
+<span id="cb2-3"><a></a>usethis<span class="sc">::</span><span class="fu">use_testthat</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>What does your file structure look like now?</p>
 </section>
 
-<section id="section" class="title-slide slide level1 center">
-<h1></h1>
-<p>This is not an exhaustive list of checks…</p>
+<section id="testing-structure" class="title-slide slide level1 center">
+<h1>Testing Structure</h1>
+<p>A test file consists of</p>
+<ol type="1">
+<li><p>context - a description of the test blocks in the file</p></li>
+<li><p>one or more test blocks:<br>
+<code>test_that(description, {test statements})</code></p></li>
+</ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a><span class="fu">library</span>(assertthat)</span>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a><span class="fu">context</span>(<span class="st">"test-basics"</span>)</span>
 <span id="cb3-2"><a></a></span>
-<span id="cb3-3"><a></a>col_means <span class="ot">&lt;-</span> <span class="cf">function</span>(df) {</span>
-<span id="cb3-4"><a></a>  <span class="fu">assert_that</span>(</span>
-<span id="cb3-5"><a></a>    <span class="fu">is.data.frame</span>(df), <span class="co"># Check input is a data frame</span></span>
-<span id="cb3-6"><a></a>    <span class="fu">not_empty</span>(df) <span class="co"># Check that df has at least one row and column</span></span>
-<span id="cb3-7"><a></a>  )</span>
-<span id="cb3-8"><a></a>  numeric <span class="ot">&lt;-</span> <span class="fu">sapply</span>(df, is.numeric)</span>
-<span id="cb3-9"><a></a>  <span class="fu">assert_that</span>(<span class="fu">length</span>(numeric) <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="co"># &gt;= one numeric column</span></span>
-<span id="cb3-10"><a></a>  </span>
-<span id="cb3-11"><a></a>  numeric_cols <span class="ot">&lt;-</span> df[, numeric]</span>
-<span id="cb3-12"><a></a>  <span class="co"># ensure numeric_cols has at least one row and column</span></span>
-<span id="cb3-13"><a></a>  <span class="fu">assert_that</span>(<span class="fu">length</span>(<span class="fu">dim</span>(numeric)) <span class="sc">==</span> <span class="dv">2</span>) </span>
-<span id="cb3-14"><a></a>  list_res <span class="ot">&lt;-</span> <span class="fu">lapply</span>(numeric_cols, mean)</span>
-<span id="cb3-15"><a></a>  res <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(list_res)</span>
-<span id="cb3-16"><a></a>  <span class="fu">assert_that</span>(</span>
-<span id="cb3-17"><a></a>    <span class="fu">is.data.frame</span>(res), <span class="co"># output is data frame</span></span>
-<span id="cb3-18"><a></a>    <span class="fu">are_equal</span>(<span class="fu">ncol</span>(res), <span class="fu">length</span>(numeric_cols)) <span class="co"># correct # cols</span></span>
-<span id="cb3-19"><a></a>  )</span>
-<span id="cb3-20"><a></a>  </span>
-<span id="cb3-21"><a></a>  res</span>
-<span id="cb3-22"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-3"><a></a><span class="co"># Test block</span></span>
+<span id="cb3-4"><a></a><span class="fu">test_that</span>(</span>
+<span id="cb3-5"><a></a>  <span class="co"># description</span></span>
+<span id="cb3-6"><a></a>  <span class="st">"multiplication works"</span>,</span>
+<span id="cb3-7"><a></a>  { <span class="co"># test statements inside this block</span></span>
+<span id="cb3-8"><a></a>    <span class="fu">expect_equal</span>(<span class="dv">2</span> <span class="sc">*</span> <span class="dv">2</span>, <span class="dv">4</span>)</span>
+<span id="cb3-9"><a></a>  }</span>
+<span id="cb3-10"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 
-<section id="checkmate" class="title-slide slide level1 center">
-<h1><code>checkmate</code></h1>
-<p>Package <code>checkmate</code> implements assertions and checks for speedy evalution …</p>
-<p>Goals:</p>
-<ul>
-<li><p>Faster (C backend)</p></li>
-<li><p>Better memory handling - no intermediate objects created</p></li>
-<li><p>Single call to check e.g.&nbsp;length, missingness, and lower/upper bounds (more concise)</p></li>
-</ul>
-<p>(Preview…) Also interfaces with <code>testthat</code> for unit tests.</p>
+<section id="test-statements" class="title-slide slide level1 smaller center">
+<h1>Test Statements</h1>
+<p><code>testthat</code> has a series of expectation functions:</p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>function</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>expect_equal(obj, value)</code></td>
+<td>Is the object equal to a value?</td>
+</tr>
+<tr class="even">
+<td><code>expect_error(expr)</code></td>
+<td>Does the expression produce an error?</td>
+</tr>
+<tr class="odd">
+<td><code>expect_gt(obj, value)</code></td>
+<td>Is the object greater than the value?</td>
+</tr>
+<tr class="even">
+<td><code>expect_length(obj, value)</code></td>
+<td>Does the object have length value?</td>
+</tr>
+</tbody>
+</table>
+<p>See more with <code>help(package = "testthat")</code></p>
+<p>These functions are silent if the expectation is met, and throw an error otherwise.</p>
+<p>Expectations are used to construct tests.</p>
 </section>
 
-<section id="checkmate-1" class="title-slide slide level1 center">
-<h1><code>checkmate</code></h1>
+<section id="your-turn---writing-expectations" class="title-slide slide level1 center" data-background-color="#006666">
+<h1>Your Turn - Writing Expectations</h1>
+<ol type="1">
+<li><p>Create a test file with <code>usethis::use_test("hello")</code></p></li>
+<li><p>Write a set of expectations that test the <code>hello</code> function</p></li>
+</ol>
+</section>
+
+<section id="test-driven-development-workflow" class="title-slide slide level1 center">
+<h1>Test-Driven Development Workflow</h1>
+<ol type="1">
+<li><p>Write out the specifications for your function</p></li>
+<li><p>Create your test file <code>usethis::use_test("foo")</code></p></li>
+<li><p>Write tests for your function in <code>tests/testthat/test_foo.R</code></p></li>
+<li><p>Write your function and documentation in <code>R/foo.R</code></p></li>
+<li><p>Test your package: <code>Ctrl/CMD - Shift - T</code> or use the Build Menu</p></li>
+</ol>
+</section>
+
+<section id="test-driven-development-example" class="title-slide slide level1 center">
+<h1>Test-Driven Development Example</h1>
+<p>Function: <code>mymean(x, na.rm)</code></p>
+<p>Required Outcome:</p>
 <ul>
-<li><p><code>assert*</code> : single statement to check type, length, type-specific attrs<br>
-also <code>assert_*</code> if you prefer that syntax</p>
+<li>calculate average for numeric vector x</li>
+<li>if <code>na.rm</code> is true, missing values in x should be removed before calculating the average</li>
+</ul>
+</section>
+
+<section id="test-driven-development-1" class="title-slide slide level1 center">
+<h1>Test-Driven Development</h1>
+<p>Function: <code>mymean(x, na.rm)</code></p>
+<p>Specific Behavior:</p>
 <ul>
-<li><p>Throw an error if the check fails</p></li>
-<li><p>Checked object returned invisibly on success</p>
+<li>issue a warning when x is not numeric and return <code>NA</code></li>
+<li>return <code>NA</code> when x has <code>NA</code>s and <code>na.rm = F</code></li>
+<li>return a value equal to <code>sum(x)/length(x)</code> when x has no <code>NA</code> values</li>
+<li>return a value equal to <code>sum(x2)/length(x2)</code> where<br>
+<code>x2 = x[!is.na(x)]</code> if <code>na.rm = T</code></li>
+</ul>
+</section>
+
+<section id="test-driven-development-example-1" class="title-slide slide level1 center">
+<h1>Test-Driven Development Example</h1>
+<p>Important behaviors:</p>
 <ul>
-<li>can be used with pipes!</li>
+<li>issue a warning when x is not numeric and return NA</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a>x <span class="ot">&lt;-</span> letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span>
+<span id="cb4-2"><a></a><span class="fu">expect_warning</span>(<span class="fu">mymean</span>(x)) <span class="co"># This is the minimal test</span></span>
+<span id="cb4-3"><a></a><span class="fu">expect_warning</span>(<span class="fu">mymean</span>(x), <span class="co"># This tests for a specific warning</span></span>
+<span id="cb4-4"><a></a>               <span class="st">"argument is not numeric or logical: returning NA"</span>) </span>
+<span id="cb4-5"><a></a></span>
+<span id="cb4-6"><a></a><span class="co"># This tests the value and that a warning is generated</span></span>
+<span id="cb4-7"><a></a><span class="fu">expect_warning</span>(</span>
+<span id="cb4-8"><a></a>  <span class="fu">expect_true</span>(<span class="fu">is.na</span>(<span class="fu">mymean</span>(x))) <span class="co"># Function returns NA</span></span>
+<span id="cb4-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+<section id="test-driven-development-example-2" class="title-slide slide level1 center">
+<h1>Test-Driven Development Example</h1>
+<ul>
+<li>return <code>NA</code> when x has <code>NA</code>s and <code>na.rm = F</code></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a><span class="co"># Can also test to see if a test fails...</span></span>
+<span id="cb5-2"><a></a><span class="fu">expect_failure</span>(</span>
+<span id="cb5-3"><a></a>  <span class="fu">expect_equal</span>(<span class="fu">mymean</span>(<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>, <span class="cn">NA</span>), <span class="at">na.rm =</span> F), <span class="fu">mymean</span>(<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>)))</span>
+<span id="cb5-4"><a></a>)</span>
+<span id="cb5-5"><a></a></span>
+<span id="cb5-6"><a></a><span class="co"># Or test if something returns NA</span></span>
+<span id="cb5-7"><a></a><span class="fu">expect_true</span>(<span class="fu">is.na</span>(<span class="fu">mymean</span>(<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>, <span class="cn">NA</span>))))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+<section id="test-driven-development-example-3" class="title-slide slide level1 center">
+<h1>Test-Driven Development Example</h1>
+<ul>
+<li>return a single numeric value equal to <code>sum(x)/length(x)</code></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a></a>x <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">8</span></span>
+<span id="cb6-2"><a></a>y <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>, <span class="cn">NA</span>)</span>
+<span id="cb6-3"><a></a></span>
+<span id="cb6-4"><a></a><span class="co"># Test that mean(1:8) returns a numerically correct response</span></span>
+<span id="cb6-5"><a></a><span class="fu">expect_equal</span>(<span class="fu">mymean</span>(x), <span class="fl">4.5</span>)</span>
+<span id="cb6-6"><a></a></span>
+<span id="cb6-7"><a></a><span class="co"># Test that mean(c(1:8, NA)) equals mean(1:8) when na.rm = T</span></span>
+<span id="cb6-8"><a></a><span class="fu">expect_equal</span>(<span class="fu">mymean</span>(y, <span class="at">na.rm =</span> T), <span class="fu">mymean</span>(x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+<section id="unit-tests-are" class="title-slide slide level1 center">
+<h1>Unit tests are…</h1>
+<ul>
+<li><p>Modular (by design)</p></li>
+<li><p>Quick to run</p></li>
+<li><p>Run in an clean environment<br></p>
+<ul>
+<li>Set up and Tear down tasks set up the environment for testing</li>
 </ul></li>
-</ul></li>
-<li><p><code>test*</code> return TRUE or FALSE - best used to combine different checks</p></li>
-<li><p><code>expect*</code> functions to be used in unit tests</p></li>
-<li><p><code>check*</code> functions</p>
+<li><p>Independent - don’t require outside files (traditionally)</p></li>
+</ul>
+</section>
+
+<section id="unit-tests" class="title-slide slide level1 center">
+<h1>Unit tests</h1>
+<blockquote>
+<p>But, we’re statisticians. What about the data?</p>
+</blockquote>
 <ul>
-<li><p>return error message as a string if the conditions fail</p></li>
-<li><p>return TRUE otherwise</p></li>
-<li><p>used in <code>assert*</code>, <code>test*</code>, <code>expect*</code> functions</p></li>
+<li><p>use tiny test data (<code>dput()</code> is helpful)</p></li>
+<li><p>read in toy data from files in the test directory</p></li>
+<li><p>use data included with the package</p></li>
+<li><p>use data included in base R</p></li>
+<li><p>download data from elsewhere with a set-up function, delete it with a tear-down function</p>
+<ul>
+<li>tests will fail without internet or if the site is down</li>
 </ul></li>
 </ul>
+</section>
+
+<section id="code-coverage-covr" class="title-slide slide level1 smaller center">
+<h1>Code Coverage: <code>covr</code></h1>
+<blockquote>
+<p>How many unit tests are enough? Is everything tested?</p>
+</blockquote>
+<ul>
+<li><code>covr</code> is a package that will:
+<ol type="1">
+<li>build your package in a clean environment</li>
+<li>run your tests</li>
+<li>determine how many times each line was evaluated (through <a href="https://cran.r-project.org/web/packages/covr/vignettes/how_it_works.html">magic</a>)</li>
+<li>launch a Shiny app to show you line-by-line coverage reports</li>
+</ol></li>
+<li>100% coverage is good, but unit tests aren’t everything
+<ul>
+<li>Some lines aren’t worth testing</li>
+<li>Integration testing matters too!</li>
+</ul></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a>covr<span class="sc">::</span><span class="fu">report</span>() <span class="co"># Run a local code coverage report</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 
 <section id="your-turn-1" class="title-slide slide level1 center" data-background-color="#006666">
 <h1>Your Turn</h1>
-<p>Use <code>checkmate</code> functions to check inputs and output for the <code>col_means</code> function, ensuring that they make sense.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a>col_means <span class="ot">&lt;-</span> <span class="cf">function</span>(df) {</span>
-<span id="cb4-2"><a></a>  numeric <span class="ot">&lt;-</span> <span class="fu">sapply</span>(df, is.numeric)</span>
-<span id="cb4-3"><a></a>  numeric_cols <span class="ot">&lt;-</span> df[, numeric]</span>
-<span id="cb4-4"><a></a></span>
-<span id="cb4-5"><a></a>  <span class="fu">data.frame</span>(<span class="fu">lapply</span>(numeric_cols, mean))</span>
-<span id="cb4-6"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-
-<section id="section-1" class="title-slide slide level1 center">
-<h1></h1>
-<p>This is not an exhaustive list of checks…</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a><span class="fu">library</span>(checkmate)</span>
-<span id="cb5-2"><a></a></span>
-<span id="cb5-3"><a></a>col_means <span class="ot">&lt;-</span> <span class="cf">function</span>(df) {</span>
-<span id="cb5-4"><a></a>  <span class="fu">assert_data_frame</span>(df, <span class="at">min.rows =</span> <span class="dv">1</span>, <span class="at">min.cols =</span> <span class="dv">1</span>) <span class="co"># Check input is a data frame</span></span>
-<span id="cb5-5"><a></a>  </span>
-<span id="cb5-6"><a></a>  numeric <span class="ot">&lt;-</span> <span class="fu">sapply</span>(df, is.numeric)</span>
-<span id="cb5-7"><a></a>  <span class="fu">assert_atomic_vector</span>(numeric, <span class="at">min.len =</span> <span class="dv">1</span>) <span class="co"># &gt;= one numeric col</span></span>
-<span id="cb5-8"><a></a>  </span>
-<span id="cb5-9"><a></a>  numeric_cols <span class="ot">&lt;-</span> df[, numeric]</span>
-<span id="cb5-10"><a></a>  <span class="fu">assert_data_frame</span>(df, <span class="at">min.rows =</span> <span class="dv">1</span>, <span class="at">min.cols =</span> <span class="dv">1</span>) <span class="co"># numeric_cols is a data frame</span></span>
-<span id="cb5-11"><a></a>  </span>
-<span id="cb5-12"><a></a>  list_res <span class="ot">&lt;-</span> <span class="fu">lapply</span>(numeric_cols, mean)</span>
-<span id="cb5-13"><a></a>  res <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(list_res)</span>
-<span id="cb5-14"><a></a>  <span class="fu">assert_data_frame</span>(</span>
-<span id="cb5-15"><a></a>    res, <span class="co"># output is data frame</span></span>
-<span id="cb5-16"><a></a>    <span class="at">ncols =</span> <span class="fu">length</span>(numeric_cols) <span class="co"># correct # cols</span></span>
-<span id="cb5-17"><a></a>  ) </span>
-<span id="cb5-18"><a></a>  </span>
-<span id="cb5-19"><a></a>  res</span>
-<span id="cb5-20"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+<ol type="1">
+<li><p>Run a code coverage report locally for your <code>happyR</code> package using <code>covr::report()</code></p></li>
+<li><p>Run <code>use_tidy_github_actions()</code>. This will activate all three main workflows: checking the package, running a code coverage report and re-publishing the website</p></li>
+</ol>
 
 
 </section>
