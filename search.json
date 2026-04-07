@@ -221,7 +221,7 @@
     "href": "index.html",
     "title": "Stat 451: Development of Statistical Software",
     "section": "",
-    "text": "Course Materials\nDates shown are due dates (for assignments and exams) and dates on which material was presented (for slides).\n\n\n\n\n\n\n\nModule 0: Setting up the work environment\n\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nDate\n\n\n\nTitle\n\n\n\nType\n\n\n\n \n\n\n\n\n\n\n\n\nJan 13, 2026\n\n\nAbout Stat 451\n\n\nslides\n\n\n\n\n\n\n\n\n\nJan 13, 2026\n\n\nR, RStudio, git\n\n\nslides\n\n\n\n\n\n\n\n\n\nJan 20, 2026\n\n\nHomework 0 Setup A: Git and Github\n\n\nHomework\n\n\n\n\n\n\n\n\n\nJan 20, 2026\n\n\nHomework 0 Setup B: Connecting RStudio and Git\n\n\nHomework\n\n\n\n\n\n\n\n\n\nJan 22, 2026\n\n\nHomework 1: Building a book\n\n\nHomework\n\n\n\n\n\n\n\n\n\nNo matching items\n\n\n\n\n\n\n\n\n\n\nModule 1: Functions and Functionals\n\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nDate\n\n\n\nTitle\n\n\n\nType\n\n\n\n \n\n\n\n\n\n\n\n\nJan 15, 2026\n\n\nReview of functions\n\n\nslides\n\n\n\n\n\n\n\n\n\nJan 20, 2026\n\n\nMore functions\n\n\nslides\n\n\n\n\n\n\n\n\n\nJan 20, 2026\n\n\nCode from class\n\n\nCode\n\n\n\n\n\n\n\n\n\nJan 22, 2026\n\n\nFloating Point Arithmetic\n\n\nslides\n\n\n\n\n\n\n\n\n\nJan 22, 2026\n\n\nCode from class\n\n\nCode\n\n\n\n\n\n\n\n\n\nJan 27, 2026\n\n\nMore on recursions and special R functions\n\n\nslides\n\n\n\n\n\n\n\n\n\nJan 27, 2026\n\n\nCode from class\n\n\nCode\n\n\n\n\n\n\n\n\n\nJan 29, 2026\n\n\nEnvironments\n\n\nslides\n\n\n\n\n\n\n\n\n\nJan 29, 2026\n\n\nHomework 2: Function writing\n\n\nHomework\n\n\n\n\n\n\n\n\n\nFeb 3, 2026\n\n\nFunctionals\n\n\nslides\n\n\n\n\n\n\n\n\n\nFeb 3, 2026\n\n\nCode from class\n\n\nCode\n\n\n\n\n\n\n\n\n\nFeb 5, 2026\n\n\nHomework 3: Function accuracy\n\n\nHomework\n\n\n\n\n\n\n\n\n\nNo matching items\n\n\n\n\n\n\n\n\n\n\nModule 2: Meta Programming\n\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nDate\n\n\n\nTitle\n\n\n\nType\n\n\n\n \n\n\n\n\n\n\n\n\nFeb 19, 2026\n\n\nExpressions\n\n\nslides\n\n\n\n\n\n\n\n\n\nFeb 19, 2026\n\n\nQuasiquotation\n\n\nslides\n\n\n\n\n\n\n\n\n\nFeb 26, 2026\n\n\nTidy Evaluation\n\n\nslides\n\n\n\n\n\n\n\n\n\nFeb 26, 2026\n\n\nHomework 5: Quasi-quotation\n\n\nHomework\n\n\n\n\n\n\n\n\n\nNo matching items\n\n\n\n\n\n\n\n\n\n\nModule 3: Package Structure\n\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nDate\n\n\n\nTitle\n\n\n\nType\n\n\n\n \n\n\n\n\n\n\n\n\nFeb 5, 2026\n\n\nSetting up a Package\n\n\nslides\n\n\n\n\n\n\n\n\n\nFeb 12, 2026\n\n\nPackage development cycle\n\n\nslides\n\n\n\n\n\n\n\n\n\nFeb 17, 2026\n\n\nPackage dependencies\n\n\nslides\n\n\n\n\n\n\n\n\n\nFeb 19, 2026\n\n\nHomework 4: Package divisor\n\n\nHomework\n\n\n\n\n\n\n\n\n\nNo matching items\n\n\n\n\n\n\n\n\n\n\nModule 4: More Function Writing\n\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nDate\n\n\n\nTitle\n\n\n\nType\n\n\n\n \n\n\n\n\n\n\n\n\nMar 3, 2026\n\n\nOutline\n\n\nslides\n\n\n\n\n\n\n\n\n\nMar 3, 2026\n\n\nDebugging\n\n\nslides\n\n\n\n\n\n\n\n\n\nMar 3, 2026\n\n\nCode from class\n\n\nCode\n\n\n\n\n\n\n\n\n\nMar 5, 2026\n\n\nError handling and Assertions\n\n\nslides\n\n\n\n\n\n\n\n\n\nMar 5, 2026\n\n\nCode for testing\n\n\nCode\n\n\n\n\n\n\n\n\n\nMar 5, 2026\n\n\nUnit Testing\n\n\nslides\n\n\n\n\n\n\n\n\n\nMar 26, 2026\n\n\nProfiling Code\n\n\nslides\n\n\n\n\n\n\n\n\n\nMar 30, 2026\n\n\nFunctions in C++\n\n\nslides\n\n\n\n\n\n\n\n\n\nApr 2, 2026\n\n\nObject Oriented Programming (OOP) in R\n\n\nslides\n\n\n\n\n\n\n\n\n\nNo matching items\n\n\n\n\n\n\n\n\n\n\nModule 5: Computational Tools\n\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nDate\n\n\n\nTitle\n\n\n\nType\n\n\n\n \n\n\n\n\n\n\n\n\nNov 11, 2025\n\n\nData Packages\n\n\nslides\n\n\n\n\n\n\n\n\n\nNov 25, 2025\n\n\nMaking your own website\n\n\nDIY\n\n\n\n\n\n\n\n\n\nNo matching items\n\n\n\n\n\n\n\nFinal Project\n\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nDate\n\n\n\nTitle\n\n\n\nType\n\n\n\n \n\n\n\n\n\n\n\n\nOct 16, 2025\n\n\nGeneral Instructions\n\n\nProject\n\n\n\n\n\n\n\n\n\nNov 25, 2025\n\n\nDraft\n\n\nProject\n\n\n\n\n\n\n\n\n\nDec 9, 2025\n\n\nFinal Report\n\n\nProject\n\n\n\n\n\n\n\n\n\nDec 18, 2025\n\n\nPeer Review\n\n\nProject\n\n\n\n\n\n\n\n\n\nApr 4, 2026\n\n\nChoose Team and Topic\n\n\nProject\n\n\n\n\n\n\n\n\n\nNo matching items"
+    "text": "Course Materials\nDates shown are due dates (for assignments and exams) and dates on which material was presented (for slides).\n\n\n\n\n\n\n\nModule 0: Setting up the work environment\n\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nDate\n\n\n\nTitle\n\n\n\nType\n\n\n\n \n\n\n\n\n\n\n\n\nJan 13, 2026\n\n\nAbout Stat 451\n\n\nslides\n\n\n\n\n\n\n\n\n\nJan 13, 2026\n\n\nR, RStudio, git\n\n\nslides\n\n\n\n\n\n\n\n\n\nJan 20, 2026\n\n\nHomework 0 Setup A: Git and Github\n\n\nHomework\n\n\n\n\n\n\n\n\n\nJan 20, 2026\n\n\nHomework 0 Setup B: Connecting RStudio and Git\n\n\nHomework\n\n\n\n\n\n\n\n\n\nJan 22, 2026\n\n\nHomework 1: Building a book\n\n\nHomework\n\n\n\n\n\n\n\n\n\nNo matching items\n\n\n\n\n\n\n\n\n\n\nModule 1: Functions and Functionals\n\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nDate\n\n\n\nTitle\n\n\n\nType\n\n\n\n \n\n\n\n\n\n\n\n\nJan 15, 2026\n\n\nReview of functions\n\n\nslides\n\n\n\n\n\n\n\n\n\nJan 20, 2026\n\n\nMore functions\n\n\nslides\n\n\n\n\n\n\n\n\n\nJan 20, 2026\n\n\nCode from class\n\n\nCode\n\n\n\n\n\n\n\n\n\nJan 22, 2026\n\n\nFloating Point Arithmetic\n\n\nslides\n\n\n\n\n\n\n\n\n\nJan 22, 2026\n\n\nCode from class\n\n\nCode\n\n\n\n\n\n\n\n\n\nJan 27, 2026\n\n\nMore on recursions and special R functions\n\n\nslides\n\n\n\n\n\n\n\n\n\nJan 27, 2026\n\n\nCode from class\n\n\nCode\n\n\n\n\n\n\n\n\n\nJan 29, 2026\n\n\nEnvironments\n\n\nslides\n\n\n\n\n\n\n\n\n\nJan 29, 2026\n\n\nHomework 2: Function writing\n\n\nHomework\n\n\n\n\n\n\n\n\n\nFeb 3, 2026\n\n\nFunctionals\n\n\nslides\n\n\n\n\n\n\n\n\n\nFeb 3, 2026\n\n\nCode from class\n\n\nCode\n\n\n\n\n\n\n\n\n\nFeb 5, 2026\n\n\nHomework 3: Function accuracy\n\n\nHomework\n\n\n\n\n\n\n\n\n\nNo matching items\n\n\n\n\n\n\n\n\n\n\nModule 2: Meta Programming\n\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nDate\n\n\n\nTitle\n\n\n\nType\n\n\n\n \n\n\n\n\n\n\n\n\nFeb 19, 2026\n\n\nExpressions\n\n\nslides\n\n\n\n\n\n\n\n\n\nFeb 19, 2026\n\n\nQuasiquotation\n\n\nslides\n\n\n\n\n\n\n\n\n\nFeb 26, 2026\n\n\nTidy Evaluation\n\n\nslides\n\n\n\n\n\n\n\n\n\nFeb 26, 2026\n\n\nHomework 5: Quasi-quotation\n\n\nHomework\n\n\n\n\n\n\n\n\n\nNo matching items\n\n\n\n\n\n\n\n\n\n\nModule 3: Package Structure\n\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nDate\n\n\n\nTitle\n\n\n\nType\n\n\n\n \n\n\n\n\n\n\n\n\nFeb 5, 2026\n\n\nSetting up a Package\n\n\nslides\n\n\n\n\n\n\n\n\n\nFeb 12, 2026\n\n\nPackage development cycle\n\n\nslides\n\n\n\n\n\n\n\n\n\nFeb 17, 2026\n\n\nPackage dependencies\n\n\nslides\n\n\n\n\n\n\n\n\n\nFeb 19, 2026\n\n\nHomework 4: Package divisor\n\n\nHomework\n\n\n\n\n\n\n\n\n\nNo matching items\n\n\n\n\n\n\n\n\n\n\nModule 4: More Function Writing\n\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nDate\n\n\n\nTitle\n\n\n\nType\n\n\n\n \n\n\n\n\n\n\n\n\nMar 3, 2026\n\n\nOutline\n\n\nslides\n\n\n\n\n\n\n\n\n\nMar 3, 2026\n\n\nDebugging\n\n\nslides\n\n\n\n\n\n\n\n\n\nMar 3, 2026\n\n\nCode from class\n\n\nCode\n\n\n\n\n\n\n\n\n\nMar 5, 2026\n\n\nError handling and Assertions\n\n\nslides\n\n\n\n\n\n\n\n\n\nMar 5, 2026\n\n\nCode for testing\n\n\nCode\n\n\n\n\n\n\n\n\n\nMar 5, 2026\n\n\nUnit Testing\n\n\nslides\n\n\n\n\n\n\n\n\n\nMar 26, 2026\n\n\nProfiling Code\n\n\nslides\n\n\n\n\n\n\n\n\n\nMar 30, 2026\n\n\nFunctions in C++\n\n\nslides\n\n\n\n\n\n\n\n\n\nApr 2, 2026\n\n\nObject Oriented Programming (OOP) in R\n\n\nslides\n\n\n\n\n\n\n\n\n\nApr 7, 2026\n\n\nThe S3 Object model\n\n\nslides\n\n\n\n\n\n\n\n\n\nApr 7, 2026\n\n\nThe S3 Object model\n\n\nslides\n\n\n\n\n\n\n\n\n\nNo matching items\n\n\n\n\n\n\n\n\n\n\nModule 5: Computational Tools\n\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nDate\n\n\n\nTitle\n\n\n\nType\n\n\n\n \n\n\n\n\n\n\n\n\nNov 11, 2025\n\n\nData Packages\n\n\nslides\n\n\n\n\n\n\n\n\n\nNov 25, 2025\n\n\nMaking your own website\n\n\nDIY\n\n\n\n\n\n\n\n\n\nNo matching items\n\n\n\n\n\n\n\nFinal Project\n\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nDate\n\n\n\nTitle\n\n\n\nType\n\n\n\n \n\n\n\n\n\n\n\n\nOct 16, 2025\n\n\nGeneral Instructions\n\n\nProject\n\n\n\n\n\n\n\n\n\nNov 25, 2025\n\n\nDraft\n\n\nProject\n\n\n\n\n\n\n\n\n\nDec 9, 2025\n\n\nFinal Report\n\n\nProject\n\n\n\n\n\n\n\n\n\nDec 18, 2025\n\n\nPeer Review\n\n\nProject\n\n\n\n\n\n\n\n\n\nApr 4, 2026\n\n\nChoose Team and Topic\n\n\nProject\n\n\n\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "project/02-draft.html",
@@ -243,5 +243,110 @@
     "title": "General Instructions",
     "section": "",
     "text": "Note: This assignment must be accepted in Canvas and submitted in github classroom.\n\n\nFinal Project\nThe final project for this class is to write and publish an R package.\nYou are free to choose package functionality, but there should be\n\na minimum of five functions with a coherent theme,\na shiny app show-casing some of the functionality\na website for the package\na README page with installation instructions and basic demonstration of functionality\nevidence of testing the functionality\n8-10 page report detailing your work. This report should be written as a package vignette, included in your package’s documentation.\n\nThere are several stages to the project. Only the last two stages are graded. All other stages are not graded. You should use them as an opportunity to get feedback. For stages 1-3 feedback will be given as soon as you submit your contribution, i.e. you don’t have to wait until after Spring break to submit your project idea.\n\nStage 1 (by mid March, not graded): Identify team and topic\nStage 2 (by mid April, not graded): Functional Package\nStage 3 (by end of April, not graded): Testing and Documentation\n\nAbstract and Presentation slots\nStage 4: Presentation (Dead week and Finals, graded) Stage 5 (May 7th, graded): Package submission (Finals week)"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/08-S4-model.html#motivation-and-context",
+    "href": "materials/04-more-function-writing/08-S4-model.html#motivation-and-context",
+    "title": "The S3 Object model",
+    "section": "Motivation and Context",
+    "text": "Motivation and Context\n\nLimitations of S3:\n\nInformal class definitions\nNo validation of structure\nAmbiguous method dispatch\n\nWhy S4?\n\nFormal class definitions\nStronger type safety\nMultiple dispatch\n\nCommon use:\n\nBioconductor and complex data structures"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/08-S4-model.html#core-concepts",
+    "href": "materials/04-more-function-writing/08-S4-model.html#core-concepts",
+    "title": "The S3 Object model",
+    "section": "Core Concepts",
+    "text": "Core Concepts\n\nFormal system for OOP in R\nKey components:\n\nClasses\nSlots (properties)\nGenerics\nMethods\n\nExplicit structure and dispatch"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/08-S4-model.html#defining-s4-classes",
+    "href": "materials/04-more-function-writing/08-S4-model.html#defining-s4-classes",
+    "title": "The S3 Object model",
+    "section": "Defining S4 Classes",
+    "text": "Defining S4 Classes\nsetClass(\n  \"Person\",\n  slots = list(\n    name = \"character\",\n    age  = \"numeric\"\n  )\n)\n\nSlots define structure and types"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/08-S4-model.html#creating-objects",
+    "href": "materials/04-more-function-writing/08-S4-model.html#creating-objects",
+    "title": "The S3 Object model",
+    "section": "Creating Objects",
+    "text": "Creating Objects\np &lt;- new(\"Person\", name = \"Alice\", age = 30)"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/08-S4-model.html#accessing-slots",
+    "href": "materials/04-more-function-writing/08-S4-model.html#accessing-slots",
+    "title": "The S3 Object model",
+    "section": "Accessing Slots",
+    "text": "Accessing Slots\np@name\np@age"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/08-S4-model.html#validity-and-type-checking",
+    "href": "materials/04-more-function-writing/08-S4-model.html#validity-and-type-checking",
+    "title": "The S3 Object model",
+    "section": "Validity and Type Checking",
+    "text": "Validity and Type Checking\n\nAutomatic type enforcement\n\nsetValidity(\"Person\", function(object) {\n  if (object@age &lt; 0) \"Age must be non-negative\"\n  else TRUE\n})\n\nEnsures consistent objects"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/08-S4-model.html#generics",
+    "href": "materials/04-more-function-writing/08-S4-model.html#generics",
+    "title": "The S3 Object model",
+    "section": "Generics",
+    "text": "Generics\nsetGeneric(\"greet\", function(object)\n  standardGeneric(\"greet\")\n)\n\nDefines interface"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/08-S4-model.html#methods",
+    "href": "materials/04-more-function-writing/08-S4-model.html#methods",
+    "title": "The S3 Object model",
+    "section": "Methods",
+    "text": "Methods\nsetMethod(\"greet\", \"Person\", function(object) {\n  paste(\"Hello\", object@name)\n})\ngreet(p)"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/08-S4-model.html#multiple-dispatch",
+    "href": "materials/04-more-function-writing/08-S4-model.html#multiple-dispatch",
+    "title": "The S3 Object model",
+    "section": "Multiple Dispatch",
+    "text": "Multiple Dispatch\nsetGeneric(\"combine\", function(x, y)\n  standardGeneric(\"combine\")\n)\n\nsetMethod(\"combine\", c(\"Person\", \"Person\"),\n  function(x, y) {\n    paste(x@name, \"and\", y@name)\n  }\n)\n\nDispatch based on multiple arguments"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/08-S4-model.html#inheritance",
+    "href": "materials/04-more-function-writing/08-S4-model.html#inheritance",
+    "title": "The S3 Object model",
+    "section": "Inheritance",
+    "text": "Inheritance\nsetClass(\"Employee\",\n  slots = list(id = \"numeric\"),\n  contains = \"Person\"\n)\n\nInherits slots and methods"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/08-S4-model.html#accessor-functions-best-practice",
+    "href": "materials/04-more-function-writing/08-S4-model.html#accessor-functions-best-practice",
+    "title": "The S3 Object model",
+    "section": "Accessor Functions (Best Practice)",
+    "text": "Accessor Functions (Best Practice)\nsetGeneric(\"name\", function(object)\n  standardGeneric(\"name\")\n)\n\nsetMethod(\"name\", \"Person\", function(object)\n  object@name\n)\n\nAvoid direct slot access"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/08-S4-model.html#interoperability",
+    "href": "materials/04-more-function-writing/08-S4-model.html#interoperability",
+    "title": "The S3 Object model",
+    "section": "Interoperability",
+    "text": "Interoperability\n\nUse S3 with S4:\n\nsetOldClass(\"data.frame\")\n\nMixed systems are common"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/08-S4-model.html#advantages-and-tradeoffs",
+    "href": "materials/04-more-function-writing/08-S4-model.html#advantages-and-tradeoffs",
+    "title": "The S3 Object model",
+    "section": "Advantages and Tradeoffs",
+    "text": "Advantages and Tradeoffs\nAdvantages\n\nFormal structure\nStrong validation\nMultiple dispatch\n\nTradeoffs\n\nVerbose\nSteeper learning curve"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/08-S4-model.html#summary",
+    "href": "materials/04-more-function-writing/08-S4-model.html#summary",
+    "title": "The S3 Object model",
+    "section": "Summary",
+    "text": "Summary\n\nS4 = formal OOP in R\nKey features:\n\nTyped slots\nExplicit classes\nMultiple dispatch\n\nBest for complex systems"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/08-S4-model.html#exercises",
+    "href": "materials/04-more-function-writing/08-S4-model.html#exercises",
+    "title": "The S3 Object model",
+    "section": "Exercises",
+    "text": "Exercises\n\nDefine class Rectangle with slots width, height\nAdd validity check (positive values)\nWrite method area()\nExtend to Square\nImplement combine() for rectangles"
   }
 ]

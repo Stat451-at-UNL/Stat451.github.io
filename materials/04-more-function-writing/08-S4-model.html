@@ -9,8 +9,8 @@
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.7.32">
 
-  <meta name="dcterms.date" content="2026-04-02">
-  <title>Stat 451 – Object Oriented Programming (OOP) in R</title>
+  <meta name="dcterms.date" content="2026-04-07">
+  <title>Stat 451 – The S3 Object model</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -193,66 +193,182 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">Object Oriented Programming (OOP) in R</h1>
+  <h1 class="title">The S3 Object model</h1>
 
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-04-02</p>
+  <p class="date">2026-04-07</p>
 </section>
-<section id="outline" class="title-slide slide level1 center">
-<h1>Outline</h1>
+<section id="an-example" class="title-slide slide level1 center">
+<h1>An example</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a>colorspace<span class="sc">::</span><span class="fu">contrast_ratio</span>(<span class="fu">palette</span>(), <span class="st">"white"</span>, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="08-S4-model_files/figure-revealjs/unnamed-chunk-2-1.png" width="960" class="r-stretch"></section>
+
+<section id="section" class="title-slide slide level1 center">
+<h1></h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a>colorspace<span class="sc">::</span><span class="fu">contrast_ratio</span>(<span class="fu">palette</span>(), <span class="st">"black"</span>, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="08-S4-model_files/figure-revealjs/unnamed-chunk-3-1.png" width="960" class="r-stretch"></section>
+
+<section id="your-turn" class="title-slide slide level1 center" data-background-color="#006666">
+<h1>Your Turn</h1>
+<p>The <code>colorspace</code> package implements color objects using the S4 model in R.</p>
+<p>Find out how that looks like from the source code.</p>
+</section>
+
+<section id="s4-addresses-limitations-of-s3" class="title-slide slide level1 center">
+<h1>S4 addresses limitations of S3</h1>
+<p>Why S4?</p>
 <ul>
-<li><p>What is Object Oriented Programming?</p></li>
-<li><p>OOP models in R</p></li>
-<li><p>Constructors</p></li>
+<li>Formal class definitions</li>
+<li>Stronger type safety</li>
+<li>Multiple dispatch</li>
 </ul>
 </section>
 
-<section id="object-oriented-programming" class="title-slide slide level1 center">
-<h1>Object Oriented Programming</h1>
-<p>Idea of object oriented programming is that the user can define abstract objects (<strong>classes</strong>, e.g.&nbsp;a linear model object) that contains named ‘pieces’ (<strong>fields</strong>, e.g.&nbsp;the data, the parameter estimates, residuals, …) and associated ‘methods’ (functions, e.g.&nbsp;<code>predict</code>)</p>
-<p><strong>Polymorphism</strong> allows us to ‘over-write’ existing methods and implement specialized functionality that way</p>
-<p>Methods have the form <code>class.methodname</code> - at the core of R and lazy evaluation: e.g.&nbsp;<code>summary</code>, <code>print</code>, …</p>
+<section id="defining-s4-classes" class="title-slide slide level1 center">
+<h1>Defining S4 Classes</h1>
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a><span class="fu">setClass</span>(</span>
+<span id="cb3-2"><a></a>  <span class="st">"Person"</span>,</span>
+<span id="cb3-3"><a></a>  <span class="at">slots =</span> <span class="fu">list</span>(</span>
+<span id="cb3-4"><a></a>    <span class="at">name =</span> <span class="st">"character"</span>,</span>
+<span id="cb3-5"><a></a>    <span class="at">age  =</span> <span class="st">"numeric"</span></span>
+<span id="cb3-6"><a></a>  )</span>
+<span id="cb3-7"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Slots define structure and types</p>
 </section>
 
-<section id="oop-models-in-r" class="title-slide slide level1 center">
-<h1>OOP models in R</h1>
-<p>In chronological order:</p>
+<section id="common-constructor" class="title-slide slide level1 center">
+<h1>Common Constructor</h1>
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a>p <span class="ot">&lt;-</span> <span class="fu">new</span>(<span class="st">"Person"</span>, <span class="at">name =</span> <span class="st">"Alice"</span>, <span class="at">age =</span> <span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Accessing Slots with <code>@</code></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a>p<span class="sc">@</span>name</span>
+<span id="cb5-2"><a></a>p<span class="sc">@</span>age</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+
+<section>
+<section id="validity-and-type-checking" class="title-slide slide level1 center">
+<h1>Validity and Type Checking</h1>
 <ul>
-<li><p>base</p></li>
-<li><p>S3</p></li>
-<li><p>S4</p></li>
-<li><p>R6</p></li>
+<li>Automatic type enforcement</li>
 </ul>
-<p>Check any object in R for its class/type with <code>typeof</code> or <code>sloop::otype</code></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a></a><span class="fu">setValidity</span>(<span class="st">"Person"</span>, <span class="cf">function</span>(object) {</span>
+<span id="cb6-2"><a></a>  <span class="cf">if</span> (object<span class="sc">@</span>age <span class="sc">&lt;</span> <span class="dv">0</span>) <span class="st">"Age must be non-negative"</span></span>
+<span id="cb6-3"><a></a>  <span class="cf">else</span> <span class="cn">TRUE</span></span>
+<span id="cb6-4"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Ensures consistent objects</li>
+</ul>
 </section>
-
-<section id="oop-models-used-in-r" class="title-slide slide level1 center">
-<h1>OOP models used in R</h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="fu">typeof</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "integer"</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a>sloop<span class="sc">::</span><span class="fu">otype</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "base"</code></pre>
-</div>
-</div>
-<p><code>ggplot2</code> is a based on <code>grid</code> and uses <code>S3</code>:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a>gg <span class="ot">&lt;-</span> diamonds <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> carat, <span class="at">y =</span> price)) <span class="sc">+</span> <span class="fu">geom_point</span>()</span>
-<span id="cb5-2"><a></a>sloop<span class="sc">::</span><span class="fu">otype</span>(gg)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "S3"</code></pre>
-</div>
-</div>
-<p><code>shiny</code> uses <code>R6</code></p>
-<p><code>lme4</code>, <code>stats4</code> use <code>S4</code></p>
-
-
+<section id="generics" class="slide level2">
+<h2>Generics</h2>
+<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a><span class="fu">setGeneric</span>(<span class="st">"greet"</span>, <span class="cf">function</span>(object)</span>
+<span id="cb7-2"><a></a>  <span class="fu">standardGeneric</span>(<span class="st">"greet"</span>)</span>
+<span id="cb7-3"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Defines interface</li>
+</ul>
 </section>
+<section id="methods" class="slide level2">
+<h2>Methods</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a></a><span class="fu">setMethod</span>(<span class="st">"greet"</span>, <span class="st">"Person"</span>, <span class="cf">function</span>(object) {</span>
+<span id="cb8-2"><a></a>  <span class="fu">paste</span>(<span class="st">"Hello"</span>, object<span class="sc">@</span>name)</span>
+<span id="cb8-3"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a><span class="fu">greet</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="multiple-dispatch" class="slide level2">
+<h2>Multiple Dispatch</h2>
+<div class="sourceCode" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a></a><span class="fu">setGeneric</span>(<span class="st">"combine"</span>, <span class="cf">function</span>(x, y)</span>
+<span id="cb10-2"><a></a>  <span class="fu">standardGeneric</span>(<span class="st">"combine"</span>)</span>
+<span id="cb10-3"><a></a>)</span>
+<span id="cb10-4"><a></a></span>
+<span id="cb10-5"><a></a><span class="fu">setMethod</span>(<span class="st">"combine"</span>, <span class="fu">c</span>(<span class="st">"Person"</span>, <span class="st">"Person"</span>),</span>
+<span id="cb10-6"><a></a>  <span class="cf">function</span>(x, y) {</span>
+<span id="cb10-7"><a></a>    <span class="fu">paste</span>(x<span class="sc">@</span>name, <span class="st">"and"</span>, y<span class="sc">@</span>name)</span>
+<span id="cb10-8"><a></a>  }</span>
+<span id="cb10-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Dispatch based on multiple arguments</li>
+</ul>
+</section>
+<section id="inheritance" class="slide level2">
+<h2>Inheritance</h2>
+<div class="sourceCode" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a><span class="fu">setClass</span>(<span class="st">"Employee"</span>,</span>
+<span id="cb11-2"><a></a>  <span class="at">slots =</span> <span class="fu">list</span>(<span class="at">id =</span> <span class="st">"numeric"</span>),</span>
+<span id="cb11-3"><a></a>  <span class="at">contains =</span> <span class="st">"Person"</span></span>
+<span id="cb11-4"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Inherits slots and methods</li>
+</ul>
+</section>
+<section id="accessor-functions-best-practice" class="slide level2">
+<h2>Accessor Functions (Best Practice)</h2>
+<div class="sourceCode" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a></a><span class="fu">setGeneric</span>(<span class="st">"name"</span>, <span class="cf">function</span>(object)</span>
+<span id="cb12-2"><a></a>  <span class="fu">standardGeneric</span>(<span class="st">"name"</span>)</span>
+<span id="cb12-3"><a></a>)</span>
+<span id="cb12-4"><a></a></span>
+<span id="cb12-5"><a></a><span class="fu">setMethod</span>(<span class="st">"name"</span>, <span class="st">"Person"</span>, <span class="cf">function</span>(object)</span>
+<span id="cb12-6"><a></a>  object<span class="sc">@</span>name</span>
+<span id="cb12-7"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Avoid direct slot access</li>
+</ul>
+</section>
+<section id="interoperability" class="slide level2">
+<h2>Interoperability</h2>
+<ul>
+<li>Use S3 with S4:</li>
+</ul>
+<div class="sourceCode" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a><span class="fu">setOldClass</span>(<span class="st">"data.frame"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Mixed systems are common</li>
+</ul>
+</section>
+<section id="advantages-and-tradeoffs" class="slide level2">
+<h2>Advantages and Tradeoffs</h2>
+<h3 id="advantages">Advantages</h3>
+<ul>
+<li>Formal structure</li>
+<li>Strong validation</li>
+<li>Multiple dispatch</li>
+</ul>
+<h3 id="tradeoffs">Tradeoffs</h3>
+<ul>
+<li>Verbose</li>
+<li>Steeper learning curve</li>
+</ul>
+</section>
+<section id="summary" class="slide level2">
+<h2>Summary</h2>
+<ul>
+<li><p>S4 = formal OOP in R</p></li>
+<li><p>Key features:</p>
+<ul>
+<li>Typed slots</li>
+<li>Explicit classes</li>
+<li>Multiple dispatch</li>
+</ul></li>
+<li><p>Best for complex systems</p></li>
+</ul>
+</section>
+<section id="exercises" class="slide level2">
+<h2>Exercises</h2>
+<ol type="1">
+<li>Define class <code>Rectangle</code> with slots <code>width</code>, <code>height</code></li>
+<li>Add validity check (positive values)</li>
+<li>Write method <code>area()</code></li>
+<li>Extend to <code>Square</code></li>
+<li>Implement <code>combine()</code> for rectangles</li>
+</ol>
+
+
+</section></section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
 <p><img src="../../N.svg" class="slide-logo"></p>
