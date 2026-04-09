@@ -9,8 +9,8 @@
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.7.32">
 
-  <meta name="dcterms.date" content="2026-04-07">
-  <title>Stat 451 – The S3 Object model</title>
+  <meta name="dcterms.date" content="2026-04-09">
+  <title>Stat 451 – The S4 Object model</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -193,12 +193,12 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">The S3 Object model</h1>
+  <h1 class="title">The S4 Object model</h1>
 
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-04-07</p>
+  <p class="date">2026-04-09</p>
 </section>
 <section id="an-example" class="title-slide slide level1 center">
 <h1>An example</h1>
@@ -234,131 +234,206 @@
 
 <section id="defining-s4-classes" class="title-slide slide level1 center">
 <h1>Defining S4 Classes</h1>
-<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a><span class="fu">setClass</span>(</span>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a>Person <span class="ot">&lt;-</span> <span class="fu">setClass</span>(</span>
 <span id="cb3-2"><a></a>  <span class="st">"Person"</span>,</span>
 <span id="cb3-3"><a></a>  <span class="at">slots =</span> <span class="fu">list</span>(</span>
 <span id="cb3-4"><a></a>    <span class="at">name =</span> <span class="st">"character"</span>,</span>
 <span id="cb3-5"><a></a>    <span class="at">age  =</span> <span class="st">"numeric"</span></span>
 <span id="cb3-6"><a></a>  )</span>
 <span id="cb3-7"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <p>Slots define structure and types</p>
 </section>
 
 <section id="common-constructor" class="title-slide slide level1 center">
 <h1>Common Constructor</h1>
-<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a>p <span class="ot">&lt;-</span> <span class="fu">new</span>(<span class="st">"Person"</span>, <span class="at">name =</span> <span class="st">"Alice"</span>, <span class="at">age =</span> <span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>use <code>new</code> or the name of the class:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a>alice <span class="ot">&lt;-</span> <span class="fu">new</span>(<span class="st">"Person"</span>, <span class="at">name =</span> <span class="st">"Alice"</span>, <span class="at">age =</span> <span class="dv">27</span>)</span>
+<span id="cb4-2"><a></a>bob <span class="ot">&lt;-</span> <span class="fu">Person</span>(<span class="at">name=</span><span class="st">"Bob"</span>, <span class="at">age =</span> <span class="dv">25</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <p>Accessing Slots with <code>@</code></p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a>p<span class="sc">@</span>name</span>
-<span id="cb5-2"><a></a>p<span class="sc">@</span>age</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a>alice<span class="sc">@</span>name</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Alice"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a>bob<span class="sc">@</span>age</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 25</code></pre>
+</div>
+</div>
 </section>
 
-<section>
 <section id="validity-and-type-checking" class="title-slide slide level1 center">
 <h1>Validity and Type Checking</h1>
 <ul>
 <li>Automatic type enforcement</li>
 </ul>
-<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a></a><span class="fu">setValidity</span>(<span class="st">"Person"</span>, <span class="cf">function</span>(object) {</span>
-<span id="cb6-2"><a></a>  <span class="cf">if</span> (object<span class="sc">@</span>age <span class="sc">&lt;</span> <span class="dv">0</span>) <span class="st">"Age must be non-negative"</span></span>
-<span id="cb6-3"><a></a>  <span class="cf">else</span> <span class="cn">TRUE</span></span>
-<span id="cb6-4"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a><span class="fu">setValidity</span>(<span class="st">"Person"</span>, <span class="cf">function</span>(object) {</span>
+<span id="cb9-2"><a></a>  <span class="cf">if</span> (object<span class="sc">@</span>age <span class="sc">&lt;</span> <span class="dv">0</span>) <span class="st">"Age must be non-negative"</span></span>
+<span id="cb9-3"><a></a>  <span class="cf">else</span> <span class="cn">TRUE</span></span>
+<span id="cb9-4"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Class "Person" [in ".GlobalEnv"]
+
+Slots:
+                          
+Name:       name       age
+Class: character   numeric</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a>cynthia <span class="ot">&lt;-</span> <span class="fu">Person</span>(<span class="at">name =</span> <span class="st">"Cynthia"</span>, <span class="at">age =</span> <span class="sc">-</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `validObject()`:
+! invalid class "Person" object: Age must be non-negative</code></pre>
+</div>
+</div>
 <ul>
 <li>Ensures consistent objects</li>
 </ul>
 </section>
-<section id="generics" class="slide level2">
-<h2>Generics</h2>
-<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a><span class="fu">setGeneric</span>(<span class="st">"greet"</span>, <span class="cf">function</span>(object)</span>
-<span id="cb7-2"><a></a>  <span class="fu">standardGeneric</span>(<span class="st">"greet"</span>)</span>
-<span id="cb7-3"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+<section id="generic-functions" class="title-slide slide level1 center">
+<h1>Generic Functions</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a><span class="fu">setGeneric</span>(<span class="st">"greet"</span>, <span class="cf">function</span>(object)</span>
+<span id="cb13-2"><a></a>  <span class="fu">standardGeneric</span>(<span class="st">"greet"</span>)</span>
+<span id="cb13-3"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "greet"</code></pre>
+</div>
+</div>
 <ul>
 <li>Defines interface</li>
 </ul>
 </section>
-<section id="methods" class="slide level2">
-<h2>Methods</h2>
-<div class="sourceCode" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a></a><span class="fu">setMethod</span>(<span class="st">"greet"</span>, <span class="st">"Person"</span>, <span class="cf">function</span>(object) {</span>
-<span id="cb8-2"><a></a>  <span class="fu">paste</span>(<span class="st">"Hello"</span>, object<span class="sc">@</span>name)</span>
-<span id="cb8-3"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a><span class="fu">greet</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+<section id="methods" class="title-slide slide level1 center">
+<h1>Methods</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a><span class="fu">setMethod</span>(<span class="st">"greet"</span>, <span class="st">"Person"</span>, <span class="cf">function</span>(object) {</span>
+<span id="cb15-2"><a></a>  <span class="fu">paste</span>(<span class="st">"Hello, "</span>, object<span class="sc">@</span>name)</span>
+<span id="cb15-3"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a></a><span class="fu">greet</span>(alice)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Hello,  Alice"</code></pre>
+</div>
+</div>
 </section>
-<section id="multiple-dispatch" class="slide level2">
-<h2>Multiple Dispatch</h2>
-<div class="sourceCode" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a></a><span class="fu">setGeneric</span>(<span class="st">"combine"</span>, <span class="cf">function</span>(x, y)</span>
-<span id="cb10-2"><a></a>  <span class="fu">standardGeneric</span>(<span class="st">"combine"</span>)</span>
-<span id="cb10-3"><a></a>)</span>
-<span id="cb10-4"><a></a></span>
-<span id="cb10-5"><a></a><span class="fu">setMethod</span>(<span class="st">"combine"</span>, <span class="fu">c</span>(<span class="st">"Person"</span>, <span class="st">"Person"</span>),</span>
-<span id="cb10-6"><a></a>  <span class="cf">function</span>(x, y) {</span>
-<span id="cb10-7"><a></a>    <span class="fu">paste</span>(x<span class="sc">@</span>name, <span class="st">"and"</span>, y<span class="sc">@</span>name)</span>
-<span id="cb10-8"><a></a>  }</span>
-<span id="cb10-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+<section id="multiple-dispatch" class="title-slide slide level1 center">
+<h1>Multiple Dispatch</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a></a><span class="fu">setGeneric</span>(<span class="st">"combine"</span>, <span class="cf">function</span>(x, y)</span>
+<span id="cb18-2"><a></a>  <span class="fu">standardGeneric</span>(<span class="st">"combine"</span>)</span>
+<span id="cb18-3"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "combine"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a></a><span class="fu">setMethod</span>(<span class="st">"combine"</span>, <span class="fu">c</span>(<span class="st">"Person"</span>, <span class="st">"Person"</span>),</span>
+<span id="cb20-2"><a></a>  <span class="cf">function</span>(x, y) {</span>
+<span id="cb20-3"><a></a>    <span class="fu">paste</span>(x<span class="sc">@</span>name, <span class="st">"and"</span>, y<span class="sc">@</span>name)</span>
+<span id="cb20-4"><a></a>  }</span>
+<span id="cb20-5"><a></a>)</span>
+<span id="cb20-6"><a></a></span>
+<span id="cb20-7"><a></a><span class="fu">combine</span>(alice, bob)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Alice and Bob"</code></pre>
+</div>
+</div>
 <ul>
 <li>Dispatch based on multiple arguments</li>
 </ul>
 </section>
-<section id="inheritance" class="slide level2">
-<h2>Inheritance</h2>
-<div class="sourceCode" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a><span class="fu">setClass</span>(<span class="st">"Employee"</span>,</span>
-<span id="cb11-2"><a></a>  <span class="at">slots =</span> <span class="fu">list</span>(<span class="at">id =</span> <span class="st">"numeric"</span>),</span>
-<span id="cb11-3"><a></a>  <span class="at">contains =</span> <span class="st">"Person"</span></span>
-<span id="cb11-4"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+<section id="inheritance" class="title-slide slide level1 center">
+<h1>Inheritance</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a></a><span class="fu">setClass</span>(<span class="st">"Employee"</span>,</span>
+<span id="cb22-2"><a></a>  <span class="at">slots =</span> <span class="fu">list</span>(<span class="at">id =</span> <span class="st">"numeric"</span>),</span>
+<span id="cb22-3"><a></a>  <span class="at">contains =</span> <span class="st">"Person"</span></span>
+<span id="cb22-4"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <ul>
 <li>Inherits slots and methods</li>
 </ul>
 </section>
-<section id="accessor-functions-best-practice" class="slide level2">
-<h2>Accessor Functions (Best Practice)</h2>
-<div class="sourceCode" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a></a><span class="fu">setGeneric</span>(<span class="st">"name"</span>, <span class="cf">function</span>(object)</span>
-<span id="cb12-2"><a></a>  <span class="fu">standardGeneric</span>(<span class="st">"name"</span>)</span>
-<span id="cb12-3"><a></a>)</span>
-<span id="cb12-4"><a></a></span>
-<span id="cb12-5"><a></a><span class="fu">setMethod</span>(<span class="st">"name"</span>, <span class="st">"Person"</span>, <span class="cf">function</span>(object)</span>
-<span id="cb12-6"><a></a>  object<span class="sc">@</span>name</span>
-<span id="cb12-7"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+<section id="accessing-parts" class="title-slide slide level1 center">
+<h1>Accessing Parts</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a>alice <span class="sc">|&gt;</span> <span class="fu">str</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Formal class 'Person' [package ".GlobalEnv"] with 2 slots
+  ..@ name: chr "Alice"
+  ..@ age : num 27</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a></a>alice<span class="sc">@</span>age</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 27</code></pre>
+</div>
+</div>
+<p>better: set up accessor functions:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a></a><span class="fu">setGeneric</span>(<span class="st">"name"</span>, <span class="cf">function</span>(object)</span>
+<span id="cb27-2"><a></a>  <span class="fu">standardGeneric</span>(<span class="st">"name"</span>)</span>
+<span id="cb27-3"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "name"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a></a><span class="fu">setMethod</span>(<span class="st">"name"</span>, <span class="st">"Person"</span>, <span class="cf">function</span>(object)</span>
+<span id="cb29-2"><a></a>  object<span class="sc">@</span>name</span>
+<span id="cb29-3"><a></a>)</span>
+<span id="cb29-4"><a></a></span>
+<span id="cb29-5"><a></a><span class="fu">name</span>(bob)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Bob"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a></a><span class="fu">age</span>(alice)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `age()`:
+! could not find function "age"</code></pre>
+</div>
+</div>
 <ul>
 <li>Avoid direct slot access</li>
 </ul>
 </section>
-<section id="interoperability" class="slide level2">
-<h2>Interoperability</h2>
+
+<section id="interoperability" class="title-slide slide level1 center">
+<h1>Interoperability</h1>
 <ul>
 <li>Use S3 with S4:</li>
 </ul>
-<div class="sourceCode" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a><span class="fu">setOldClass</span>(<span class="st">"data.frame"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a></a><span class="fu">setOldClass</span>(<span class="st">"data.frame"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <ul>
 <li>Mixed systems are common</li>
 </ul>
 </section>
-<section id="advantages-and-tradeoffs" class="slide level2">
-<h2>Advantages and Tradeoffs</h2>
-<h3 id="advantages">Advantages</h3>
+
+<section id="summary" class="title-slide slide level1 center">
+<h1>Summary</h1>
 <ul>
-<li>Formal structure</li>
-<li>Strong validation</li>
-<li>Multiple dispatch</li>
-</ul>
-<h3 id="tradeoffs">Tradeoffs</h3>
-<ul>
-<li>Verbose</li>
-<li>Steeper learning curve</li>
-</ul>
-</section>
-<section id="summary" class="slide level2">
-<h2>Summary</h2>
-<ul>
-<li><p>S4 = formal OOP in R</p></li>
+<li><p>S4 is a more formal OOP model than S3</p></li>
 <li><p>Key features:</p>
 <ul>
 <li>Typed slots</li>
 <li>Explicit classes</li>
 <li>Multiple dispatch</li>
 </ul></li>
-<li><p>Best for complex systems</p></li>
+<li><p>Better for complex problems</p></li>
 </ul>
+<p>At the expense of steeper learning curve, more verbose function</p>
 </section>
-<section id="exercises" class="slide level2">
-<h2>Exercises</h2>
+
+<section id="your-turn-1" class="title-slide slide level1 center" data-background-color="#006666">
+<h1>Your Turn</h1>
 <ol type="1">
 <li>Define class <code>Rectangle</code> with slots <code>width</code>, <code>height</code></li>
 <li>Add validity check (positive values)</li>
@@ -368,7 +443,7 @@
 </ol>
 
 
-</section></section>
+</section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
 <p><img src="../../N.svg" class="slide-logo"></p>
