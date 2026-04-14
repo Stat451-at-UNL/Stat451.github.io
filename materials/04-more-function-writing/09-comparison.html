@@ -9,8 +9,8 @@
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.7.32">
 
-  <meta name="dcterms.date" content="2026-04-09">
-  <title>Stat 451 – The S4 Object model</title>
+  <meta name="dcterms.date" content="2026-04-14">
+  <title>Stat 451 – Comparison of S3 and S4</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -28,72 +28,6 @@
       margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
       vertical-align: middle;
     }
-    /* CSS for syntax highlighting */
-    html { -webkit-text-size-adjust: 100%; }
-    pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-    pre > code.sourceCode > span:empty { height: 1.2em; }
-    .sourceCode { overflow: visible; }
-    code.sourceCode > span { color: inherit; text-decoration: inherit; }
-    div.sourceCode { margin: 1em 0; }
-    pre.sourceCode { margin: 0; }
-    @media screen {
-    div.sourceCode { overflow: auto; }
-    }
-    @media print {
-    pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-    }
-    pre.numberSource code
-      { counter-reset: source-line 0; }
-    pre.numberSource code > span
-      { position: relative; left: -4em; counter-increment: source-line; }
-    pre.numberSource code > span > a:first-child::before
-      { content: counter(source-line);
-        position: relative; left: -1em; text-align: right; vertical-align: baseline;
-        border: none; display: inline-block;
-        -webkit-touch-callout: none; -webkit-user-select: none;
-        -khtml-user-select: none; -moz-user-select: none;
-        -ms-user-select: none; user-select: none;
-        padding: 0 4px; width: 4em;
-        color: #aaaaaa;
-      }
-    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-    div.sourceCode
-      { color: #003b4f; background-color: #f1f3f5; }
-    @media screen {
-    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-    }
-    code span { color: #003b4f; } /* Normal */
-    code span.al { color: #ad0000; } /* Alert */
-    code span.an { color: #5e5e5e; } /* Annotation */
-    code span.at { color: #657422; } /* Attribute */
-    code span.bn { color: #ad0000; } /* BaseN */
-    code span.bu { } /* BuiltIn */
-    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
-    code span.ch { color: #20794d; } /* Char */
-    code span.cn { color: #8f5902; } /* Constant */
-    code span.co { color: #5e5e5e; } /* Comment */
-    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
-    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
-    code span.dt { color: #ad0000; } /* DataType */
-    code span.dv { color: #ad0000; } /* DecVal */
-    code span.er { color: #ad0000; } /* Error */
-    code span.ex { } /* Extension */
-    code span.fl { color: #ad0000; } /* Float */
-    code span.fu { color: #4758ab; } /* Function */
-    code span.im { color: #00769e; } /* Import */
-    code span.in { color: #5e5e5e; } /* Information */
-    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
-    code span.op { color: #5e5e5e; } /* Operator */
-    code span.ot { color: #003b4f; } /* Other */
-    code span.pp { color: #ad0000; } /* Preprocessor */
-    code span.sc { color: #5e5e5e; } /* SpecialChar */
-    code span.ss { color: #20794d; } /* SpecialString */
-    code span.st { color: #20794d; } /* String */
-    code span.va { color: #111111; } /* Variable */
-    code span.vs { color: #20794d; } /* VerbatimString */
-    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
   <link rel="stylesheet" href="../../site_libs/revealjs/dist/theme/quarto-f563837468303362081e247dddd440d0.css">
   <link href="../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
@@ -193,246 +127,14 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">The S4 Object model</h1>
+  <h1 class="title">Comparison of S3 and S4</h1>
 
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-04-09</p>
+  <p class="date">2026-04-14</p>
 </section>
-<section id="an-example" class="title-slide slide level1 center">
-<h1>An example</h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a>colorspace<span class="sc">::</span><span class="fu">contrast_ratio</span>(<span class="fu">palette</span>(), <span class="st">"white"</span>, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-
-</div>
-<img data-src="08-S4-model_files/figure-revealjs/unnamed-chunk-2-1.png" width="960" class="r-stretch"></section>
-
-<section id="section" class="title-slide slide level1 center">
-<h1></h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a>colorspace<span class="sc">::</span><span class="fu">contrast_ratio</span>(<span class="fu">palette</span>(), <span class="st">"black"</span>, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-
-</div>
-<img data-src="08-S4-model_files/figure-revealjs/unnamed-chunk-3-1.png" width="960" class="r-stretch"></section>
-
 <section id="your-turn" class="title-slide slide level1 center" data-background-color="#006666">
-<h1>Your Turn</h1>
-<p>The <code>colorspace</code> package implements color objects using the S4 model in R.</p>
-<p>Find out how that looks like from the source code.</p>
-</section>
-
-<section id="s4-addresses-limitations-of-s3" class="title-slide slide level1 center">
-<h1>S4 addresses limitations of S3</h1>
-<p>Why S4?</p>
-<ul>
-<li>Formal class definitions</li>
-<li>Stronger type safety</li>
-<li>Multiple dispatch</li>
-</ul>
-</section>
-
-<section id="defining-s4-classes" class="title-slide slide level1 center">
-<h1>Defining S4 Classes</h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a>Person <span class="ot">&lt;-</span> <span class="fu">setClass</span>(</span>
-<span id="cb3-2"><a></a>  <span class="st">"Person"</span>,</span>
-<span id="cb3-3"><a></a>  <span class="at">slots =</span> <span class="fu">list</span>(</span>
-<span id="cb3-4"><a></a>    <span class="at">name =</span> <span class="st">"character"</span>,</span>
-<span id="cb3-5"><a></a>    <span class="at">age  =</span> <span class="st">"numeric"</span></span>
-<span id="cb3-6"><a></a>  )</span>
-<span id="cb3-7"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>Slots define structure and types</p>
-</section>
-
-<section id="common-constructor" class="title-slide slide level1 center">
-<h1>Common Constructor</h1>
-<p>use <code>new</code> or the name of the class:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a>alice <span class="ot">&lt;-</span> <span class="fu">new</span>(<span class="st">"Person"</span>, <span class="at">name =</span> <span class="st">"Alice"</span>, <span class="at">age =</span> <span class="dv">27</span>)</span>
-<span id="cb4-2"><a></a>bob <span class="ot">&lt;-</span> <span class="fu">Person</span>(<span class="at">name=</span><span class="st">"Bob"</span>, <span class="at">age =</span> <span class="dv">25</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>Accessing Slots with <code>@</code></p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a>alice<span class="sc">@</span>name</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Alice"</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a>bob<span class="sc">@</span>age</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 25</code></pre>
-</div>
-</div>
-</section>
-
-<section id="validity-and-type-checking" class="title-slide slide level1 center">
-<h1>Validity and Type Checking</h1>
-<ul>
-<li>Automatic type enforcement</li>
-</ul>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a><span class="fu">setValidity</span>(<span class="st">"Person"</span>, <span class="cf">function</span>(object) {</span>
-<span id="cb9-2"><a></a>  <span class="cf">if</span> (object<span class="sc">@</span>age <span class="sc">&lt;</span> <span class="dv">0</span>) <span class="st">"Age must be non-negative"</span></span>
-<span id="cb9-3"><a></a>  <span class="cf">else</span> <span class="cn">TRUE</span></span>
-<span id="cb9-4"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Class "Person" [in ".GlobalEnv"]
-
-Slots:
-                          
-Name:       name       age
-Class: character   numeric</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a>cynthia <span class="ot">&lt;-</span> <span class="fu">Person</span>(<span class="at">name =</span> <span class="st">"Cynthia"</span>, <span class="at">age =</span> <span class="sc">-</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-error">
-<pre><code>Error in `validObject()`:
-! invalid class "Person" object: Age must be non-negative</code></pre>
-</div>
-</div>
-<ul>
-<li>Ensures consistent objects</li>
-</ul>
-</section>
-
-<section id="generic-functions" class="title-slide slide level1 center">
-<h1>Generic Functions</h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a><span class="fu">setGeneric</span>(<span class="st">"greet"</span>, <span class="cf">function</span>(object)</span>
-<span id="cb13-2"><a></a>  <span class="fu">standardGeneric</span>(<span class="st">"greet"</span>)</span>
-<span id="cb13-3"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "greet"</code></pre>
-</div>
-</div>
-<ul>
-<li>Defines interface</li>
-</ul>
-</section>
-
-<section id="methods" class="title-slide slide level1 center">
-<h1>Methods</h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a><span class="fu">setMethod</span>(<span class="st">"greet"</span>, <span class="st">"Person"</span>, <span class="cf">function</span>(object) {</span>
-<span id="cb15-2"><a></a>  <span class="fu">paste</span>(<span class="st">"Hello, "</span>, object<span class="sc">@</span>name)</span>
-<span id="cb15-3"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a></a><span class="fu">greet</span>(alice)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Hello,  Alice"</code></pre>
-</div>
-</div>
-</section>
-
-<section id="multiple-dispatch" class="title-slide slide level1 center">
-<h1>Multiple Dispatch</h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a></a><span class="fu">setGeneric</span>(<span class="st">"combine"</span>, <span class="cf">function</span>(x, y)</span>
-<span id="cb18-2"><a></a>  <span class="fu">standardGeneric</span>(<span class="st">"combine"</span>)</span>
-<span id="cb18-3"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "combine"</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a></a><span class="fu">setMethod</span>(<span class="st">"combine"</span>, <span class="fu">c</span>(<span class="st">"Person"</span>, <span class="st">"Person"</span>),</span>
-<span id="cb20-2"><a></a>  <span class="cf">function</span>(x, y) {</span>
-<span id="cb20-3"><a></a>    <span class="fu">paste</span>(x<span class="sc">@</span>name, <span class="st">"and"</span>, y<span class="sc">@</span>name)</span>
-<span id="cb20-4"><a></a>  }</span>
-<span id="cb20-5"><a></a>)</span>
-<span id="cb20-6"><a></a></span>
-<span id="cb20-7"><a></a><span class="fu">combine</span>(alice, bob)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Alice and Bob"</code></pre>
-</div>
-</div>
-<ul>
-<li>Dispatch based on multiple arguments</li>
-</ul>
-</section>
-
-<section id="inheritance" class="title-slide slide level1 center">
-<h1>Inheritance</h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a></a><span class="fu">setClass</span>(<span class="st">"Employee"</span>,</span>
-<span id="cb22-2"><a></a>  <span class="at">slots =</span> <span class="fu">list</span>(<span class="at">id =</span> <span class="st">"numeric"</span>),</span>
-<span id="cb22-3"><a></a>  <span class="at">contains =</span> <span class="st">"Person"</span></span>
-<span id="cb22-4"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<ul>
-<li>Inherits slots and methods</li>
-</ul>
-</section>
-
-<section id="accessing-parts" class="title-slide slide level1 center">
-<h1>Accessing Parts</h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a>alice <span class="sc">|&gt;</span> <span class="fu">str</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Formal class 'Person' [package ".GlobalEnv"] with 2 slots
-  ..@ name: chr "Alice"
-  ..@ age : num 27</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a></a>alice<span class="sc">@</span>age</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 27</code></pre>
-</div>
-</div>
-<p>better: set up accessor functions:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a></a><span class="fu">setGeneric</span>(<span class="st">"name"</span>, <span class="cf">function</span>(object)</span>
-<span id="cb27-2"><a></a>  <span class="fu">standardGeneric</span>(<span class="st">"name"</span>)</span>
-<span id="cb27-3"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "name"</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a></a><span class="fu">setMethod</span>(<span class="st">"name"</span>, <span class="st">"Person"</span>, <span class="cf">function</span>(object)</span>
-<span id="cb29-2"><a></a>  object<span class="sc">@</span>name</span>
-<span id="cb29-3"><a></a>)</span>
-<span id="cb29-4"><a></a></span>
-<span id="cb29-5"><a></a><span class="fu">name</span>(bob)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Bob"</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a></a><span class="fu">age</span>(alice)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-error">
-<pre><code>Error in `age()`:
-! could not find function "age"</code></pre>
-</div>
-</div>
-<ul>
-<li>Avoid direct slot access</li>
-</ul>
-</section>
-
-<section id="interoperability" class="title-slide slide level1 center">
-<h1>Interoperability</h1>
-<ul>
-<li>Use S3 with S4:</li>
-</ul>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a></a><span class="fu">setOldClass</span>(<span class="st">"data.frame"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<ul>
-<li>Mixed systems are common</li>
-</ul>
-</section>
-
-<section id="summary" class="title-slide slide level1 center">
-<h1>Summary</h1>
-<ul>
-<li><p>S4 is a more formal OOP model than S3</p></li>
-<li><p>Key features:</p>
-<ul>
-<li>Typed slots</li>
-<li>Explicit classes</li>
-<li>Multiple dispatch</li>
-</ul></li>
-<li><p>Better for complex problems</p></li>
-</ul>
-<p>At the expense of steeper learning curve, more verbose function</p>
-</section>
-
-<section id="your-turn-1" class="title-slide slide level1 center" data-background-color="#006666">
 <h1>Your Turn</h1>
 <ol type="1">
 <li>Define class <code>Rectangle</code> with slots <code>width</code>, <code>height</code></li>
@@ -443,7 +145,7 @@ Class: character   numeric</code></pre>
 </ol>
 </section>
 
-<section id="your-turn-2" class="title-slide slide level1 center" data-background-color="#006666">
+<section id="your-turn-1" class="title-slide slide level1 center" data-background-color="#006666">
 <h1>Your Turn</h1>
 <ol type="1">
 <li><p>Create the class <code>RectangleS3</code> using S3 with constructor <code>height</code> and <code>widths</code>.</p></li>

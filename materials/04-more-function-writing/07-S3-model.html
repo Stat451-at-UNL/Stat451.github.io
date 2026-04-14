@@ -576,7 +576,7 @@ simMatrix &lt; 1  x  1 &gt;
 <span id="cb37-7"><a></a>}</span>
 <span id="cb37-8"><a></a></span>
 <span id="cb37-9"><a></a>simMatrix.data.frame <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="at">formula =</span> value <span class="sc">~</span> rows<span class="sc">+</span>cols, ...) {</span>
-<span id="cb37-10"><a></a>  mat <span class="ot">&lt;-</span> <span class="fu">xtabs</span>(formula, <span class="at">data =</span> dframe)</span>
+<span id="cb37-10"><a></a>  mat <span class="ot">&lt;-</span> <span class="fu">xtabs</span>(formula, <span class="at">data =</span> x)</span>
 <span id="cb37-11"><a></a>  <span class="fu">class</span>(mat) <span class="ot">&lt;-</span> <span class="st">"simMatrix"</span></span>
 <span id="cb37-12"><a></a>  <span class="fu">validate_simMatrix</span>(mat)</span>
 <span id="cb37-13"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -597,15 +597,15 @@ simMatrix &lt; 1  x  1 &gt;
 <div class="cell-output cell-output-stdout">
 <pre><code>simMatrix &lt; 6  x  6 &gt;
     cols
-rows         L1        L2         L3        L4         L5         L6
-  L1 0.22624887 0.9916330 0.42861227 0.5554402 0.90891288 0.06843171
-  L2 0.29474521 0.5043359 0.63750699 0.9386285 0.29877017 0.99216363
-  L3 0.69845988 0.5670248 0.31632591 0.7233865 0.84867702 0.41445844
-  L4 0.08139706 0.7197292 0.02013728 0.4025442 0.06401502 0.63736946
-  L5 0.76138978 0.4106155 0.19961063 0.5576382 0.84614916 0.09594601
-  L6 0.96790093 0.2716909 0.90479963 0.3080704 0.84115221 0.48461767
+rows         L1        L2        L3        L4        L5        L6
+  L1 0.40906402 0.4312901 0.1226299 0.2491036 0.5752681 0.9734270
+  L2 0.26932297 0.4150509 0.8863641 0.5720747 0.7818894 0.5336315
+  L3 0.29910564 0.1358033 0.3457592 0.1367327 0.5634814 0.5100801
+  L4 0.12903827 0.5165881 0.7967894 0.8045982 0.5908067 0.7355987
+  L5 0.03926059 0.8511282 0.7923718 0.8058035 0.6417222 0.8298380
+  L6 0.69488666 0.6067140 0.2701741 0.9571089 0.6897846 0.1022970
 attr(,"call")
-xtabs(formula = formula, data = dframe)</code></pre>
+xtabs(formula = formula, data = x)</code></pre>
 </div>
 </div>
 
