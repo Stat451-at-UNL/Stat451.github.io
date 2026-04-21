@@ -9,8 +9,8 @@
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.7.32">
 
-  <meta name="dcterms.date" content="2026-04-16">
-  <title>Stat 451 – The R6 Object model</title>
+  <meta name="dcterms.date" content="2026-04-21">
+  <title>Stat 451 – Parallel Computing in R</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -193,341 +193,336 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">The R6 Object model</h1>
+  <h1 class="title">Parallel Computing in R</h1>
 
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-04-16</p>
+  <p class="date">2026-04-21</p>
 </section>
-<section id="an-example" class="title-slide slide level1 center">
-<h1>An Example</h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="fu">library</span>(R6)</span>
-<span id="cb1-2"><a></a>RectangleR6 <span class="ot">&lt;-</span> <span class="fu">R6Class</span>(<span class="st">"RectangleR6"</span>, <span class="fu">list</span>(</span>
-<span id="cb1-3"><a></a>  <span class="at">width =</span> <span class="dv">0</span>,</span>
-<span id="cb1-4"><a></a>  <span class="at">height =</span> <span class="dv">0</span>,</span>
-<span id="cb1-5"><a></a>  <span class="at">area =</span> <span class="cf">function</span>() {</span>
-<span id="cb1-6"><a></a>    <span class="fu">return</span>(self<span class="sc">$</span>width <span class="sc">*</span> self<span class="sc">$</span>height)</span>
-<span id="cb1-7"><a></a>  })</span>
-<span id="cb1-8"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p><code>self</code> refers to the object itself</p>
-</section>
-
-<section id="constructor-and-immutability" class="title-slide slide level1 center">
-<h1>Constructor and Immutability</h1>
-<p>For free, function <code>new</code></p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a>x <span class="ot">&lt;-</span> RectangleR6<span class="sc">$</span><span class="fu">new</span>()</span>
-<span id="cb2-2"><a></a>x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>&lt;RectangleR6&gt;
-  Public:
-    area: function () 
-    clone: function (deep = FALSE) 
-    height: 0
-    width: 0</code></pre>
-</div>
-</div>
-<p><code>clone</code> function - used for copying, but by default objects are immutable.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a>y <span class="ot">&lt;-</span> x</span>
-<span id="cb4-2"><a></a>y<span class="sc">$</span>width <span class="ot">&lt;-</span> <span class="dv">5</span></span>
-<span id="cb4-3"><a></a>x<span class="sc">$</span>width</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 5</code></pre>
-</div>
-</div>
-</section>
-
-<section id="initialize" class="title-slide slide level1 center">
-<h1><code>initialize</code></h1>
-<p>replaces the default behavior of <code>new</code>, i.e.&nbsp;we can check for validity:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a></a>RectangleR6 <span class="ot">&lt;-</span> <span class="fu">R6Class</span>(<span class="st">"RectangleR6"</span>, <span class="fu">list</span>(</span>
-<span id="cb6-2"><a></a>  <span class="at">width =</span> <span class="dv">0</span>,</span>
-<span id="cb6-3"><a></a>  <span class="at">height =</span> <span class="dv">0</span>,</span>
-<span id="cb6-4"><a></a>  <span class="at">initialize =</span> <span class="cf">function</span>(width, height) {</span>
-<span id="cb6-5"><a></a>    <span class="fu">stopifnot</span>(width <span class="sc">&gt;=</span> <span class="dv">0</span>, height <span class="sc">&gt;=</span> <span class="dv">0</span>)</span>
-<span id="cb6-6"><a></a>    self<span class="sc">$</span>width <span class="ot">=</span> width</span>
-<span id="cb6-7"><a></a>    self<span class="sc">$</span>height <span class="ot">=</span> height</span>
-<span id="cb6-8"><a></a>  },</span>
-<span id="cb6-9"><a></a>  <span class="at">area =</span> <span class="cf">function</span>() {</span>
-<span id="cb6-10"><a></a>    <span class="fu">return</span>(self<span class="sc">$</span>width <span class="sc">*</span> self<span class="sc">$</span>height)</span>
-<span id="cb6-11"><a></a>  })</span>
-<span id="cb6-12"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-
-<section id="adding-methods" class="title-slide slide level1 center">
-<h1>Adding Methods</h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a>RectangleR6<span class="sc">$</span><span class="fu">set</span>(<span class="st">"public"</span>, <span class="st">"expand_by"</span>, <span class="cf">function</span>(<span class="at">w=</span><span class="dv">0</span>, <span class="at">h=</span><span class="dv">0</span>) {</span>
-<span id="cb7-2"><a></a>    <span class="fu">stopifnot</span>(w <span class="sc">&gt;=</span> <span class="dv">0</span>, h <span class="sc">&gt;=</span> <span class="dv">0</span>)</span>
-<span id="cb7-3"><a></a>    self<span class="sc">$</span>width <span class="ot">=</span> self<span class="sc">$</span>width <span class="sc">+</span> w</span>
-<span id="cb7-4"><a></a>    self<span class="sc">$</span>height <span class="ot">=</span> self<span class="sc">$</span>height <span class="sc">+</span> h</span>
-<span id="cb7-5"><a></a>    <span class="fu">invisible</span>(self)</span>
-<span id="cb7-6"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a></a>x_new <span class="ot">&lt;-</span> RectangleR6<span class="sc">$</span><span class="fu">new</span>(<span class="dv">3</span>,<span class="dv">4</span>)</span>
-<span id="cb8-2"><a></a>x_new</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>&lt;RectangleR6&gt;
-  Public:
-    area: function () 
-    clone: function (deep = FALSE) 
-    expand_by: function (w = 0, h = 0) 
-    height: 4
-    initialize: function (width, height) 
-    width: 3</code></pre>
-</div>
-</div>
-</section>
-
-<section id="this-needs-care" class="title-slide slide level1 center">
-<h1>This needs care!</h1>
+<section id="idea-of-parallelization" class="title-slide slide level1 center">
+<h1>Idea of Parallelization</h1>
 <ul>
-<li>Only newly created objects have the functionality:</li>
-</ul>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a></a>x<span class="sc">$</span><span class="fu">expand_by</span>(<span class="dv">2</span>,<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-error">
-<pre><code>Error:
-! attempt to apply non-function</code></pre>
-</div>
-</div>
-<ul>
-<li><em>Convention</em>: if the function is implemented for the side effect, return <code>self</code> invisibly. This allows chaining.</li>
+<li><p>by default R is using only a single processor (core)</p></li>
+<li><p>most modern machines have multiple processors</p></li>
+<li><p>parallel code makes use of these multiple processors</p></li>
+<li><p>challenge: identify those pieces of code that can be run in parallel</p></li>
 </ul>
 </section>
 
-<section id="chaining" class="title-slide slide level1 center">
-<h1>Chaining</h1>
-<p>R6 classes allow chaining</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a></a>x_new<span class="sc">$</span><span class="fu">expand_by</span>(<span class="dv">1</span>,<span class="dv">2</span>)<span class="sc">$</span><span class="fu">expand_by</span>(<span class="dv">3</span>,<span class="dv">2</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>same as</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a>x_new<span class="sc">$</span></span>
-<span id="cb13-2"><a></a>  <span class="fu">expand_by</span>(<span class="dv">1</span>,<span class="dv">2</span>)<span class="sc">$</span></span>
-<span id="cb13-3"><a></a>  <span class="fu">expand_by</span>(<span class="dv">3</span>,<span class="dv">2</span>) <span class="sc">|&gt;</span> <span class="fu">print</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>&lt;RectangleR6&gt;
-  Public:
-    area: function () 
-    clone: function (deep = FALSE) 
-    expand_by: function (w = 0, h = 0) 
-    height: 12
-    initialize: function (width, height) 
-    width: 11</code></pre>
-</div>
-</div>
-</section>
-
-<section id="r6-reference-class" class="title-slide slide level1 center">
-<h1>R6 reference class</h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a><span class="fu">R6Class</span>(</span>
-<span id="cb15-2"><a></a>  <span class="at">classname =</span> <span class="cn">NULL</span>,</span>
-<span id="cb15-3"><a></a>  <span class="at">public =</span> <span class="fu">list</span>(),</span>
-<span id="cb15-4"><a></a>  <span class="at">private =</span> <span class="cn">NULL</span>,</span>
-<span id="cb15-5"><a></a>  <span class="at">active =</span> <span class="cn">NULL</span>,</span>
-<span id="cb15-6"><a></a>  <span class="at">inherit =</span> <span class="cn">NULL</span>,</span>
-<span id="cb15-7"><a></a>  <span class="at">lock_objects =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb15-8"><a></a>  <span class="at">class =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb15-9"><a></a>  <span class="at">portable =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb15-10"><a></a>  <span class="at">lock_class =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb15-11"><a></a>  <span class="at">cloneable =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb15-12"><a></a>  <span class="at">parent_env =</span> <span class="fu">parent.frame</span>()</span>
-<span id="cb15-13"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-
-<section id="r6class-objects-have" class="title-slide slide level1 center">
-<h1>R6Class objects have …</h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a></a><span class="fu">str</span>(RectangleR6)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Class 'R6ClassGenerator' &lt;RectangleR6&gt; object generator
-  Public:
-    width: 0
-    height: 0
-    initialize: function (width, height) 
-    area: function () 
-    clone: function (deep = FALSE) 
-    expand_by: function (w = 0, h = 0) 
-  Parent env: &lt;environment: R_GlobalEnv&gt;
-  Locked objects: TRUE
-  Locked class: FALSE
-  Portable: TRUE 
- - attr(*, "name")= chr "RectangleR6_generator"</code></pre>
-</div>
-</div>
-</section>
-
-<section>
-<section id="your-turn" class="title-slide slide level1 center" data-background-color="#006666">
-<h1>Your Turn</h1>
-<p>Let’s think about this <a href="https://adv-r.hadley.nz/r6.html#r6-classes">quote</a> for a moment:</p>
-
-<img data-src="../../images/this-is-the-only-function.png" class="r-stretch"><p>Which functions did we use so far?</p>
-</section>
-<section class="slide level2">
-
+<section id="types-of-parallelism" class="title-slide slide level1 center">
+<h1>Types of Parallelism</h1>
+<p><strong>Data Parallelism</strong></p>
 <ul>
-<li><p><code>new</code> and <code>set</code> look like functions, but …</p></li>
-<li><p>are actually methods of an <code>R6Class</code> object</p></li>
+<li>Same operation on different data chunks</li>
+<li>Example: bootstrap</li>
 </ul>
-</section>
-<section class="slide level2">
-
-</section></section>
-<section id="your-turn-1" class="title-slide slide level1 center" data-background-color="#006666">
-<h1>Your Turn</h1>
+<p><strong>Task Parallelism</strong></p>
 <ul>
-<li><p>… What does that mean for the built-in help in R?</p></li>
-<li><p>your turn modification: find documentation for the <code>set</code> function</p></li>
+<li>Different tasks in parallel</li>
+<li>Example: multiple models</li>
 </ul>
 </section>
 
-<section id="your-turn-2" class="title-slide slide level1 center" data-background-color="#006666">
-<h1>Your Turn</h1>
-<p>R6 class online: https://r6.r-lib.org/</p>
-<p>Locate the function <code>set</code> and read through the code</p>
+<section id="embarassingly-parallel-processes" class="title-slide slide level1 center">
+<h1>Embarassingly parallel processes</h1>
+<p>An <em>embarassingly parallel process</em> is defined as a process where little or no effort is needed to separate the problem into a number of parallel tasks</p>
+<p>Loops and grouping structures are prime candidates:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a>dataframe <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(group) <span class="sc">%&gt;%</span></span>
+<span id="cb1-2"><a></a>  <span class="fu">mutate</span>(<span class="sc">&lt;</span><span class="er">&lt;</span>some calculation<span class="sc">&gt;</span><span class="er">&gt;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>we can exploit group structure to identify code pieces that can be parallelized</p>
 </section>
 
-<section id="your-turn-3" class="title-slide slide level1 center" data-background-color="#006666">
-<h1>Your Turn</h1>
-<p>Speed check! microbench the R6 class Rectangle and compare to the S3 and S4 implementations</p>
+<section id="parallel-architecture" class="title-slide slide level1 center">
+<h1>Parallel Architecture</h1>
+<p><strong>Shared Memory</strong></p>
+<ul>
+<li>Multiple cores, same memory</li>
+<li>Fast communication</li>
+</ul>
+<p><strong>Distributed Memory</strong></p>
+<ul>
+<li>Multiple machines</li>
+<li>Network communication</li>
+</ul>
+</section>
+
+<section id="parallel-r" class="title-slide slide level1 center">
+<h1>Parallel R</h1>
+<ul>
+<li><p>there are various packages for High Performance Computing in R, <br> e.g.&nbsp;CRAN view task at https://cran.r-project.org/web/views/HighPerformanceComputing.html</p></li>
+<li><p>some of these packages are experimental and only available as github packages</p></li>
+</ul>
+</section>
+
+<section id="base-r-parallel" class="title-slide slide level1 center">
+<h1>Base R: <code>parallel</code></h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a><span class="fu">library</span>(parallel)</span>
+<span id="cb2-2"><a></a></span>
+<span id="cb2-3"><a></a><span class="fu">detectCores</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 16</code></pre>
+</div>
+</div>
+<p>Main function: switch <code>lapply</code> to <code>mcapply</code> (for multi-core lapply)</p>
+<p>Doesn’t work on Windows</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a><span class="fu">library</span>(lme4)</span>
+<span id="cb4-2"><a></a></span>
+<span id="cb4-3"><a></a>f <span class="ot">&lt;-</span> <span class="cf">function</span>(i) { <span class="co"># i contains core from 1 to k</span></span>
+<span id="cb4-4"><a></a>  <span class="fu">lmer</span>(Petal.Width <span class="sc">~</span> . <span class="sc">-</span> Species <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> Species), <span class="at">data =</span> iris)</span>
+<span id="cb4-5"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+<section id="parallelization" class="title-slide slide level1 center">
+<h1>Parallelization</h1>
+<p>Parallel setup and pullback of results are costly overheads</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a><span class="fu">system.time</span>(save1 <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">120</span>, f)) <span class="co"># single core</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   user  system elapsed 
+  2.034   0.021   2.086 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a><span class="fu">system.time</span>(save2 <span class="ot">&lt;-</span> <span class="fu">mclapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">120</span>, f, <span class="at">mc.cores =</span> <span class="dv">2</span>)) <span class="co"># two cores</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   user  system elapsed 
+  0.125   0.208   1.997 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a><span class="fu">system.time</span>(save2 <span class="ot">&lt;-</span> <span class="fu">mclapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">120</span>, f, <span class="at">mc.cores =</span> <span class="dv">3</span>)) <span class="co"># three cores</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   user  system elapsed 
+  1.122   0.441   1.599 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a><span class="fu">system.time</span>(save2 <span class="ot">&lt;-</span> <span class="fu">mclapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">120</span>, f, <span class="at">mc.cores =</span> <span class="dv">4</span>)) <span class="co"># four cores</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   user  system elapsed 
+  0.118   0.196   1.247 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a><span class="fu">system.time</span>(save2 <span class="ot">&lt;-</span> <span class="fu">mclapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">120</span>, f, <span class="at">mc.cores =</span> <span class="dv">5</span>)) <span class="co"># five cores</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   user  system elapsed 
+  0.129   0.219   1.119 </code></pre>
+</div>
+</div>
+</section>
+
+<section id="diminishing-returns" class="title-slide slide level1 center">
+<h1>Diminishing returns</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a><span class="fu">system.time</span>(save2 <span class="ot">&lt;-</span> <span class="fu">mclapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">120</span>, f, <span class="at">mc.cores =</span> <span class="dv">6</span>)) <span class="co"># six cores</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   user  system elapsed 
+  0.190   0.314   1.716 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a><span class="fu">system.time</span>(save2 <span class="ot">&lt;-</span> <span class="fu">mclapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">120</span>, f, <span class="at">mc.cores =</span> <span class="dv">7</span>)) <span class="co"># seven cores</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   user  system elapsed 
+  0.793   0.528   1.445 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a><span class="fu">system.time</span>(save2 <span class="ot">&lt;-</span> <span class="fu">mclapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">120</span>, f, <span class="at">mc.cores =</span> <span class="dv">8</span>)) <span class="co"># eight cores</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   user  system elapsed 
+  0.815   0.591   1.769 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a><span class="fu">system.time</span>(save2 <span class="ot">&lt;-</span> <span class="fu">mclapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">120</span>, f, <span class="at">mc.cores =</span> <span class="dv">9</span>)) <span class="co"># nine cores</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   user  system elapsed 
+  0.237   0.371   1.450 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a><span class="fu">system.time</span>(save2 <span class="ot">&lt;-</span> <span class="fu">mclapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">120</span>, f, <span class="at">mc.cores =</span> <span class="dv">10</span>)) <span class="co"># ten cores</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   user  system elapsed 
+  0.728   0.618   1.585 </code></pre>
+</div>
+</div>
+</section>
+
+<section id="cluster-parallelism" class="title-slide slide level1 center">
+<h1>Cluster Parallelism</h1>
+<p>Start separate sockets - also works on Windows</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a></a>cl <span class="ot">&lt;-</span> <span class="fu">makeCluster</span>(<span class="dv">4</span>)</span>
+<span id="cb25-2"><a></a><span class="fu">clusterExport</span>(cl, <span class="st">"f"</span>)</span>
+<span id="cb25-3"><a></a><span class="fu">clusterEvalQ</span>(cl, {</span>
+<span id="cb25-4"><a></a>  <span class="fu">library</span>(lme4)</span>
+<span id="cb25-5"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+ [1] "lme4"      "Matrix"    "stats"     "graphics"  "grDevices" "utils"    
+ [7] "datasets"  "devtools"  "usethis"   "methods"   "base"     
+
+[[2]]
+ [1] "lme4"      "Matrix"    "stats"     "graphics"  "grDevices" "utils"    
+ [7] "datasets"  "devtools"  "usethis"   "methods"   "base"     
+
+[[3]]
+ [1] "lme4"      "Matrix"    "stats"     "graphics"  "grDevices" "utils"    
+ [7] "datasets"  "devtools"  "usethis"   "methods"   "base"     
+
+[[4]]
+ [1] "lme4"      "Matrix"    "stats"     "graphics"  "grDevices" "utils"    
+ [7] "datasets"  "devtools"  "usethis"   "methods"   "base"     </code></pre>
+</div>
+</div>
 </section>
 
 <section id="section" class="title-slide slide level1 center">
 <h1></h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a></a><span class="fu">source</span>(<span class="st">"../../code/2026-04-14-code.R"</span>)</span>
-<span id="cb18-2"><a></a></span>
-<span id="cb18-3"><a></a>widths <span class="ot">&lt;-</span> <span class="fu">abs</span>(<span class="fu">rnorm</span>(<span class="dv">1000</span>))</span>
-<span id="cb18-4"><a></a>heights <span class="ot">&lt;-</span> <span class="fu">abs</span>(<span class="fu">rnorm</span>(<span class="dv">1000</span>))</span>
-<span id="cb18-5"><a></a></span>
-<span id="cb18-6"><a></a>make_R6_area <span class="ot">&lt;-</span> <span class="cf">function</span>(widths, heights) {</span>
-<span id="cb18-7"><a></a>  result <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="fu">length</span>(widths))</span>
-<span id="cb18-8"><a></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(widths)) {</span>
-<span id="cb18-9"><a></a>    rectangle <span class="ot">&lt;-</span> RectangleR6<span class="sc">$</span><span class="fu">new</span>(widths[i],</span>
-<span id="cb18-10"><a></a>                                 heights[i])</span>
-<span id="cb18-11"><a></a>    result[i] <span class="ot">&lt;-</span> rectangle<span class="sc">$</span><span class="fu">area</span>()</span>
-<span id="cb18-12"><a></a>  }</span>
-<span id="cb18-13"><a></a>  result</span>
-<span id="cb18-14"><a></a>}</span>
-<span id="cb18-15"><a></a></span>
-<span id="cb18-16"><a></a></span>
-<span id="cb18-17"><a></a>bench <span class="ot">&lt;-</span> microbenchmark<span class="sc">::</span><span class="fu">microbenchmark</span>(</span>
-<span id="cb18-18"><a></a>  <span class="fu">make_S3_area</span>(widths, heights),</span>
-<span id="cb18-19"><a></a>  <span class="fu">make_S4_area</span>(widths, heights), </span>
-<span id="cb18-20"><a></a>  <span class="fu">make_R6_area</span>(widths, heights))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-
-<section id="comparison-results" class="title-slide slide level1 center">
-<h1>Comparison Results</h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a>bench</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a></a><span class="fu">system.time</span>({</span>
+<span id="cb27-2"><a></a>res <span class="ot">&lt;-</span> <span class="fu">parLapply</span>(cl, <span class="dv">1</span><span class="sc">:</span><span class="dv">120</span>, f)</span>
+<span id="cb27-3"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Unit: milliseconds
-                          expr       min        lq      mean    median
- make_S3_area(widths, heights)  6.377388  7.262704  8.148551  7.502182
- make_S4_area(widths, heights) 69.952245 78.090924 83.803645 80.607613
- make_R6_area(widths, heights) 39.047178 44.553520 48.318658 47.129283
-        uq       max neval cld
-  8.132724  15.84722   100 a  
- 83.936256 166.19284   100  b 
- 49.194458  96.86089   100   c</code></pre>
+<pre><code>   user  system elapsed 
+  0.147   0.034   0.807 </code></pre>
 </div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a></a><span class="fu">stopCluster</span>(cl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 
-<section id="active-fields" class="title-slide slide level1 center">
-<h1>Active fields</h1>
-<p>Help us prevent misuse like this:</p>
+<section id="foreach-doparallel" class="title-slide slide level1 center">
+<h1><code>foreach</code> + <code>doParallel</code></h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a>x<span class="sc">$</span>height <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb21-2"><a></a>x<span class="sc">$</span>width <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">100</span></span>
-<span id="cb21-3"><a></a>x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a></a><span class="fu">library</span>(foreach)</span>
+<span id="cb30-2"><a></a><span class="fu">library</span>(doParallel)</span>
+<span id="cb30-3"><a></a></span>
+<span id="cb30-4"><a></a>cl <span class="ot">&lt;-</span> <span class="fu">makeCluster</span>(<span class="dv">4</span>)</span>
+<span id="cb30-5"><a></a><span class="fu">registerDoParallel</span>(cl)</span>
+<span id="cb30-6"><a></a></span>
+<span id="cb30-7"><a></a></span>
+<span id="cb30-8"><a></a>res <span class="ot">&lt;-</span> <span class="fu">foreach</span>(<span class="at">i =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">120</span>, <span class="at">.combine =</span> c, <span class="at">.packages =</span> <span class="st">"lme4"</span>) <span class="sc">%dopar%</span> {</span>
+<span id="cb30-9"><a></a>  <span class="fu">f</span>()</span>
+<span id="cb30-10"><a></a>}</span>
+<span id="cb30-11"><a></a></span>
+<span id="cb30-12"><a></a><span class="fu">stopCluster</span>(cl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+<section id="future-framework" class="title-slide slide level1 center">
+<h1><code>future</code> Framework</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a></a><span class="fu">library</span>(future)</span>
+<span id="cb31-2"><a></a><span class="fu">library</span>(future.apply)</span>
+<span id="cb31-3"><a></a></span>
+<span id="cb31-4"><a></a><span class="fu">plan</span>(multisession, <span class="at">workers =</span> <span class="dv">4</span>)</span>
+<span id="cb31-5"><a></a></span>
+<span id="cb31-6"><a></a><span class="fu">system.time</span>(</span>
+<span id="cb31-7"><a></a>res <span class="ot">&lt;-</span> <span class="fu">future_lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">120</span>, f)</span>
+<span id="cb31-8"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>$width
-[1] -100
-
-$height
-[1] 1
-
-attr(,"class")
-[1] "RectangleS3"</code></pre>
+<pre><code>   user  system elapsed 
+  0.729   0.081   2.596 </code></pre>
 </div>
-</div>
-<p>Idea: make height and width private and use active fields to access them</p>
-</section>
-
-<section id="a-new-class" class="title-slide slide level1 center">
-<h1>a new class …</h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a>RectangleR6 <span class="ot">&lt;-</span> <span class="fu">R6Class</span>(<span class="st">"RectangleR6"</span>, </span>
-<span id="cb23-2"><a></a>  <span class="at">private =</span> <span class="fu">list</span>(</span>
-<span id="cb23-3"><a></a>    <span class="at">.width =</span> <span class="dv">0</span>,</span>
-<span id="cb23-4"><a></a>    <span class="at">.height =</span> <span class="dv">0</span></span>
-<span id="cb23-5"><a></a>  ),</span>
-<span id="cb23-6"><a></a>  <span class="at">public =</span> <span class="fu">list</span>(<span class="at">initialize =</span> <span class="cf">function</span>(width, height) {</span>
-<span id="cb23-7"><a></a>    <span class="fu">stopifnot</span>(width <span class="sc">&gt;=</span> <span class="dv">0</span>, height <span class="sc">&gt;=</span> <span class="dv">0</span>)</span>
-<span id="cb23-8"><a></a>    private<span class="sc">$</span>.width <span class="ot">=</span> width             <span class="co">#&lt;&lt;</span></span>
-<span id="cb23-9"><a></a>    private<span class="sc">$</span>.height <span class="ot">=</span> height           <span class="co">#&lt;&lt;</span></span>
-<span id="cb23-10"><a></a>  },</span>
-<span id="cb23-11"><a></a>  <span class="at">area =</span> <span class="cf">function</span>() {</span>
-<span id="cb23-12"><a></a>    <span class="fu">return</span>(private<span class="sc">$</span>.width <span class="sc">*</span> private<span class="sc">$</span>.height)</span>
-<span id="cb23-13"><a></a>  }),</span>
-<span id="cb23-14"><a></a>  <span class="at">active =</span> <span class="fu">list</span>(</span>
-<span id="cb23-15"><a></a>    <span class="at">width =</span> <span class="cf">function</span>(value) {</span>
-<span id="cb23-16"><a></a>      <span class="cf">if</span> (<span class="fu">missing</span>(value)) {</span>
-<span id="cb23-17"><a></a>        private<span class="sc">$</span>.width</span>
-<span id="cb23-18"><a></a>      } <span class="cf">else</span> {</span>
-<span id="cb23-19"><a></a>        <span class="cf">if</span> (value <span class="sc">&lt;</span> <span class="dv">0</span>)</span>
-<span id="cb23-20"><a></a>          <span class="fu">stop</span>(<span class="st">"`$width` can't be negative"</span>, <span class="at">call. =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb23-21"><a></a>        private<span class="sc">$</span>.width <span class="ot">&lt;-</span> value</span>
-<span id="cb23-22"><a></a>      }</span>
-<span id="cb23-23"><a></a>    },</span>
-<span id="cb23-24"><a></a>    <span class="at">height =</span> <span class="cf">function</span>(value) {</span>
-<span id="cb23-25"><a></a>      <span class="cf">if</span> (<span class="fu">missing</span>(value)) {</span>
-<span id="cb23-26"><a></a>        private<span class="sc">$</span>.height</span>
-<span id="cb23-27"><a></a>      } <span class="cf">else</span> {</span>
-<span id="cb23-28"><a></a>        <span class="cf">if</span> (value <span class="sc">&lt;</span> <span class="dv">0</span>)</span>
-<span id="cb23-29"><a></a>          <span class="fu">stop</span>(<span class="st">"`$height` can't be negative"</span>, <span class="at">call. =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb23-30"><a></a>        private<span class="sc">$</span>.height <span class="ot">&lt;-</span> value</span>
-<span id="cb23-31"><a></a>      }</span>
-<span id="cb23-32"><a></a>    }</span>
-<span id="cb23-33"><a></a>  )</span>
-<span id="cb23-34"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 
-<section id="active-fields-1" class="title-slide slide level1 center">
-<h1>Active fields …</h1>
+<section id="performance-considerations" class="title-slide slide level1 center">
+<h1>Performance Considerations</h1>
 <ul>
-<li><p>look like fields to the outside</p></li>
-<li><p>are implemented using active bindings; their values are re-computed every time they are accessed</p></li>
+<li>Overhead matters</li>
+<li>Task granularity</li>
+<li>Memory duplication</li>
+<li>Load balancing</li>
+</ul>
+</section>
+
+<section id="your-turn" class="title-slide slide level1 center" data-background-color="#006666">
+<h1>Your Turn</h1>
+<ul>
+<li><p>Check how many cores the machine you are using has <code>parallel::detectCores()</code></p></li>
+<li><p>Initialize a cluster with fewer than the number of cores available</p></li>
+<li><p>Run the R code below on your machine</p></li>
+<li><p>Parallelize the statement, re-run it and time</p></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a></a>x <span class="ot">&lt;-</span> RectangleR6<span class="sc">$</span><span class="fu">new</span>(<span class="dv">3</span>,<span class="dv">5</span>)</span>
-<span id="cb24-2"><a></a>x<span class="sc">$</span>width</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a></a><span class="fu">library</span>(nycflights13)</span>
+<span id="cb33-2"><a></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb33-3"><a></a></span>
+<span id="cb33-4"><a></a><span class="fu">system.time</span>(</span>
+<span id="cb33-5"><a></a>delays <span class="ot">&lt;-</span> flights <span class="sc">|&gt;</span> <span class="fu">group_by</span>(flight) <span class="sc">|&gt;</span></span>
+<span id="cb33-6"><a></a>  <span class="fu">summarize</span>(</span>
+<span id="cb33-7"><a></a>    <span class="at">mean_delay =</span> <span class="fu">mean</span>(arr_delay, <span class="at">na.rm=</span><span class="cn">FALSE</span>)</span>
+<span id="cb33-8"><a></a>  ) </span>
+<span id="cb33-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 3</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a></a>x<span class="sc">$</span>width <span class="ot">&lt;-</span> <span class="dv">4</span></span>
-<span id="cb26-2"><a></a>x<span class="sc">$</span>width <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-error">
-<pre><code>Error:
-! `$width` can't be negative</code></pre>
+<pre><code>   user  system elapsed 
+  1.297   0.043   1.364 </code></pre>
 </div>
 </div>
+</section>
+
+<section id="your-turn-1" class="title-slide slide level1 center" data-background-color="#006666">
+<h1>Your Turn</h1>
+<p><code>set.seed</code> allows you to set the seed before using a random number generator to create reproducible samples.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb35-2"><a></a><span class="fu">runif</span>(<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.2875775 0.7883051 0.4089769</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb37-2"><a></a><span class="fu">runif</span>(<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.2875775 0.7883051 0.4089769</code></pre>
+</div>
+</div>
+<p>How would this work for a parallel process? What else do we need to ensure?</p>
+</section>
+
+<section id="random-number-generation" class="title-slide slide level1 center">
+<h1>Random Number Generation</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb39-2"><a></a></span>
+<span id="cb39-3"><a></a><span class="fu">mclapply</span>(<span class="fu">c</span>(<span class="dv">5</span>,<span class="dv">5</span>), runif, <span class="at">mc.cores=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+[1] 0.05886526 0.38873231 0.08882955 0.30483353 0.47057922
+
+[[2]]
+[1] 0.5765516 0.4525950 0.3720192 0.6351603 0.8252240</code></pre>
+</div>
+</div>
+<p>How do we ensure reproducibility and independence?</p>
+</section>
+
+<section id="rng-in-parallel" class="title-slide slide level1 center">
+<h1>RNG in Parallel</h1>
+<p><code>clusterSetRNGStream</code> uses RNG “L’Ecuyer-CMRG” that produces <em>streams</em> of independent random numbers</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a></a>cl <span class="ot">&lt;-</span> <span class="fu">makeCluster</span>(<span class="dv">4</span>)</span>
+<span id="cb41-2"><a></a></span>
+<span id="cb41-3"><a></a><span class="fu">clusterSetRNGStream</span>(cl, <span class="dv">123</span>)</span>
+<span id="cb41-4"><a></a></span>
+<span id="cb41-5"><a></a>results <span class="ot">&lt;-</span> <span class="fu">parLapply</span>(cl, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="cf">function</span>(i) {</span>
+<span id="cb41-6"><a></a>  <span class="fu">data.frame</span>(i, <span class="at">runif=</span><span class="fu">runif</span>(<span class="dv">5</span>))</span>
+<span id="cb41-7"><a></a>})</span>
+<span id="cb41-8"><a></a></span>
+<span id="cb41-9"><a></a><span class="fu">clusterSetRNGStream</span>(cl, <span class="dv">123</span>)</span>
+<span id="cb41-10"><a></a></span>
+<span id="cb41-11"><a></a>results2 <span class="ot">&lt;-</span> <span class="fu">parLapply</span>(cl, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="cf">function</span>(i) {</span>
+<span id="cb41-12"><a></a>  <span class="fu">data.frame</span>(i, <span class="at">runif=</span><span class="fu">runif</span>(<span class="dv">5</span>))</span>
+<span id="cb41-13"><a></a>})</span>
+<span id="cb41-14"><a></a></span>
+<span id="cb41-15"><a></a><span class="fu">identical</span>(results, results2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a></a><span class="fu">stopCluster</span>(cl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+<section id="when-not-to-parallelize" class="title-slide slide level1 center">
+<h1>When NOT to Parallelize</h1>
+<ul>
+<li>Small tasks</li>
+<li>Fast vectorized code</li>
+<li>Memory limits</li>
+</ul>
 
 
 </section>

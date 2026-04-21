@@ -109,7 +109,7 @@
     "href": "materials/04-more-function-writing/09b-code.html",
     "title": "Code from class: speed test S3 vs S4",
     "section": "",
-    "text": "# Your Turn: implement Rectangle in S4:\n\n#' @examples\n#' # example code\n#' RectangleS4(width=rnorm(1, mean=4), height=rnorm(1, mean=3))\n#'\nRectangleS4 &lt;- setClass(\n  \"RectangleS4\",\n  slots = list(\n    width = \"numeric\",\n    height  = \"numeric\"\n  )\n)\n\n\nsetValidity(\"RectangleS4\", function(rect) {\n  if (!all(rect@width &gt;= 0, rect@height &gt;= 0))\n    \"Both width and height must be positive\"\n  else TRUE\n})\n\nSquareS4 &lt;- setClass(\n  \"SquareS4\",\n  contains = \"RectangleS4\"\n)\n\nsetValidity(\"SquareS4\", function(object) {\n  if (!near(object@width - object@height, 0))\n    return(\"Height and width of a square must be the same\")\n  if (!all(object@width &gt;= 0, object@height &gt;= 0))\n    \"The size of a square must be positive\"\n  else TRUE\n})\n\n\nSquareS4 &lt;- function(size) {\n  RectangleS4(width = size, height = size)\n}\n\nsetGeneric(\"areaS4\", function(object)\n  standardGeneric(\"areaS4\")\n)\n\n#' @examples\n#' # example code\n#' x &lt;- RectangleS4(width=rnorm(1, mean=4), height=rnorm(1, mean=3))\n#' area(x)\nsetMethod(\"areaS4\", \"RectangleS4\", function(object) {\n  object@width * object@height\n})\n\n\nsetGeneric(\"combine\", function(x, y)\n  standardGeneric(\"combine\")\n)\n\n#' @examples\n#' # example code\n#' x &lt;- RectangleS4(width=rnorm(1, mean=4), height=rnorm(1, mean=3))\n#' y &lt;- RectangleS4(width=rnorm(1, mean=4), height=rnorm(1, mean=3))\n#' combine(x, y)\nsetMethod(\"combine\", c(\"RectangleS4\", \"RectangleS4\"), function(x, y) {\n  RectangleS4(width = max(x@width, y@width),\n              height = max(x@height, y@height))\n\n})\n\n\n\nx &lt;- structure(list(width=0, height=0), class=\"RectangleS3\")\n\n#' @examples\n#' # example code\n#' new_RectangleS3(width = rnorm(1), height = rnorm(1))\nnew_RectangleS3 &lt;- function(width, height) {\n  structure(list(width=width,\n                 height=height),\n            class=\"RectangleS3\")\n}\n\n#' @examples\n#' # example code\n#' r100 &lt;- RectangleS3(width = rnorm(100, mean = 3),\n#'                     height = rnorm(100, mean = 4))\nRectangleS3 &lt;- function(width, height) {\n  stopifnot(length(width) == length(height))\n  n &lt;- length(width)\n  1:n |&gt; lapply(function(i) {\n    x &lt;- new_RectangleS3(width[i], height[i])\n    validate_RectangleS3(x)\n  })\n}\n\nvalidate_RectangleS3 &lt;- function(x) {\n  values &lt;- unclass(x)\n  stopifnot(x$width &gt;=0, x$height &gt;= 0)\n  x\n}\n\nareaS3 &lt;- function(x, ...) {\n  UseMethod(\"areaS3\")\n}\n\nareaS3.RectangleS3 &lt;- function(x, ...) {\n  return(x$height * x$width)\n}\n\n# Speed test\n\nwidths &lt;- abs(rnorm(1000))\nheights &lt;- abs(rnorm(1000))\narea_S3 &lt;- numeric(1000)\narea_S4 &lt;- numeric(1000)\n\nmicrobenchmark::microbenchmark({\n  for (i in 1:length(widths)) {\n    x &lt;- RectangleS4(width = widths[i], height = heights[i])\n    area_S4[i] = areaS4(x)\n  }\n  area_S4\n}, {\n  for (i in 1:length(widths)) {\n    x &lt;- new_RectangleS3(width = widths[i], height = heights[i])\n    area_S3[i] = areaS3(x)\n  }\n  area_S3\n  })"
+    "text": "# Your Turn: implement Rectangle in S4:\n\n#' @examples\n#' # example code\n#' RectangleS4(width=rnorm(1, mean=4), height=rnorm(1, mean=3))\n#'\nRectangleS4 &lt;- setClass(\n  \"RectangleS4\",\n  slots = list(\n    width = \"numeric\",\n    height  = \"numeric\"\n  )\n)\n\n\nsetValidity(\"RectangleS4\", function(rect) {\n  if (!all(rect@width &gt;= 0, rect@height &gt;= 0))\n    \"Both width and height must be positive\"\n  else TRUE\n})\n\nSquareS4 &lt;- setClass(\n  \"SquareS4\",\n  contains = \"RectangleS4\"\n)\n\nsetValidity(\"SquareS4\", function(object) {\n  if (!near(object@width - object@height, 0))\n    return(\"Height and width of a square must be the same\")\n  if (!all(object@width &gt;= 0, object@height &gt;= 0))\n    \"The size of a square must be positive\"\n  else TRUE\n})\n\n\nSquareS4 &lt;- function(size) {\n  RectangleS4(width = size, height = size)\n}\n\nsetGeneric(\"areaS4\", function(object)\n  standardGeneric(\"areaS4\")\n)\n\n#' @examples\n#' # example code\n#' x &lt;- RectangleS4(width=rnorm(1, mean=4), height=rnorm(1, mean=3))\n#' area(x)\nsetMethod(\"areaS4\", \"RectangleS4\", function(object) {\n  object@width * object@height\n})\n\n\nsetGeneric(\"combine\", function(x, y)\n  standardGeneric(\"combine\")\n)\n\n#' @examples\n#' # example code\n#' x &lt;- RectangleS4(width=rnorm(1, mean=4), height=rnorm(1, mean=3))\n#' y &lt;- RectangleS4(width=rnorm(1, mean=4), height=rnorm(1, mean=3))\n#' combine(x, y)\nsetMethod(\"combine\", c(\"RectangleS4\", \"RectangleS4\"), function(x, y) {\n  RectangleS4(width = max(x@width, y@width),\n              height = max(x@height, y@height))\n\n})\n\n\n\nx &lt;- structure(list(width=0, height=0), class=\"RectangleS3\")\n\n#' @examples\n#' # example code\n#' new_RectangleS3(width = rnorm(1), height = rnorm(1))\nnew_RectangleS3 &lt;- function(width, height) {\n  structure(list(width=width,\n                 height=height),\n            class=\"RectangleS3\")\n}\n\n#' @examples\n#' # example code\n#' r100 &lt;- RectangleS3(width = rnorm(100, mean = 3),\n#'                     height = rnorm(100, mean = 4))\nRectangleS3 &lt;- function(width, height) {\n  stopifnot(length(width) == length(height))\n  n &lt;- length(width)\n  1:n |&gt; lapply(function(i) {\n    x &lt;- new_RectangleS3(width[i], height[i])\n    validate_RectangleS3(x)\n  })\n}\n\nvalidate_RectangleS3 &lt;- function(x) {\n  values &lt;- unclass(x)\n  stopifnot(x$width &gt;=0, x$height &gt;= 0)\n  x\n}\n\nareaS3 &lt;- function(x, ...) {\n  UseMethod(\"areaS3\")\n}\n\nareaS3.RectangleS3 &lt;- function(x, ...) {\n  return(x$height * x$width)\n}\n\n# Speed test\n\nwidths &lt;- abs(rnorm(1000))\nheights &lt;- abs(rnorm(1000))\narea_S3 &lt;- numeric(1000)\narea_S4 &lt;- numeric(1000)\n\n# microbenchmark::microbenchmark({\n#   for (i in 1:length(widths)) {\n#     x &lt;- RectangleS4(width = widths[i], height = heights[i])\n#     area_S4[i] = areaS4(x)\n#   }\n#   area_S4\n# }, {\n#   for (i in 1:length(widths)) {\n#     x &lt;- new_RectangleS3(width = widths[i], height = heights[i])\n#     area_S3[i] = areaS3(x)\n#   }\n#   area_S3\n#   })\n\n# make functions for later use\n\nmake_S4_area &lt;- function(widths, heights) {\n  result &lt;- numeric(length(widths))\nfor (i in 1:length(widths)) {\n  x &lt;- RectangleS4(width = widths[i], height = heights[i])\n  result[i] = areaS4(x)\n}\n  result\n}\n\nmake_S3_area &lt;- function(widths, heights) {\n  result &lt;- numeric(length(widths))\n  for (i in 1:length(widths)) {\n    x &lt;- new_RectangleS3(width = widths[i], height = heights[i])\n    result[i] = areaS3(x)\n  }\n  result\n}"
   },
   {
     "objectID": "materials/01-function-writing/04b-code.html",
@@ -228,7 +228,7 @@
     "href": "index.html",
     "title": "Stat 451: Development of Statistical Software",
     "section": "",
-    "text": "Course Materials\nDates shown are due dates (for assignments and exams) and dates on which material was presented (for slides).\n\n\n\n\n\n\n\nModule 0: Setting up the work environment\n\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nDate\n\n\n\nTitle\n\n\n\nType\n\n\n\n \n\n\n\n\n\n\n\n\nJan 13, 2026\n\n\nAbout Stat 451\n\n\nslides\n\n\n\n\n\n\n\n\n\nJan 13, 2026\n\n\nR, RStudio, git\n\n\nslides\n\n\n\n\n\n\n\n\n\nJan 20, 2026\n\n\nHomework 0 Setup A: Git and Github\n\n\nHomework\n\n\n\n\n\n\n\n\n\nJan 20, 2026\n\n\nHomework 0 Setup B: Connecting RStudio and Git\n\n\nHomework\n\n\n\n\n\n\n\n\n\nJan 22, 2026\n\n\nHomework 1: Building a book\n\n\nHomework\n\n\n\n\n\n\n\n\n\nNo matching items\n\n\n\n\n\n\n\n\n\n\nModule 1: Functions and Functionals\n\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nDate\n\n\n\nTitle\n\n\n\nType\n\n\n\n \n\n\n\n\n\n\n\n\nJan 15, 2026\n\n\nReview of functions\n\n\nslides\n\n\n\n\n\n\n\n\n\nJan 20, 2026\n\n\nMore functions\n\n\nslides\n\n\n\n\n\n\n\n\n\nJan 20, 2026\n\n\nCode from class\n\n\nCode\n\n\n\n\n\n\n\n\n\nJan 22, 2026\n\n\nFloating Point Arithmetic\n\n\nslides\n\n\n\n\n\n\n\n\n\nJan 22, 2026\n\n\nCode from class\n\n\nCode\n\n\n\n\n\n\n\n\n\nJan 27, 2026\n\n\nMore on recursions and special R functions\n\n\nslides\n\n\n\n\n\n\n\n\n\nJan 27, 2026\n\n\nCode from class\n\n\nCode\n\n\n\n\n\n\n\n\n\nJan 29, 2026\n\n\nEnvironments\n\n\nslides\n\n\n\n\n\n\n\n\n\nJan 29, 2026\n\n\nHomework 2: Function writing\n\n\nHomework\n\n\n\n\n\n\n\n\n\nFeb 3, 2026\n\n\nFunctionals\n\n\nslides\n\n\n\n\n\n\n\n\n\nFeb 3, 2026\n\n\nCode from class\n\n\nCode\n\n\n\n\n\n\n\n\n\nFeb 5, 2026\n\n\nHomework 3: Function accuracy\n\n\nHomework\n\n\n\n\n\n\n\n\n\nNo matching items\n\n\n\n\n\n\n\n\n\n\nModule 2: Meta Programming\n\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nDate\n\n\n\nTitle\n\n\n\nType\n\n\n\n \n\n\n\n\n\n\n\n\nFeb 19, 2026\n\n\nExpressions\n\n\nslides\n\n\n\n\n\n\n\n\n\nFeb 19, 2026\n\n\nQuasiquotation\n\n\nslides\n\n\n\n\n\n\n\n\n\nFeb 26, 2026\n\n\nTidy Evaluation\n\n\nslides\n\n\n\n\n\n\n\n\n\nFeb 26, 2026\n\n\nHomework 5: Quasi-quotation\n\n\nHomework\n\n\n\n\n\n\n\n\n\nNo matching items\n\n\n\n\n\n\n\n\n\n\nModule 3: Package Structure\n\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nDate\n\n\n\nTitle\n\n\n\nType\n\n\n\n \n\n\n\n\n\n\n\n\nFeb 5, 2026\n\n\nSetting up a Package\n\n\nslides\n\n\n\n\n\n\n\n\n\nFeb 12, 2026\n\n\nPackage development cycle\n\n\nslides\n\n\n\n\n\n\n\n\n\nFeb 17, 2026\n\n\nPackage dependencies\n\n\nslides\n\n\n\n\n\n\n\n\n\nFeb 19, 2026\n\n\nHomework 4: Package divisor\n\n\nHomework\n\n\n\n\n\n\n\n\n\nNo matching items\n\n\n\n\n\n\n\n\n\n\nModule 4: More Function Writing\n\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nDate\n\n\n\nTitle\n\n\n\nType\n\n\n\n \n\n\n\n\n\n\n\n\nMar 3, 2026\n\n\nOutline\n\n\nslides\n\n\n\n\n\n\n\n\n\nMar 3, 2026\n\n\nDebugging\n\n\nslides\n\n\n\n\n\n\n\n\n\nMar 3, 2026\n\n\nCode from class\n\n\nCode\n\n\n\n\n\n\n\n\n\nMar 5, 2026\n\n\nError handling and Assertions\n\n\nslides\n\n\n\n\n\n\n\n\n\nMar 5, 2026\n\n\nCode for testing\n\n\nCode\n\n\n\n\n\n\n\n\n\nMar 5, 2026\n\n\nUnit Testing\n\n\nslides\n\n\n\n\n\n\n\n\n\nMar 26, 2026\n\n\nProfiling Code\n\n\nslides\n\n\n\n\n\n\n\n\n\nMar 30, 2026\n\n\nFunctions in C++\n\n\nslides\n\n\n\n\n\n\n\n\n\nApr 2, 2026\n\n\nObject Oriented Programming (OOP) in R\n\n\nslides\n\n\n\n\n\n\n\n\n\nApr 7, 2026\n\n\nThe S3 Object model\n\n\nslides\n\n\n\n\n\n\n\n\n\nApr 9, 2026\n\n\nThe S4 Object model\n\n\nslides\n\n\n\n\n\n\n\n\n\nApr 14, 2026\n\n\nComparison of S3 and S4\n\n\nslides\n\n\n\n\n\n\n\n\n\nApr 14, 2026\n\n\nCode from class: speed test S3 vs S4\n\n\nCode\n\n\n\n\n\n\n\n\n\nApr 16, 2026\n\n\nThe R6 Object model\n\n\nslides\n\n\n\n\n\n\n\n\n\nNo matching items\n\n\n\n\n\n\n\n\n\n\nModule 5: Computational Tools\n\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nDate\n\n\n\nTitle\n\n\n\nType\n\n\n\n \n\n\n\n\n\n\n\n\nNov 11, 2025\n\n\nData Packages\n\n\nslides\n\n\n\n\n\n\n\n\n\nNov 25, 2025\n\n\nMaking your own website\n\n\nDIY\n\n\n\n\n\n\n\n\n\nNo matching items\n\n\n\n\n\n\n\nFinal Project\n\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nDate\n\n\n\nTitle\n\n\n\nType\n\n\n\n \n\n\n\n\n\n\n\n\nOct 16, 2025\n\n\nGeneral Instructions\n\n\nProject\n\n\n\n\n\n\n\n\n\nNov 25, 2025\n\n\nDraft\n\n\nProject\n\n\n\n\n\n\n\n\n\nDec 9, 2025\n\n\nFinal Report\n\n\nProject\n\n\n\n\n\n\n\n\n\nDec 18, 2025\n\n\nPeer Review\n\n\nProject\n\n\n\n\n\n\n\n\n\nApr 4, 2026\n\n\nChoose Team and Topic\n\n\nProject\n\n\n\n\n\n\n\n\n\nNo matching items"
+    "text": "Course Materials\nDates shown are due dates (for assignments and exams) and dates on which material was presented (for slides).\n\n\n\n\n\n\n\nModule 0: Setting up the work environment\n\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nDate\n\n\n\nTitle\n\n\n\nType\n\n\n\n \n\n\n\n\n\n\n\n\nJan 13, 2026\n\n\nAbout Stat 451\n\n\nslides\n\n\n\n\n\n\n\n\n\nJan 13, 2026\n\n\nR, RStudio, git\n\n\nslides\n\n\n\n\n\n\n\n\n\nJan 20, 2026\n\n\nHomework 0 Setup A: Git and Github\n\n\nHomework\n\n\n\n\n\n\n\n\n\nJan 20, 2026\n\n\nHomework 0 Setup B: Connecting RStudio and Git\n\n\nHomework\n\n\n\n\n\n\n\n\n\nJan 22, 2026\n\n\nHomework 1: Building a book\n\n\nHomework\n\n\n\n\n\n\n\n\n\nNo matching items\n\n\n\n\n\n\n\n\n\n\nModule 1: Functions and Functionals\n\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nDate\n\n\n\nTitle\n\n\n\nType\n\n\n\n \n\n\n\n\n\n\n\n\nJan 15, 2026\n\n\nReview of functions\n\n\nslides\n\n\n\n\n\n\n\n\n\nJan 20, 2026\n\n\nMore functions\n\n\nslides\n\n\n\n\n\n\n\n\n\nJan 20, 2026\n\n\nCode from class\n\n\nCode\n\n\n\n\n\n\n\n\n\nJan 22, 2026\n\n\nFloating Point Arithmetic\n\n\nslides\n\n\n\n\n\n\n\n\n\nJan 22, 2026\n\n\nCode from class\n\n\nCode\n\n\n\n\n\n\n\n\n\nJan 27, 2026\n\n\nMore on recursions and special R functions\n\n\nslides\n\n\n\n\n\n\n\n\n\nJan 27, 2026\n\n\nCode from class\n\n\nCode\n\n\n\n\n\n\n\n\n\nJan 29, 2026\n\n\nEnvironments\n\n\nslides\n\n\n\n\n\n\n\n\n\nJan 29, 2026\n\n\nHomework 2: Function writing\n\n\nHomework\n\n\n\n\n\n\n\n\n\nFeb 3, 2026\n\n\nFunctionals\n\n\nslides\n\n\n\n\n\n\n\n\n\nFeb 3, 2026\n\n\nCode from class\n\n\nCode\n\n\n\n\n\n\n\n\n\nFeb 5, 2026\n\n\nHomework 3: Function accuracy\n\n\nHomework\n\n\n\n\n\n\n\n\n\nNo matching items\n\n\n\n\n\n\n\n\n\n\nModule 2: Meta Programming\n\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nDate\n\n\n\nTitle\n\n\n\nType\n\n\n\n \n\n\n\n\n\n\n\n\nFeb 19, 2026\n\n\nExpressions\n\n\nslides\n\n\n\n\n\n\n\n\n\nFeb 19, 2026\n\n\nQuasiquotation\n\n\nslides\n\n\n\n\n\n\n\n\n\nFeb 26, 2026\n\n\nTidy Evaluation\n\n\nslides\n\n\n\n\n\n\n\n\n\nFeb 26, 2026\n\n\nHomework 5: Quasi-quotation\n\n\nHomework\n\n\n\n\n\n\n\n\n\nNo matching items\n\n\n\n\n\n\n\n\n\n\nModule 3: Package Structure\n\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nDate\n\n\n\nTitle\n\n\n\nType\n\n\n\n \n\n\n\n\n\n\n\n\nFeb 5, 2026\n\n\nSetting up a Package\n\n\nslides\n\n\n\n\n\n\n\n\n\nFeb 12, 2026\n\n\nPackage development cycle\n\n\nslides\n\n\n\n\n\n\n\n\n\nFeb 17, 2026\n\n\nPackage dependencies\n\n\nslides\n\n\n\n\n\n\n\n\n\nFeb 19, 2026\n\n\nHomework 4: Package divisor\n\n\nHomework\n\n\n\n\n\n\n\n\n\nNo matching items\n\n\n\n\n\n\n\n\n\n\nModule 4: More Function Writing\n\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nDate\n\n\n\nTitle\n\n\n\nType\n\n\n\n \n\n\n\n\n\n\n\n\nMar 3, 2026\n\n\nOutline\n\n\nslides\n\n\n\n\n\n\n\n\n\nMar 3, 2026\n\n\nDebugging\n\n\nslides\n\n\n\n\n\n\n\n\n\nMar 3, 2026\n\n\nCode from class\n\n\nCode\n\n\n\n\n\n\n\n\n\nMar 5, 2026\n\n\nError handling and Assertions\n\n\nslides\n\n\n\n\n\n\n\n\n\nMar 5, 2026\n\n\nCode for testing\n\n\nCode\n\n\n\n\n\n\n\n\n\nMar 5, 2026\n\n\nUnit Testing\n\n\nslides\n\n\n\n\n\n\n\n\n\nMar 26, 2026\n\n\nProfiling Code\n\n\nslides\n\n\n\n\n\n\n\n\n\nMar 30, 2026\n\n\nFunctions in C++\n\n\nslides\n\n\n\n\n\n\n\n\n\nApr 2, 2026\n\n\nObject Oriented Programming (OOP) in R\n\n\nslides\n\n\n\n\n\n\n\n\n\nApr 7, 2026\n\n\nThe S3 Object model\n\n\nslides\n\n\n\n\n\n\n\n\n\nApr 9, 2026\n\n\nThe S4 Object model\n\n\nslides\n\n\n\n\n\n\n\n\n\nApr 14, 2026\n\n\nComparison of S3 and S4\n\n\nslides\n\n\n\n\n\n\n\n\n\nApr 14, 2026\n\n\nCode from class: speed test S3 vs S4\n\n\nCode\n\n\n\n\n\n\n\n\n\nApr 16, 2026\n\n\nThe R6 Object model\n\n\nslides\n\n\n\n\n\n\n\n\n\nApr 21, 2026\n\n\nParallel Computing in R\n\n\nslides\n\n\n\n\n\n\n\n\n\nNo matching items\n\n\n\n\n\n\n\n\n\n\nModule 5: Computational Tools\n\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nDate\n\n\n\nTitle\n\n\n\nType\n\n\n\n \n\n\n\n\n\n\n\n\nNov 11, 2025\n\n\nData Packages\n\n\nslides\n\n\n\n\n\n\n\n\n\nNov 25, 2025\n\n\nMaking your own website\n\n\nDIY\n\n\n\n\n\n\n\n\n\nNo matching items\n\n\n\n\n\n\n\nFinal Project\n\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nDate\n\n\n\nTitle\n\n\n\nType\n\n\n\n \n\n\n\n\n\n\n\n\nOct 16, 2025\n\n\nGeneral Instructions\n\n\nProject\n\n\n\n\n\n\n\n\n\nNov 25, 2025\n\n\nDraft\n\n\nProject\n\n\n\n\n\n\n\n\n\nDec 9, 2025\n\n\nFinal Report\n\n\nProject\n\n\n\n\n\n\n\n\n\nDec 18, 2025\n\n\nPeer Review\n\n\nProject\n\n\n\n\n\n\n\n\n\nApr 4, 2026\n\n\nChoose Team and Topic\n\n\nProject\n\n\n\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "project/02-draft.html",
@@ -257,5 +257,138 @@
     "title": "The R6 Object model",
     "section": "",
     "text": "Which functions did we use so far? new and set are methods …"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/12-parallelizing-code.html#motivation",
+    "href": "materials/04-more-function-writing/12-parallelizing-code.html#motivation",
+    "title": "Parallel Computing in R",
+    "section": "Motivation",
+    "text": "Motivation\n\nModern datasets and simulations are computationally expensive\nParallel computing reduces runtime\nEfficient use of multi-core systems\n\nKey idea: Split tasks and run simultaneously"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/12-parallelizing-code.html#types-of-parallelism",
+    "href": "materials/04-more-function-writing/12-parallelizing-code.html#types-of-parallelism",
+    "title": "Parallel Computing in R",
+    "section": "Types of Parallelism",
+    "text": "Types of Parallelism\nData Parallelism\n\nSame operation on different data chunks\nExample: bootstrap\n\nTask Parallelism\n\nDifferent tasks in parallel\nExample: multiple models"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/12-parallelizing-code.html#parallel-architecture",
+    "href": "materials/04-more-function-writing/12-parallelizing-code.html#parallel-architecture",
+    "title": "Parallel Computing in R",
+    "section": "Parallel Architecture",
+    "text": "Parallel Architecture\nShared Memory\n\nMultiple cores, same memory\nFast communication\n\nDistributed Memory\n\nMultiple machines\nNetwork communication"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/12-parallelizing-code.html#base-r-parallel",
+    "href": "materials/04-more-function-writing/12-parallelizing-code.html#base-r-parallel",
+    "title": "Parallel Computing in R",
+    "section": "Base R: parallel",
+    "text": "Base R: parallel\nlibrary(parallel)\n\nf &lt;- function(x) {\n  Sys.sleep(1)\n  x^2\n}\n\nsystem.time({\n  res &lt;- mclapply(1:4, f, mc.cores = 4)\n})"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/12-parallelizing-code.html#cluster-parallelism",
+    "href": "materials/04-more-function-writing/12-parallelizing-code.html#cluster-parallelism",
+    "title": "Parallel Computing in R",
+    "section": "Cluster Parallelism",
+    "text": "Cluster Parallelism\nlibrary(parallel)\n\ncl &lt;- makeCluster(4)\nclusterExport(cl, \"f\")\n\nres &lt;- parLapply(cl, 1:4, f)\n\nstopCluster(cl)"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/12-parallelizing-code.html#foreach-doparallel",
+    "href": "materials/04-more-function-writing/12-parallelizing-code.html#foreach-doparallel",
+    "title": "Parallel Computing in R",
+    "section": "foreach + doParallel",
+    "text": "foreach + doParallel\n\nlibrary(foreach)\nlibrary(doParallel)\n\ncl &lt;- makeCluster(4)\nregisterDoParallel(cl)\n\n\nres &lt;- foreach(i = 1:120, .combine = c, .packages = \"lme4\") %dopar% {\n  f()\n}\n\nstopCluster(cl)"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/12-parallelizing-code.html#future-framework",
+    "href": "materials/04-more-function-writing/12-parallelizing-code.html#future-framework",
+    "title": "Parallel Computing in R",
+    "section": "future Framework",
+    "text": "future Framework\nlibrary(future)\nlibrary(future.apply)\n\nplan(multisession, workers = 4)\n\nres &lt;- future_lapply(1:4, function(x) x^2)"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/12-parallelizing-code.html#performance-considerations",
+    "href": "materials/04-more-function-writing/12-parallelizing-code.html#performance-considerations",
+    "title": "Parallel Computing in R",
+    "section": "Performance Considerations",
+    "text": "Performance Considerations\n\nOverhead matters\nTask granularity\nMemory duplication\nLoad balancing"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/12-parallelizing-code.html#random-number-generation",
+    "href": "materials/04-more-function-writing/12-parallelizing-code.html#random-number-generation",
+    "title": "Parallel Computing in R",
+    "section": "Random Number Generation",
+    "text": "Random Number Generation\nclusterSetRNGStream(cl, 123)\nfuture_lapply(1:4, rnorm, n = 10, future.seed = TRUE)"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/12-parallelizing-code.html#debugging",
+    "href": "materials/04-more-function-writing/12-parallelizing-code.html#debugging",
+    "title": "Parallel Computing in R",
+    "section": "Debugging",
+    "text": "Debugging\n\nStart sequential\nUse small examples\n\nforeach(i = 1:4, .errorhandling = \"pass\") %dopar% {\n  log(i - 2)\n}"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/12-parallelizing-code.html#case-study-bootstrap",
+    "href": "materials/04-more-function-writing/12-parallelizing-code.html#case-study-bootstrap",
+    "title": "Parallel Computing in R",
+    "section": "Case Study: Bootstrap",
+    "text": "Case Study: Bootstrap\nlibrary(future.apply)\n\nplan(multisession, workers = 4)\n\nresults &lt;- future_replicate(1000, {\n  sample_data &lt;- sample(x, replace = TRUE)\n  mean(sample_data)\n})"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/12-parallelizing-code.html#when-not-to-parallelize",
+    "href": "materials/04-more-function-writing/12-parallelizing-code.html#when-not-to-parallelize",
+    "title": "Parallel Computing in R",
+    "section": "When NOT to Parallelize",
+    "text": "When NOT to Parallelize\n\nSmall tasks\nFast vectorized code\nMemory limits"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/12-parallelizing-code.html#best-practices",
+    "href": "materials/04-more-function-writing/12-parallelizing-code.html#best-practices",
+    "title": "Parallel Computing in R",
+    "section": "Best Practices",
+    "text": "Best Practices\n\nVectorize first\nProfile code\nMinimize data transfer\nUse future"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/12-parallelizing-code.html#advanced-topics",
+    "href": "materials/04-more-function-writing/12-parallelizing-code.html#advanced-topics",
+    "title": "Parallel Computing in R",
+    "section": "Advanced Topics",
+    "text": "Advanced Topics\n\nGPU computing (gpuR, torch)\nDistributed computing (sparklyr)\nRcpp + OpenMP"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/12-parallelizing-code.html#summary",
+    "href": "materials/04-more-function-writing/12-parallelizing-code.html#summary",
+    "title": "Parallel Computing in R",
+    "section": "Summary",
+    "text": "Summary\n\nParallelism speeds up computation\nChoose the right tools\nManage overhead and reproducibility"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/12-parallelizing-code.html#data-parallelism",
+    "href": "materials/04-more-function-writing/12-parallelizing-code.html#data-parallelism",
+    "title": "Parallel Computing in R",
+    "section": "Data Parallelism",
+    "text": "Data Parallelism\n\nSame operation on different data chunks\nExample: bootstrap"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/12-parallelizing-code.html#task-parallelism",
+    "href": "materials/04-more-function-writing/12-parallelizing-code.html#task-parallelism",
+    "title": "Parallel Computing in R",
+    "section": "Task Parallelism",
+    "text": "Task Parallelism\n\nDifferent tasks in parallel\nExample: multiple models"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/12-parallelizing-code.html#shared-memory",
+    "href": "materials/04-more-function-writing/12-parallelizing-code.html#shared-memory",
+    "title": "Parallel Computing in R",
+    "section": "Shared Memory",
+    "text": "Shared Memory\n\nMultiple cores, same memory\nFast communication"
+  },
+  {
+    "objectID": "materials/04-more-function-writing/12-parallelizing-code.html#distributed-memory",
+    "href": "materials/04-more-function-writing/12-parallelizing-code.html#distributed-memory",
+    "title": "Parallel Computing in R",
+    "section": "Distributed Memory",
+    "text": "Distributed Memory\n\nMultiple machines\nNetwork communication"
   }
 ]
