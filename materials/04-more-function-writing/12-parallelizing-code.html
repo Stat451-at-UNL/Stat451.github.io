@@ -285,27 +285,27 @@
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a><span class="fu">system.time</span>(save1 <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">120</span>, f)) <span class="co"># single core</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   user  system elapsed 
-  2.034   0.021   2.086 </code></pre>
+  1.618   0.010   1.645 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a><span class="fu">system.time</span>(save2 <span class="ot">&lt;-</span> <span class="fu">mclapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">120</span>, f, <span class="at">mc.cores =</span> <span class="dv">2</span>)) <span class="co"># two cores</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   user  system elapsed 
-  0.125   0.208   1.997 </code></pre>
+  0.095   0.098   1.319 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a><span class="fu">system.time</span>(save2 <span class="ot">&lt;-</span> <span class="fu">mclapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">120</span>, f, <span class="at">mc.cores =</span> <span class="dv">3</span>)) <span class="co"># three cores</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   user  system elapsed 
-  1.122   0.441   1.599 </code></pre>
+  0.103   0.124   1.159 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a><span class="fu">system.time</span>(save2 <span class="ot">&lt;-</span> <span class="fu">mclapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">120</span>, f, <span class="at">mc.cores =</span> <span class="dv">4</span>)) <span class="co"># four cores</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   user  system elapsed 
-  0.118   0.196   1.247 </code></pre>
+  0.738   0.346   1.062 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a><span class="fu">system.time</span>(save2 <span class="ot">&lt;-</span> <span class="fu">mclapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">120</span>, f, <span class="at">mc.cores =</span> <span class="dv">5</span>)) <span class="co"># five cores</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   user  system elapsed 
-  0.129   0.219   1.119 </code></pre>
+  0.120   0.160   0.941 </code></pre>
 </div>
 </div>
 </section>
@@ -316,27 +316,27 @@
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a><span class="fu">system.time</span>(save2 <span class="ot">&lt;-</span> <span class="fu">mclapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">120</span>, f, <span class="at">mc.cores =</span> <span class="dv">6</span>)) <span class="co"># six cores</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   user  system elapsed 
-  0.190   0.314   1.716 </code></pre>
+  0.131   0.208   0.947 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a><span class="fu">system.time</span>(save2 <span class="ot">&lt;-</span> <span class="fu">mclapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">120</span>, f, <span class="at">mc.cores =</span> <span class="dv">7</span>)) <span class="co"># seven cores</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   user  system elapsed 
-  0.793   0.528   1.445 </code></pre>
+  0.575   0.402   0.940 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a><span class="fu">system.time</span>(save2 <span class="ot">&lt;-</span> <span class="fu">mclapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">120</span>, f, <span class="at">mc.cores =</span> <span class="dv">8</span>)) <span class="co"># eight cores</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   user  system elapsed 
-  0.815   0.591   1.769 </code></pre>
+  0.552   0.415   0.919 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a><span class="fu">system.time</span>(save2 <span class="ot">&lt;-</span> <span class="fu">mclapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">120</span>, f, <span class="at">mc.cores =</span> <span class="dv">9</span>)) <span class="co"># nine cores</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   user  system elapsed 
-  0.237   0.371   1.450 </code></pre>
+  0.626   0.481   1.167 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a><span class="fu">system.time</span>(save2 <span class="ot">&lt;-</span> <span class="fu">mclapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">120</span>, f, <span class="at">mc.cores =</span> <span class="dv">10</span>)) <span class="co"># ten cores</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   user  system elapsed 
-  0.728   0.618   1.585 </code></pre>
+  0.651   0.557   1.189 </code></pre>
 </div>
 </div>
 </section>
@@ -374,11 +374,11 @@
 <h1></h1>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a></a><span class="fu">system.time</span>({</span>
-<span id="cb27-2"><a></a>res <span class="ot">&lt;-</span> <span class="fu">parLapply</span>(cl, <span class="dv">1</span><span class="sc">:</span><span class="dv">120</span>, f)</span>
+<span id="cb27-2"><a></a>res <span class="ot">&lt;-</span> <span class="fu">parLapply</span>(cl, <span class="dv">1</span><span class="sc">:</span><span class="dv">12000</span>, f)</span>
 <span id="cb27-3"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   user  system elapsed 
-  0.147   0.034   0.807 </code></pre>
+ 27.429   5.437 103.347 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a></a><span class="fu">stopCluster</span>(cl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -415,7 +415,7 @@
 <span id="cb31-8"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   user  system elapsed 
-  0.729   0.081   2.596 </code></pre>
+  0.879   0.111   3.127 </code></pre>
 </div>
 </div>
 </section>
@@ -427,101 +427,6 @@
 <li>Task granularity</li>
 <li>Memory duplication</li>
 <li>Load balancing</li>
-</ul>
-</section>
-
-<section id="your-turn" class="title-slide slide level1 center" data-background-color="#006666">
-<h1>Your Turn</h1>
-<ul>
-<li><p>Check how many cores the machine you are using has <code>parallel::detectCores()</code></p></li>
-<li><p>Initialize a cluster with fewer than the number of cores available</p></li>
-<li><p>Run the R code below on your machine</p></li>
-<li><p>Parallelize the statement, re-run it and time</p></li>
-</ul>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a></a><span class="fu">library</span>(nycflights13)</span>
-<span id="cb33-2"><a></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb33-3"><a></a></span>
-<span id="cb33-4"><a></a><span class="fu">system.time</span>(</span>
-<span id="cb33-5"><a></a>delays <span class="ot">&lt;-</span> flights <span class="sc">|&gt;</span> <span class="fu">group_by</span>(flight) <span class="sc">|&gt;</span></span>
-<span id="cb33-6"><a></a>  <span class="fu">summarize</span>(</span>
-<span id="cb33-7"><a></a>    <span class="at">mean_delay =</span> <span class="fu">mean</span>(arr_delay, <span class="at">na.rm=</span><span class="cn">FALSE</span>)</span>
-<span id="cb33-8"><a></a>  ) </span>
-<span id="cb33-9"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>   user  system elapsed 
-  1.297   0.043   1.364 </code></pre>
-</div>
-</div>
-</section>
-
-<section id="your-turn-1" class="title-slide slide level1 center" data-background-color="#006666">
-<h1>Your Turn</h1>
-<p><code>set.seed</code> allows you to set the seed before using a random number generator to create reproducible samples.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb35-2"><a></a><span class="fu">runif</span>(<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.2875775 0.7883051 0.4089769</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb37-2"><a></a><span class="fu">runif</span>(<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.2875775 0.7883051 0.4089769</code></pre>
-</div>
-</div>
-<p>How would this work for a parallel process? What else do we need to ensure?</p>
-</section>
-
-<section id="random-number-generation" class="title-slide slide level1 center">
-<h1>Random Number Generation</h1>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb39-2"><a></a></span>
-<span id="cb39-3"><a></a><span class="fu">mclapply</span>(<span class="fu">c</span>(<span class="dv">5</span>,<span class="dv">5</span>), runif, <span class="at">mc.cores=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[[1]]
-[1] 0.05886526 0.38873231 0.08882955 0.30483353 0.47057922
-
-[[2]]
-[1] 0.5765516 0.4525950 0.3720192 0.6351603 0.8252240</code></pre>
-</div>
-</div>
-<p>How do we ensure reproducibility and independence?</p>
-</section>
-
-<section id="rng-in-parallel" class="title-slide slide level1 center">
-<h1>RNG in Parallel</h1>
-<p><code>clusterSetRNGStream</code> uses RNG “L’Ecuyer-CMRG” that produces <em>streams</em> of independent random numbers</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a></a>cl <span class="ot">&lt;-</span> <span class="fu">makeCluster</span>(<span class="dv">4</span>)</span>
-<span id="cb41-2"><a></a></span>
-<span id="cb41-3"><a></a><span class="fu">clusterSetRNGStream</span>(cl, <span class="dv">123</span>)</span>
-<span id="cb41-4"><a></a></span>
-<span id="cb41-5"><a></a>results <span class="ot">&lt;-</span> <span class="fu">parLapply</span>(cl, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="cf">function</span>(i) {</span>
-<span id="cb41-6"><a></a>  <span class="fu">data.frame</span>(i, <span class="at">runif=</span><span class="fu">runif</span>(<span class="dv">5</span>))</span>
-<span id="cb41-7"><a></a>})</span>
-<span id="cb41-8"><a></a></span>
-<span id="cb41-9"><a></a><span class="fu">clusterSetRNGStream</span>(cl, <span class="dv">123</span>)</span>
-<span id="cb41-10"><a></a></span>
-<span id="cb41-11"><a></a>results2 <span class="ot">&lt;-</span> <span class="fu">parLapply</span>(cl, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="cf">function</span>(i) {</span>
-<span id="cb41-12"><a></a>  <span class="fu">data.frame</span>(i, <span class="at">runif=</span><span class="fu">runif</span>(<span class="dv">5</span>))</span>
-<span id="cb41-13"><a></a>})</span>
-<span id="cb41-14"><a></a></span>
-<span id="cb41-15"><a></a><span class="fu">identical</span>(results, results2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] TRUE</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a></a><span class="fu">stopCluster</span>(cl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-
-<section id="when-not-to-parallelize" class="title-slide slide level1 center">
-<h1>When NOT to Parallelize</h1>
-<ul>
-<li>Small tasks</li>
-<li>Fast vectorized code</li>
-<li>Memory limits</li>
 </ul>
 
 
